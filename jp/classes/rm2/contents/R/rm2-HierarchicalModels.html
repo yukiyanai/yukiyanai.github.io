@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="矢内　勇生" />
+
+
+<title>政治学方法論 II：階層モデルの推定</title>
+
+<script src="rm2-HierarchicalModels_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rm2-HierarchicalModels_files/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="rm2-HierarchicalModels_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="rm2-HierarchicalModels_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="rm2-HierarchicalModels_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link rel="stylesheet" href="my-markdown.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">政治学方法論 II：階層モデルの推定</h1>
+<h4 class="author"><b>矢内　勇生</b></h4>
+<h4 class="date"><b>2015年6月3日</b></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#bda-5.3-">BDA 5.3 共役階層モデルの推定</a><ul>
+<li><a href="#-hyperparameter-">超母数 (hyperparameter) の周辺事後分布</a></li>
+<li><a>同時事後分布から母数と超母数を抽出する</a></li>
+<li><a>推定結果の図示</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;ggplot2&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;plyr&quot;</span>)</code></pre></div>
+<div id="bda-5.3-" class="section level2">
+<h2>BDA 5.3 共役階層モデルの推定</h2>
+<p>解析の部分 (pp.108-111) については教科書とスライドを参照せよ。以下の数式番号はBDA3 のものである。</p>
+<p>使用する<a href="data/rats.txt">データ</a>を読み込む。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rats &lt;-<span class="st"> </span><span class="kw">scan</span>(<span class="st">&quot;rats.txt&quot;</span>, <span class="dt">skip =</span> <span class="dv">4</span>)
+rats &lt;-<span class="st"> </span><span class="kw">matrix</span>(rats, <span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)
+y &lt;-<span class="st"> </span>rats[,<span class="dv">1</span>]
+n &lt;-<span class="st"> </span>rats[,<span class="dv">2</span>]
+J &lt;-<span class="st"> </span><span class="kw">length</span>(y)</code></pre></div>
+<div id="-hyperparameter-" class="section level3">
+<h3>超母数 (hyperparameter) の周辺事後分布</h3>
+<p>超母数 <span class="math inline">\((\alpha, \beta)\)</span> の周辺事後分布 <span class="math inline">\(p(\alpha, \beta | y)\)</span> を計算する式は (5.8)。</p>
+<p>まず、(5.9) を超事前分布とし、それを (5.8) に代入し、かつその自然対数を計算する。 その際、母数を <span class="math inline">\((\alpha, \beta)\)</span> から <span class="math inline">\((\log(\alpha / \beta), \log(\alpha + \beta))\)</span> に変換するために、ヤコビアン <span class="math inline">\(|J| = \alpha\beta\)</span> を掛ける。</p>
+<p>グリッドは <span class="math inline">\(\log(\alpha / \beta)\)</span> と <span class="math inline">\(\log(\alpha, \beta)\)</span> でとりたいので、 引数も <span class="math inline">\((\phi_1, \phi_2) = (\log(\alpha / \beta), \log(\alpha + \beta))\)</span> にする。 <span class="math display">\[\alpha = \frac{\exp(\log(\alpha / \beta)) \exp(\log(\alpha + \beta))}{1 + \exp(\log(\alpha/\beta))}\]</span> <span class="math display">\[\beta = \frac{\exp(\log(\alpha + \beta))}{1 + \exp(\log(\alpha/\beta))}\]</span></p>
+<p>これを求めるための関数は、次のように定義できる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">get_alpha &lt;-<span class="st"> </span>function(phi1, phi2) {
+    <span class="kw">return</span>( <span class="kw">exp</span>(phi1 +<span class="st"> </span>phi2) /<span class="st"> </span>(<span class="dv">1</span> +<span class="st"> </span><span class="kw">exp</span>(phi1)) )
+}
+get_beta &lt;-<span class="st"> </span>function(phi1, phi2) {
+    <span class="kw">return</span>( beta &lt;-<span class="st"> </span><span class="kw">exp</span>(phi2) /<span class="st"> </span>(<span class="dv">1</span> +<span class="st"> </span><span class="kw">exp</span>(phi1)) )
+}
+m_post_hyper &lt;-<span class="st"> </span>function(phi1, phi2, y, n) {
+    ## Given phi1 = log(alpha / beta), phi2 = log(alpha + beta),
+    ##       y (j-dimensional vector), and n (j-dim. vec),
+    ## return the log of marginal posterior density (unnormalized)
+    ##       of (alpha, beta)
+    alpha &lt;-<span class="st"> </span><span class="kw">get_alpha</span>(phi1, phi2)
+    beta &lt;-<span class="st"> </span><span class="kw">get_beta</span>(phi1, phi2)
+    x &lt;-<span class="st"> </span>( <span class="kw">gamma</span>(alpha +<span class="st"> </span>beta) /<span class="st"> </span>( <span class="kw">gamma</span>(alpha) *<span class="st"> </span><span class="kw">gamma</span>(beta) ) ) *
+<span class="st">          </span>( <span class="kw">gamma</span>(alpha +<span class="st"> </span>y) *<span class="st"> </span><span class="kw">gamma</span>(beta +<span class="st"> </span>n -<span class="st"> </span>y ) /
+<span class="st">              </span><span class="kw">gamma</span>(alpha +<span class="st"> </span>beta +<span class="st"> </span>n) )
+    x &lt;-<span class="st"> </span><span class="kw">log</span>(x)
+    <span class="kw">return</span>( (-<span class="dv">5</span>/<span class="dv">2</span>) *<span class="st"> </span><span class="kw">log</span>(alpha +<span class="st"> </span>beta) +<span class="st"> </span>
+<span class="st">             </span><span class="kw">log</span>(alpha) +<span class="st"> </span><span class="kw">log</span>(beta) +<span class="st"> </span><span class="kw">sum</span>(x))
+}</code></pre></div>
+<p>グリッドを用意する。 とりあえず、<span class="math inline">\((\log(\alpha / \beta), \log(\alpha + \beta)) \in [-2.5, -1], \times [1.5, 3]\)</span> とする。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">phi1 &lt;-<span class="st"> </span><span class="kw">seq</span>(-<span class="fl">2.5</span>, -<span class="dv">1</span>, <span class="dt">length =</span> <span class="dv">100</span>)
+phi2 &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="fl">1.5</span>, <span class="dv">3</span>, <span class="dt">length =</span> <span class="dv">100</span>)
+Grid<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(phi1, phi2)
+<span class="kw">names</span>(Grid<span class="fl">.1</span>) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;phi1&quot;</span>, <span class="st">&quot;phi2&quot;</span>)</code></pre></div>
+<p>グリッド上の各点について、周辺事後分布（正規化前）を計算する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Grid<span class="fl">.1</span>$dens &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">dim</span>(Grid<span class="fl">.1</span>)[<span class="dv">1</span>])
+for (i in <span class="dv">1</span>:<span class="kw">dim</span>(Grid<span class="fl">.1</span>)[<span class="dv">1</span>]) {
+    phi1 &lt;-<span class="st"> </span>Grid<span class="fl">.1</span>[i, <span class="dv">1</span>]
+    phi2 &lt;-<span class="st"> </span>Grid<span class="fl">.1</span>[i, <span class="dv">2</span>]
+    Grid<span class="fl">.1</span>$dens[i] &lt;-<span class="st"> </span><span class="kw">m_post_hyper</span>(phi1, phi2, <span class="dt">y =</span> y, <span class="dt">n =</span> n)
+}
+Grid<span class="fl">.1</span>$dens &lt;-<span class="st"> </span><span class="kw">with</span>(Grid<span class="fl">.1</span>, <span class="kw">exp</span>(dens -<span class="st"> </span><span class="kw">max</span>(dens)))</code></pre></div>
+<p>等高線図を描いてみる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cont<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">ggplot</span>(Grid<span class="fl">.1</span>, <span class="kw">aes</span>(phi1, phi2, <span class="dt">z =</span> dens)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_contour</span>() +<span class="st"> </span><span class="kw">xlim</span>(-<span class="fl">2.5</span>, -<span class="dv">1</span>) +<span class="st"> </span><span class="kw">ylim</span>(<span class="fl">1.5</span>, <span class="dv">3</span>)
+cont<span class="fl">.1</span> +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;log(alpha / beta)&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;log(alpha + beta)&quot;</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels_files/figure-html/contour-1-1.png" title="" alt="" width="672" /></p>
+<p>分布の中心（中央値付近）は、階層モデルを使わなかった場合の（データ全体の平均とサンプルサイズによって設定した）値とほぼ一致する。 しかし、このグリッドの範囲では、分布の一部をカバーし損なってしまうことがわかる。 そこで、グリッドの範囲を変えてみる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">phi1 &lt;-<span class="st"> </span><span class="kw">seq</span>(-<span class="fl">2.2</span>, -<span class="fl">1.4</span>, <span class="dt">length =</span> <span class="dv">100</span>)
+phi2 &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="fl">1.5</span>, <span class="fl">4.5</span>, <span class="dt">length =</span> <span class="dv">100</span>)
+Grid<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(phi1, phi2)
+<span class="kw">names</span>(Grid<span class="fl">.2</span>) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;phi1&quot;</span>, <span class="st">&quot;phi2&quot;</span>)</code></pre></div>
+<p>このグリッドの各点で、正規化前の周辺事後分布を計算する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Grid<span class="fl">.2</span>$dens &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">dim</span>(Grid<span class="fl">.2</span>)[<span class="dv">1</span>])
+for (i in <span class="dv">1</span>:<span class="kw">dim</span>(Grid<span class="fl">.2</span>)[<span class="dv">1</span>]) {
+    phi1 &lt;-<span class="st"> </span>Grid<span class="fl">.2</span>[i, <span class="dv">1</span>]
+    phi2 &lt;-<span class="st"> </span>Grid<span class="fl">.2</span>[i, <span class="dv">2</span>]
+    Grid<span class="fl">.2</span>$dens[i] &lt;-<span class="st"> </span><span class="kw">m_post_hyper</span>(phi1, phi2, <span class="dt">y =</span> y, <span class="dt">n =</span> n)
+}
+Grid<span class="fl">.2</span>$dens &lt;-<span class="st"> </span><span class="kw">with</span>(Grid<span class="fl">.2</span>, <span class="kw">exp</span>(dens -<span class="st"> </span><span class="kw">max</span>(dens)))</code></pre></div>
+<p>これを等高線図にしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cont<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">ggplot</span>(Grid<span class="fl">.2</span>, <span class="kw">aes</span>(phi1, phi2, <span class="dt">z =</span> dens)) +
+<span class="st">    </span><span class="kw">geom_contour</span>() +<span class="st"> </span><span class="kw">xlim</span>(-<span class="fl">2.2</span>, -<span class="fl">1.4</span>) +<span class="st"> </span><span class="kw">ylim</span>(<span class="dv">1</span>, <span class="dv">5</span>) +
+<span class="st">    </span><span class="kw">coord_fixed</span>(<span class="dt">ratio =</span> .<span class="dv">2</span>)
+cont<span class="fl">.2</span> +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;log(alpha / beta)&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;log(alpha + beta)&quot;</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels_files/figure-html/contour-2-1.png" title="" alt="" width="672" /></p>
+<p>今度は、分布全体を捉えているようである。</p>
+<p>この分布から、<span class="math inline">\((log(\alpha/\beta), log(\alpha + \beta))\)</span> を1000個引いてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">phi1.post &lt;-<span class="st"> </span><span class="kw">ddply</span>(Grid<span class="fl">.2</span>, .(phi1), summarize, <span class="dt">dens =</span> <span class="kw">sum</span>(dens))
+phi2.post &lt;-<span class="st"> </span><span class="kw">ddply</span>(Grid<span class="fl">.2</span>, .(phi2), summarize, <span class="dt">dens =</span> <span class="kw">sum</span>(dens))
+phi1.sample &lt;-<span class="st"> </span><span class="kw">sample</span>(phi1.post$phi1, <span class="dt">size =</span> <span class="dv">1000</span>,
+                      <span class="dt">prob =</span> phi1.post$dens, <span class="dt">replace =</span> <span class="ot">TRUE</span>)
+phi1.sample &lt;-<span class="st"> </span>phi1.sample +<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1000</span>, -<span class="fl">0.8</span>/<span class="dv">100</span>, <span class="fl">0.8</span>/<span class="dv">100</span>)
+phi2.sample &lt;-<span class="st"> </span><span class="kw">sample</span>(phi2.post$phi2, <span class="dt">size =</span> <span class="dv">1000</span>,
+                      <span class="dt">prob =</span> phi2.post$dens, <span class="dt">replace =</span> <span class="ot">TRUE</span>)
+phi2.sample &lt;-<span class="st"> </span>phi2.sample +<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1000</span>, -<span class="dv">4</span>/<span class="dv">100</span>, <span class="dv">4</span>/<span class="dv">100</span>)
+df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">phi1 =</span> phi1.sample, <span class="dt">phi2 =</span> phi2.sample)</code></pre></div>
+<p>抽出したペアを散布図にしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pt &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df, <span class="kw">aes</span>(phi1, phi2)) +<span class="st"> </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">xlim</span>(-<span class="fl">2.2</span>, -<span class="fl">1.4</span>) +<span class="st"> </span><span class="kw">ylim</span>(<span class="dv">1</span>, <span class="dv">5</span>) +<span class="st"> </span><span class="kw">coord_fixed</span>(<span class="dt">ratio =</span> .<span class="dv">2</span>)
+pt +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;log(alpha / beta)&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;log(alpha + beta)&quot;</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels_files/figure-html/post-pair-1.png" title="" alt="" width="672" /></p>
+<p>ここで、<span class="math inline">\(\alpha\)</span> と <span class="math inline">\(\beta\)</span> の事後分布の期待値、<span class="math inline">\(\mathrm{E}(\alpha | y)\)</span> と <span class="math inline">\(\mathrm{E}(\beta | y)\)</span> をそれぞれ計算してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Grid<span class="fl">.2</span>$alpha &lt;-<span class="st"> </span><span class="kw">get_alpha</span>(Grid<span class="fl">.2</span>$phi1, Grid<span class="fl">.2</span>$phi2)
+Grid<span class="fl">.2</span>$beta &lt;-<span class="st"> </span><span class="kw">get_beta</span>(Grid<span class="fl">.2</span>$phi1, Grid<span class="fl">.2</span>$phi2)
+Grid<span class="fl">.2</span>$prob &lt;-<span class="st"> </span><span class="kw">with</span>(Grid<span class="fl">.2</span>, dens /<span class="st"> </span><span class="kw">sum</span>(dens))
+## E(alpha | y)
+(exp.alpha.post &lt;-<span class="st"> </span><span class="kw">with</span>(Grid<span class="fl">.2</span>, <span class="kw">sum</span>(alpha *<span class="st"> </span>prob)))</code></pre></div>
+<pre><code>## [1] 2.402281</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## E(beta | y)
+(exp.beta.post &lt;-<span class="st"> </span><span class="kw">with</span>(Grid<span class="fl">.2</span>, <span class="kw">sum</span>(beta *<span class="st"> </span>prob)))</code></pre></div>
+<pre><code>## [1] 14.31831</code></pre>
+</div>
+<div class="section level3">
+<h3>同時事後分布から母数と超母数を抽出する</h3>
+<p>最後に、<span class="math inline">\(\theta_j\)</span> を抽出しよう。まず、超母数を抽出し、その値を利用して <span class="math inline">\(\theta_j\)</span> をベータ分布から抽出する。ここでは、1,000個値を引くこととする。</p>
+<p>まず、<span class="math inline">\((\alpha, \beta | y)\)</span> を1000組引く。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Grid<span class="fl">.2</span>$index &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="kw">dim</span>(Grid<span class="fl">.2</span>)[<span class="dv">1</span>]
+target &lt;-<span class="st"> </span><span class="kw">with</span>(Grid<span class="fl">.2</span>, <span class="kw">sample</span>(index, <span class="dt">size =</span> <span class="dv">1000</span>,
+                              <span class="dt">prob =</span> prob, <span class="dt">rep =</span> <span class="ot">TRUE</span>))
+## 1000 draws of alpha and beta
+alpha1000 &lt;-<span class="st"> </span>Grid<span class="fl">.2</span>$alpha[target]
+beta1000 &lt;-<span class="st"> </span>Grid<span class="fl">.2</span>$beta[target]</code></pre></div>
+<p>次に、抽出した <span class="math inline">\(\alpha, \beta\)</span> を使い、 <span class="math display">\[\theta_j | \alpha, \beta, y \sim \mathrm{Beta}(\alpha + y_j, \beta + n_j - y_j\]</span> によって、<span class="math inline">\(\theta\)</span> を抽出する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">post.matrix &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">ncol =</span> <span class="dv">71</span>, <span class="dt">nrow =</span> <span class="dv">1000</span>)
+for (j in <span class="dv">1</span>:J) {
+    post.matrix[, j] &lt;-<span class="st"> </span><span class="kw">rbeta</span>(<span class="dv">1000</span>, alpha1000 +<span class="st"> </span>y[j],
+                              beta1000 +<span class="st"> </span>n[j] -<span class="st"> </span>y[j])
+}</code></pre></div>
+</div>
+<div class="section level3">
+<h3>推定結果の図示</h3>
+<p>この推定結果を図示しよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rate &lt;-<span class="st"> </span>y /n
+post.median &lt;-<span class="st"> </span><span class="kw">apply</span>(post.matrix, <span class="dv">2</span>, median)
+post.lower &lt;-<span class="st"> </span><span class="kw">apply</span>(post.matrix, <span class="dv">2</span>, function(x) <span class="kw">quantile</span>(x, .<span class="dv">025</span>))
+post.upper &lt;-<span class="st"> </span><span class="kw">apply</span>(post.matrix, <span class="dv">2</span>, function(x) <span class="kw">quantile</span>(x, .<span class="dv">975</span>))
+Post &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">rate =</span> rate,
+                   <span class="dt">med =</span> post.median,
+                   <span class="dt">lower =</span> post.lower,
+                   <span class="dt">upper =</span> post.upper)
+mean.overall &lt;-<span class="st"> </span><span class="kw">mean</span>(Post$rate)
+shrink &lt;-<span class="st"> </span><span class="kw">ggplot</span>(Post, <span class="kw">aes</span>(<span class="dt">x =</span> rate, <span class="dt">y =</span> med)) +
+<span class="st">    </span><span class="kw">geom_linerange</span>(<span class="kw">aes</span>(<span class="dt">ymin =</span> lower, <span class="dt">ymax =</span> upper), <span class="dt">color =</span> <span class="st">&quot;skyblue&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">xlim</span>(<span class="dv">0</span>, <span class="kw">max</span>(Post$upper)) +<span class="st"> </span><span class="kw">ylim</span>(<span class="dv">0</span>, <span class="kw">max</span>(Post$upper)) +<span class="st"> </span><span class="kw">coord_fixed</span>() +
+<span class="st">    </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">color =</span> <span class="st">&quot;gray&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> mean.overall, <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>)
+shrink +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;observed rate, y[j] / n[j]&quot;</span>,
+              <span class="dt">y =</span> <span class="st">&quot;95% posterior interval for theta[j]&quot;</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels_files/figure-html/unnamed-chunk-2-1.png" title="" alt="" width="672" /></p>
+<p>この図の点は<span class="math inline">\(\theta_j\)</span> の点推定値（事後分布の中央値）、線分は95%事後分布区間を示す。 また、赤い点線はデータ全体の平均値である。</p>
+<p>この図から何がわかる？</p>
+<br>
+<br>
+<div style="text-align: right;">
+<a href="../">授業の内容に戻る</a>
+</div>
+
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

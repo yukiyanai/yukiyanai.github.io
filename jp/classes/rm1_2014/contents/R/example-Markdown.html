@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="矢内　勇生" />
+
+
+<title>政治学方法論 I：Rマークダウンの例</title>
+
+<script src="example-Markdown_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="example-Markdown_files/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="example-Markdown_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="example-Markdown_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="example-Markdown_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link rel="stylesheet" href="my-markdown.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">政治学方法論 I：Rマークダウンの例</h1>
+<h4 class="author"><em>矢内　勇生</em></h4>
+<h4 class="date"><em>October 15, 2014 (rev. June 6, 2015)</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#r">Rマークダウンの使い方</a><ul>
+<li><a>マークダウン記法を利用した文書の書き方</a><ul>
+<li><a>数式の書き方</a></li>
+</ul></li>
+<li><a>コードチャンクの書き方</a></li>
+</ul></li>
+<li><a href="#r">（ついでに）Rによるシミュレーション</a><ul>
+<li><a>分散と不偏分散</a><ul>
+<li><a>シミュレーション条件の設定</a></li>
+</ul></li>
+<li><a>関数を定義してシミュレーションを効率的に行う</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p><br></p>
+<div id="r" class="section level1">
+<h1>Rマークダウンの使い方</h1>
+<p>マークダウンファイル (<a href="example-Markdown.Rmd" class="uri">example-Markdown.Rmd</a>) とそのファイルを元に生成されたhtmlファイル（example-Markdown.html) を見比べながら、RStudio でRマークダウンファイルを扱えるようにするのが今日の目標である。</p>
+<p>このマークダウンをそのまま使うためには、担当教員が作ったスタイルシート（<a href="../docs/my-markdown.css">my-markdown.css</a>）をホームディレクトリに保存する必要がある。 スタイルをカスタマイズしたいなら、このファイルを変更すればよい。 デフォルトのスタイルのままでいいとき（あまり良くないと思うが）は、ヘッダの’css’オプションの指定をやめる（このRmdファイル [htmlではない] の第10行を削除する）。</p>
+<div class="section level2">
+<h2>マークダウン記法を利用した文書の書き方</h2>
+<p>文章は、いつもどおり書けばよい。 文章の一部をイタリックにしたいときは<em>this is italic</em> あるいは <em>this is also italic</em> とする。 太字は、<strong>ここが太字</strong> または <strong>ここも太字</strong> とする。 太字のイタリックは、<strong><em>here is bold italic</em></strong> または <strong><em>here is also bold italic</em></strong> とする。</p>
+<p>改行するときは、文章の間を1行以上空ける。</p>
+<p>箇条書きは、</p>
+<ul>
+<li>項目1</li>
+<li>項目2
+<ul>
+<li>項目2-1</li>
+<li>項目2-2</li>
+</ul></li>
+</ul>
+<p>あるいは、</p>
+<ul>
+<li>項目1
+<ul>
+<li>項目1-1</li>
+<li>項目1-2</li>
+</ul></li>
+<li>項目2</li>
+</ul>
+<p>のようにする。* や - の後は半角スペースを空ける。箇条書きを入れ子ににするとき、字下げはTabで行う</p>
+<p>番号付きの箇条書きは、</p>
+<ol style="list-style-type: decimal">
+<li>First item</li>
+<li>Second item
+<ol style="list-style-type: decimal">
+<li>What?</li>
+<li>How?</li>
+</ol></li>
+<li>Third item</li>
+</ol>
+<p>のようにする。</p>
+<p>また、リンクを貼ることもできる：<a href="http://www.yukiyanai.com/">矢内のウェブサイト</a>。</p>
+<p>画像も貼れる：<img src="figs/Rlogo.png" alt="Rのロゴ" /> （画像ファイルは、<a href="http://www.r-project.org/Rlogo.png">ココ</a> にある）</p>
+<div class="section level3">
+<h3>数式の書き方</h3>
+<p><span class="math inline">\(\LaTeX\)</span> と同じように数式を書くこともできる。 文章中と同じ行に数式を書きたいときは、<code>$</code>で挟む。 たとえば、<span class="math inline">\(\bar{x} = \sum_{i=1}^n x_i / n\)</span> と、する。 数式を独立したブロックとして書きたいときは、<code>$$</code>で挟み、 <span class="math display">\[\sigma^2 = \frac{\sum_{i=1}^n (x_i - \mu)^2}{n}\]</span> のようにする。</p>
+</div>
+</div>
+<div class="section level2">
+<h2>コードチャンクの書き方</h2>
+<p>Rのコードは、コードチャンクと呼ばれる部分に書き込む。 コードチャンクは、たとえば以下のように書ける。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span>
+b &lt;-<span class="st"> </span>-<span class="dv">1</span>:-<span class="dv">10</span></code></pre></div>
+<p>3つの「`」の後に、{r}をつける。 rとスペースの後には、チャンクの名前を付ける。 好きな名前を付けてよいが、他のチャンクとまったく同じ名前は付けられない。</p>
+<p>文章中にRコードを書きたいときは<code>mean(x)</code> のように書く。 関数を実行（評価, evaluate）した後の結果を文章中に入れたいときは、「<span class="math inline">\(a\)</span> の平均値は5.5 です」のように“r”を入れて書く。</p>
+<p>図を含めた文章も作れる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(a, b, <span class="dt">main =</span> <span class="st">&quot;aとbの散布図&quot;</span>)</code></pre></div>
+<p><img src="example-Markdown_files/figure-html/example-plot-1.png" title="" alt="" width="576" /></p>
+<p>何もオプションを指定しない状態では、チャンクは1行ずつ評価され、結果も順番に次々出力される。 たとえば、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sd</span>(a)</code></pre></div>
+<pre><code>## [1] 3.02765</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">var</span>(a)</code></pre></div>
+<pre><code>## [1] 9.166667</code></pre>
+<p>チャンクの最後まで評価してからまとめて結果表示したいときは、チャンクオプション**results* を’hold’にする。 オプションは、チャンク名の後に「,（comma）」を打ち、その後に書く。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sd</span>(a)
+<span class="kw">var</span>(a)</code></pre></div>
+<pre><code>## [1] 3.02765
+## [1] 9.166667</code></pre>
+<p>チャンクオプションについてより詳しくは <a href="http://d.hatena.ne.jp/teramonagi/20130615/1371303616">ココ</a> などを参照されたい。</p>
+<p><br></p>
+</div>
+</div>
+<div id="r" class="section level1">
+<h1>（ついでに）Rによるシミュレーション</h1>
+<div class="section level2">
+<h2>分散と不偏分散</h2>
+<p>変数<span class="math inline">\(X\)</span>の母分散が<span class="math inline">\(\sigma^2\)</span>だとする。 このとき、<span class="math inline">\(X\)</span>の標本分散を <span class="math display">\[s^2 = \frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n}\]</span> とすると、 <span class="math display">\[\mathrm{E}(s^2) = \frac{n-1}{n} \sigma^2\]</span>となる。 つまり、<span class="math inline">\(s^2\)</span>は<span class="math inline">\(\sigma^2\)</span>の不偏推定量ではない。 代わりに、<span class="math display">\[u^2 = \frac{n}{n-1}s^2 = \frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}\]</span> が<span class="math inline">\(\sigma^2\)</span>の不偏推定量になる。 このことは簡単に証明できるが、ここではRでシミュレーションを行うことによって、本当にそうなるかどうか確認してみよう。</p>
+<div class="section level3">
+<h3>シミュレーション条件の設定</h3>
+<p>まず、シミュレーションの条件として、サンプルサイズ (<span class="math inline">\(n\)</span>)、シミュレーションの繰り返し回数 (trials)、真の母分散の値 (<span class="math inline">\(\sigma^2\)</span>) を決める。 また、シミュレーションの結果を保存するための変数を用意する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n &lt;-<span class="st"> </span><span class="dv">10</span>   ## sample size
+trials &lt;-<span class="st"> </span><span class="dv">1000</span>  ## number of samples
+sigma2 &lt;-<span class="st"> </span><span class="dv">10</span>    ## True Variance
+## prepare vectors to save the results
+s2 &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, trials)
+u2 &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, trials)</code></pre></div>
+<p>ここまでで準備ができたので、実際にシミュレーションを行う。 ここでは、<code>for</code> ループを利用する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">for (i in <span class="dv">1</span>:trials) {  ## シミュレーションを実行するループ
+    x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">sd =</span> <span class="kw">sqrt</span>(sigma2))　## N(0, sigma^2)からの無作為抽出
+    s2[i] &lt;-<span class="st"> </span><span class="kw">sum</span>((x -<span class="st"> </span><span class="kw">mean</span>(x))^<span class="dv">2</span>) /<span class="st"> </span>n  ## 標本分散の計算
+    u2[i] &lt;-<span class="st"> </span><span class="kw">sum</span>((x -<span class="st"> </span><span class="kw">mean</span>(x))^<span class="dv">2</span>) /<span class="st"> </span>(n -<span class="st"> </span><span class="dv">1</span>)　## 不偏分散の計算
+}
+<span class="kw">rm</span>(x)</code></pre></div>
+<p>シミュレーションが終わったので、結果を確認してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## variance
+<span class="kw">mean</span>(s2)  ## 標本分散の平均値</code></pre></div>
+<pre><code>## [1] 9.190591</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(u2)  ## 不偏分散の平均値</code></pre></div>
+<pre><code>## [1] 10.21177</code></pre>
+<p>このように、<span class="math inline">\(s^2\)</span> (s2) は真の値よりも小さめの値を出してしまうことがわかる。</p>
+<p><br></p>
+</div>
+</div>
+<div class="section level2">
+<h2>関数を定義してシミュレーションを効率的に行う</h2>
+<p>上の例では、シミュレーションの条件を変更するたびに複数のコードを実行し直す必要があって不便である。 そこで、シミュレーションを1行でやり直せるよう、シミュレーション用の関数を定義する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_var &lt;-<span class="st"> </span>function(n, trials, true.var) {## 不偏分散をシミュレートする関数
+    ## 引数 (arguments)：
+    ##    n = サンプルサイズ
+    ##    trials = シミュレーションの繰り返し回数
+    ##    true.var = sigma^2 （真の母平均）
+    ## 返り値 (return)：ベクトル(s2, u2)
+    s2 &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, trials)
+    u2 &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, trials)
+    for (i in <span class="dv">1</span>:trials) { ## シミュレーションを実行するループ
+        x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">sd =</span> <span class="kw">sqrt</span>(true.var))  ## N(0, true.var) からの無作為抽出
+        s2[i] &lt;-<span class="st"> </span><span class="kw">sum</span>((x -<span class="st"> </span><span class="kw">mean</span>(x))^<span class="dv">2</span>) /<span class="st"> </span>n   ## 標本分散を計算する
+        u2[i] &lt;-<span class="st"> </span><span class="kw">sum</span>((x -<span class="st"> </span><span class="kw">mean</span>(x))^<span class="dv">2</span>) /<span class="st"> </span>(n -<span class="st"> </span><span class="dv">1</span>) ## 不偏分散を計算する
+    }
+    s2 &lt;-<span class="st"> </span><span class="kw">mean</span>(s2)　## 標本分散の平均値を計算する
+    u2 &lt;-<span class="st"> </span><span class="kw">mean</span>(u2)  ## 不偏分散の平均値を計算する
+    <span class="kw">return</span>(<span class="kw">c</span>(s2, u2)) ## ベクトルを返す
+}</code></pre></div>
+<p>これで、関数が定義できた。</p>
+<p>この関数を使ってシミュレーションを行ってみよう。 まず、<span class="math inline">\(n=5\)</span> の場合は、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sim_var</span>(<span class="dt">n =</span> <span class="dv">5</span>, <span class="dt">trials =</span> <span class="dv">1000</span>, <span class="dt">true.var =</span> <span class="dv">10</span>)</code></pre></div>
+<pre><code>## [1]  8.027553 10.034441</code></pre>
+<p>これでシミュレーションの結果が出た。</p>
+<p><span class="math inline">\(n\)</span>の値を10に変ると、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sim_var</span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">trials =</span> <span class="dv">1000</span>, <span class="dt">true.var =</span> <span class="dv">10</span>)</code></pre></div>
+<pre><code>## [1] 8.959179 9.954643</code></pre>
+<p>この関数を使って、複数の<span class="math inline">\(n\)</span>についてのシミュレーションを一挙に行う関数を新たに定義しよう。 ここでは、シミュレーションを行いたいうちで最も小さな<span class="math inline">\(n\)</span>の値<strong>n.min</strong> と最も大きな値 <strong>n.max</strong> を与えたとき、その間（端点を含む）にあるすべての<span class="math inline">\(n\)</span>についてシミュレーションを実施する関数を作る。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_var2 &lt;-<span class="st"> </span>function(<span class="dt">n.min =</span> <span class="dv">1</span>, n.max, <span class="dt">trials =</span> <span class="dv">1000</span>, true.var){
+    ## 引数：n.min = 最も小さなn, 既定値は1
+    ##       n.max = 最も大きなn
+    ##       trials = シミュレーションの繰り返し回数, 既定値は1000
+    ##       true.var = sigma^2 （真の母平均）
+    ## 返り値：行列（行数 = nの数, 列数 = 3）
+    
+    ## 入力がおかしいときはエラーを出す
+    if (n.min &lt;<span class="st"> </span><span class="dv">1</span>) <span class="kw">stop</span>(<span class="st">&quot;Error: n.min には1以上の整数を指定してください&quot;</span>)
+    if (n.max &lt;<span class="st"> </span><span class="dv">1</span>) <span class="kw">stop</span>(<span class="st">&quot;Error: n.max には1以上の整数を指定してください&quot;</span>)
+    if (trials &lt;<span class="st"> </span><span class="dv">1</span>) <span class="kw">stop</span>(<span class="st">&quot;Error: trials には1以上の整数を指定してください&quot;</span>)
+    if (true.var&lt;<span class="dv">0</span>) <span class="kw">stop</span>(<span class="st">&quot;Error: true.var には0以上の実数を指定してください&quot;</span>)
+    
+    ## シミュレーションに利用するn
+    n.vec &lt;-<span class="st"> </span>n.min:n.max
+    ## 結果を保存するための行列
+    output &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">ncol =</span> <span class="dv">3</span>, <span class="dt">nrow =</span> <span class="kw">length</span>(n.vec))
+    ## ループを使ってシミュレーションを実施する
+    for (i in <span class="dv">1</span>:<span class="kw">length</span>(n.vec)) {
+        ## 既に定義済みの関数を利用する
+        ## i 行目にi番目のシミュレーション結果を保存する
+        ## 1列目にはnの値を保存
+        output[i, <span class="dv">1</span>] &lt;-<span class="st"> </span>n.vec[i]
+        ## 第2列に標本分散、第3列に不偏分散を保存する
+        output[i, <span class="dv">2</span>:<span class="dv">3</span>] &lt;-<span class="st"> </span><span class="kw">sim_var</span>(<span class="dt">n =</span> n.vec[i], <span class="dt">trials =</span> trials, <span class="dt">true.var =</span> true.var)
+    }
+    <span class="kw">return</span>(output)
+}      </code></pre></div>
+<p>これで、関数ができた。</p>
+<p>ためしに、<span class="math inline">\(n = 10, 11, \dots, 100\)</span>について、この関数を使ってシミュレーションを実行し、結果を図示してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim1 &lt;-<span class="st"> </span><span class="kw">sim_var2</span>(<span class="dt">n.min =</span> <span class="dv">10</span>, <span class="dt">n.max =</span> <span class="dv">100</span>, <span class="dt">trials =</span> <span class="dv">1000</span>, <span class="dt">true.var =</span> <span class="dv">10</span>)
+<span class="kw">plot</span>(sim1[,<span class="dv">1</span>], sim1[,<span class="dv">2</span>], <span class="dt">type =</span> <span class="st">&quot;l&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;royalblue&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>,
+     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="kw">min</span>(sim1[,<span class="dv">2</span>:<span class="dv">3</span>]), <span class="kw">max</span>(sim1[,<span class="dv">2</span>:<span class="dv">3</span>])),
+     <span class="dt">xlab =</span> <span class="st">&quot;標本サイズ&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;分散&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;不偏分散のシミュレーション&quot;</span>)
+<span class="kw">lines</span>(sim1[,<span class="dv">1</span>], sim1[,<span class="dv">3</span>], <span class="dt">type =</span> <span class="st">&quot;l&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)
+<span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">10</span>, <span class="dt">col =</span> <span class="st">&quot;tomato&quot;</span>)
+<span class="kw">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;標本分散&quot;</span>,<span class="st">&quot;不偏分散&quot;</span>, <span class="st">&quot;母分散&quot;</span>),
+       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;royalblue&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;tomato&quot;</span>), <span class="dt">lty =</span> <span class="dv">1</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</code></pre></div>
+<p><img src="example-Markdown_files/figure-html/sim-var-n1to100-1.png" title="" alt="" width="576" /></p>
+<p><br></p>
+<p><a href="http://www2.kobe-u.ac.jp/~yyanai/jp/classes/rm1/contents/">授業の内容に戻る</a></p>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

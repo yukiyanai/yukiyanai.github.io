@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="矢内　勇生" />
+
+
+<title>政治学方法論 I：Rを使って表と図を作る</title>
+
+<script src="tables-n-figures_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="tables-n-figures_files/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="tables-n-figures_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="tables-n-figures_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="tables-n-figures_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link rel="stylesheet" href="my-markdown.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">政治学方法論 I：Rを使って表と図を作る</h1>
+<h4 class="author"><b>矢内　勇生</b></h4>
+<h4 class="date"><em>October 22, 2014 (rev. June 6, 2015)</em></h4>
+</div>
+
+
+<div class="section level1">
+<h1>分析結果の視覚化：表と図</h1>
+<p>説明のために『Stataによる計量政治学』（浅野正彦, 矢内勇生. 2013）で使用されているデータ（<a href="http://www2.kobe-u.ac.jp/~yyanai/jp/quant-methods-stata/data/hr96-09.dta">hr96-09.dta</a>） を使う。</p>
+<p>このデータはStataのデータファイル（拡張子が.dta）であるが、<strong>foreign</strong> パッケージの<code>read.dta()</code> を利用して、Rで読み込むことができる。 このデータを作業ディレクトリ内のdataフォルダに保存したとすると、以下のコマンドでデータを読み込むことができる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;foreign&quot;</span>)
+HR &lt;-<span class="st"> </span><span class="kw">read.dta</span>(<span class="st">&quot;data/hr96-09.dta&quot;</span>)
+<span class="kw">head</span>(HR)</code></pre></div>
+<pre><code>##   year    ku kun party              name age     status nocand   wl rank
+## 1 1996 aichi   1   NFP KAWAMURA, TAKASHI  47  incumbent      7  win    1
+## 2 1996 aichi   1   LDP     IMAEDA, NORIO  72       moto      7 lose    2
+## 3 1996 aichi   1   DPJ     SATO, TAISUKE  53  incumbent      7 lose    3
+## 4 1996 aichi   1   JCP   IWANAKA, MIHOKO  43 challenger      7 lose    4
+## 5 1996 aichi   1 bunka       ITO, MASAKO  51 challenger      7 lose    5
+## 6 1996 aichi   1    NP  YAMADA, HIROSHIB  51 challenger      7 lose    6
+##   previous  vote voteshare eligible turnout     exp
+## 1        2 66876      40.0   346774   49.22 9828097
+## 2        3 42969      25.7   346774   49.22 9311555
+## 3        2 33503      20.1   346774   49.22 9231284
+## 4        0 22209      13.3   346774   49.22 2177203
+## 5        0   616       0.4   346774   49.22      NA
+## 6        0   566       0.3   346774   49.22      NA</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tail</span>(HR)</code></pre></div>
+<pre><code>##      year        ku kun party                name age     status nocand
+## 5609 2009 yamanashi   2   msz    NAGASAKI, KOTARO  41  incumbent      4
+## 5610 2009 yamanashi   2   LDP    HORIUCHI, MITSUO  79  incumbent      4
+## 5611 2009 yamanashi   2     H MIYAMATSU, HIROYUKI  69 challenger      4
+## 5612 2009 yamanashi   3   DPJ       GOTO, HITOSHI  52  incumbent      3
+## 5613 2009 yamanashi   3   LDP           ONO, JIRO  56  incumbent      3
+## 5614 2009 yamanashi   3     H   SAKURADA, DAISUKE  47 challenger      3
+##        wl rank previous   vote voteshare eligible turnout      exp
+## 5609 lose    2        1  57213      32.1   234746   77.09  7916556
+## 5610 lose    3       10  52773      29.6   234746   77.09 11611677
+## 5611 lose    4        0   1214       0.7   234746   77.09  1326378
+## 5612  win    1        3 112894      62.7   248102   74.70  6795969
+## 5613 lose    2        1  63611      35.3   248102   74.70 12876644
+## 5614 lose    3        0   3663       2.0   248102   74.70  1953819</code></pre>
+<p>これで、データを読み込み、HRという名前のデータフレームを作ることができた。</p>
+<p>このデータセットには、複数年の選挙結果が保存されている。 どの選挙のデータが含まれるか確認しよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">with</span>(HR, <span class="kw">table</span>(year))</code></pre></div>
+<pre><code>## year
+## 1996 2000 2003 2005 2009 
+## 1261 1199 1026  989 1139</code></pre>
+<p>このように、5回の衆院選のデータがある。 ここから <strong>dplyr</strong> パッケージの <code>filter()</code> で2009年のデータだけを取り出し、HR09というデータフレームを作ろう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 必要なら、まずdplyr をインストールする
+<span class="co"># install.packages(&quot;dplyr&quot;, dependencies = TRUE, repos = &quot;http://cran.ism.ac.jp&quot;)</span>
+<span class="kw">library</span>(<span class="st">&quot;dplyr&quot;</span>)
+HR09 &lt;-<span class="st"> </span><span class="kw">filter</span>(HR, year==<span class="dv">2009</span>)
+<span class="kw">with</span>(HR09, <span class="kw">table</span>(year))</code></pre></div>
+<pre><code>## year
+## 2009 
+## 1139</code></pre>
+<p>以下の説明では、このHR09を使う</p>
+<p><br></p>
+<div id="r" class="section level2">
+<h2>Rで表を出力する</h2>
+<p>2009年の衆院選データ（HR09）のうち、候補者の立場（status) と選挙結果 (wl) の関係を表にしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(tbl.st.wl &lt;-<span class="st"> </span><span class="kw">with</span>(HR09, <span class="kw">table</span>(status, wl)))</code></pre></div>
+<pre><code>##             wl
+## status       lose win zombie
+##   challenger  559  81     43
+##   incumbent   168 174     52
+##   moto         15  45      2</code></pre>
+<p>このようにRの中で扱う表は<code>table()</code> で作ることができる。</p>
+<p>しかし、この表をこのままの形で論文や学会報告等に使うことはできないので、表を他の形式に変換する必要がある。</p>
+<div id="xtablelatex" class="section level3">
+<h3>xtableを使ってLaTeX形式の表を出力する</h3>
+<p>Rで表を作るには、<strong>xtable</strong> パッケージの<code>xtable()</code> を使い、LaTeX形式で出力するのが便利である （LaTeX の説明は省く。研究者志望 [特に数量分析を使った研究をしたい者] には<strong>LaTeXの使用を強く勧める</strong>）。</p>
+<p>まず、xtableパッケージを読み込む。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## xtableをインストール済みでない場合は、次の行を実行
+<span class="co"># install.packages(&quot;xtable&quot;, repos = &quot;http://cran.ism.ac.jp&quot;)</span>
+<span class="kw">library</span>(<span class="st">&quot;xtable&quot;</span>)</code></pre></div>
+<p>次に、Rの表オブジェクト（行列や回帰分析の結果などにも使える：<code>methods(xtable)</code> で確認可）に<code>xtable()</code> を適用すれば、LaTeX形式の表が作れる。</p>
+<p>先ほど作った表をLaTeXの表に変換してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">xtbl.st.wl &lt;-<span class="st"> </span><span class="kw">xtable</span>(tbl.st.wl, <span class="dt">align=</span><span class="st">&quot;lccc&quot;</span>,
+                     <span class="dt">caption=</span><span class="st">&quot;候補者の立場と選挙結果の関係&quot;</span>)
+<span class="kw">print</span>(xtbl.st.wl)</code></pre></div>
+<pre><code>## % latex table generated in R 3.1.3 by xtable 1.7-4 package
+## % Sat Jun  6 17:40:31 2015
+## \begin{table}[ht]
+## \centering
+## \begin{tabular}{lccc}
+##   \hline
+##  &amp; lose &amp; win &amp; zombie \\ 
+##   \hline
+## challenger &amp; 559 &amp;  81 &amp;  43 \\ 
+##   incumbent &amp; 168 &amp; 174 &amp;  52 \\ 
+##   moto &amp;  15 &amp;  45 &amp;   2 \\ 
+##    \hline
+## \end{tabular}
+## \caption{候補者の立場と選挙結果の関係} 
+## \end{table}</code></pre>
+<p>これをTeXの文書にコピペしてもよいが、通常はオプションでファイル名を指定してファイルに書き出し、必要な変更（キャプションの位置など）を加えて利用する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(xtbl.st.wl, <span class="dt">file =</span> <span class="st">&quot;tbl-st-wl.tex&quot;</span>)</code></pre></div>
+<p>また、<code>type=&quot;html&quot;</code> として、HTML形式の表を出力することもできる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(xtbl.st.wl, <span class="dt">type =</span> <span class="st">&quot;html&quot;</span>)</code></pre></div>
+<!-- html table generated in R 3.1.3 by xtable 1.7-4 package -->
+<!-- Sat Jun  6 17:40:31 2015 -->
+<table border="1">
+<caption align="bottom">
+候補者の立場と選挙結果の関係
+</caption>
+<tr>
+<th>
+</th>
+<th>
+lose
+</th>
+<th>
+win
+</th>
+<th>
+zombie
+</th>
+</tr>
+<tr>
+<td>
+challenger
+</td>
+<td align="center">
+559
+</td>
+<td align="center">
+81
+</td>
+<td align="center">
+43
+</td>
+</tr>
+<tr>
+<td>
+incumbent
+</td>
+<td align="center">
+168
+</td>
+<td align="center">
+174
+</td>
+<td align="center">
+52
+</td>
+</tr>
+<tr>
+<td>
+moto
+</td>
+<td align="center">
+15
+</td>
+<td align="center">
+45
+</td>
+<td align="center">
+2
+</td>
+</tr>
+</table>
+<p><br> Rマークダウンで表を使うときは、この方法をとればよい。 ただし、チャンクオプションとして<code>results='asis'</code> を指定する。</p>
+</div>
+<div id="csv" class="section level3">
+<h3>表をCSVファイルに出力する</h3>
+<p>LaTeXを使わない場合、表をCSVファイルとして出力し、出力されたCSVファイルをMS Excel やLibreOffice Calc等のスプレッドシートで編集するのが簡単である。 CSVファイルを出力するには、<code>write.csv()</code>を利用する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(tbl.st.wl, <span class="dt">file =</span> <span class="st">&quot;tbl-st-wl.csv&quot;</span>)</code></pre></div>
+<p>これで作業ディレクトリにtbl-st-wl.csv という名前のcsvファイルが出来るので、スプレッドシートで罫線を加えるなどの修正を行えばよい。</p>
+</div>
+<div id="r2pptr2wd" class="section level3">
+<h3>その他の方法：R2PPTとR2wd</h3>
+<p>RからMS PowerPoint で使える表を作る<strong>R2PPT</strong> パッケージや、MS Word で使える表を作る<strong>R2wd</strong> パッケージがあるが、最近のR (R version 3.1.1) では使えない。 （おそらく）バージョン2 のRを使う必要があるので、説明は省略する。</p>
+<p><br></p>
+</div>
+</div>
+<div id="ggplot2" class="section level2">
+<h2>ggplot2を使って作図する</h2>
+<p>論文や学会報告等のプレゼンテーションに使う図は、ggplot2 を使って作るのがよい。 ggplot2 を使うメリットは、何と言っても見栄えのよい図ができるということである。 見栄えより中身のほうが重要なのは言うまでもないが、中身が同じなら見栄えがよいほうがよい。 それに、図が「見易い」ということは、内容が「理解し易い」ということに繋がる。</p>
+<p>ggplot2は、<a href="htttp://had.co.nz">Hadley Wickham</a> が作ったR用のパッケージである。 各コマンドの解説は<a href="http://ggplot2.org">ggplot2のページ</a> で読むことができる。 さらに詳細な解説は、Wickham. 2009. <em>ggplot2: Elegant Graphics for Data Analysis</em> (Springer) に書かれている（学内ネットワークから<a href="http://link.springer.com/book/10.1007/978-0-387-98141-3">Springerのサイト</a> に接続してダウンロード可。ただし、古いバージョンでしか動かないコマンドがいくつか書かれているので注意）。 関連書籍として、Hrish V. Mittal. 2011. <em>R Graphs Cookbook</em> (Packt) やWinston Chang (石井弓美子 訳） 2013.『Rグラフィックスクックブック』（オライリー・ジャパン）などがある。</p>
+<p>今日の目標は、ggplot2を使った基本的な作図法を身につけることである。 図を微調整する方法については、来週以降必要に応じて説明する。</p>
+<div id="ggplot2" class="section level3">
+<h3>ggplot2のインストールと読み込み</h3>
+<p>ggplot2 をまだインストールしていない場合は以下のコマンドでインストールする。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;ggplot2&quot;</span>, <span class="dt">repos =</span> <span class="st">&quot;http://cran.ism.ac.jp&quot;</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p>インストールが済んだら、パッケージを読み込む。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;ggplot2&quot;</span>)</code></pre></div>
+<p>これでggplot2を使う準備は整った。</p>
+</div>
+<div id="ggplot2" class="section level3">
+<h3>ggplot2の基礎</h3>
+<p>ggplot2で図を作る際に使う基本的な関数は<code>ggplot()</code> である（<code>qplot()</code> を使う方が簡単な作図ができるが、[1] <code>ggplot()</code> と使い方が少し異なり、[2] 最終的には<code>ggplot()</code> を使うことになるという理由から、説明は省略する。<code>ggplot()</code> のほうが細かい調整ができるので、<code>qplot()</code>の使い方を知らなくても特に問題はない）。 <code>ggplot()</code> の第1引数は作図に使うデータフレームである。 したがって、データフレーム形式で保存されていない変数をそのままの形で用いることはできない。 ggplotで作図するときは、必要な変数をデータフレームに保存してから作図する。</p>
+<p>第2の引数として<code>aes</code> （aestheticsの略）を指定する。<code>aes</code> には、作図に利用される変数を与える。 たとえば、二次元の図であれば、横軸x と縦軸y を指定する。さらに、色color や点の大きさsize を指定することで、二次元平面に二次元より多い情報を図示することができる。</p>
+<p>次に、<code>ggplot()</code> で作ったオブジェクトに、実際に表示される層（layer）を加える。 Layer は、作りたい図によって変える。 たとえば、散布図を作りたいときは<code>geom_point()</code>、ヒストグラムを作りたいときは<code>geom_histogram()</code> のように、<strong>geom</strong> （geometryの略) から始まる特定のレイヤーを加える。</p>
+<p>最後に、軸ラベルや図のタイトル、凡例 (legend) など、図そのものではない部分を加える。</p>
+<p>試しに、横軸を当選回数 (previous) 縦軸を選挙費用 (exp) とする散布図を作ってみよう。 まず、<code>ggplot()</code> を使って、オブジェクトを作り、そこに散布図のレイヤーを加える。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 1. ggplotオブジェクトを作る
+scatter1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> previous, <span class="dt">y =</span> exp))
+## 2. 散布図レイヤーを加える
+scatter1 &lt;-<span class="st"> </span>scatter1 +<span class="st"> </span><span class="kw">geom_point</span>()
+## 3. 軸ラベルとタイトルを加える
+scatter1 &lt;-<span class="st"> </span>scatter1 +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;previous wins&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;money spent (yen)&quot;</span>, 
+                            <span class="dt">title =</span> <span class="st">&quot;Scatter Plot&quot;</span>)
+## 4. 図を出力する
+<span class="kw">print</span>(scatter1)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/gg-eg1-scatter-1.png" title="" alt="" width="576" /></p>
+<p>これで散布図ができた。上の1〜3の過程は次のように一挙に実行しても構わない。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">scatter1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> previous, <span class="dt">y =</span> exp)) +
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;previous wins&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;money spent (yen)&quot;</span>,
+         <span class="dt">title =</span> <span class="st">&quot;Scatter Plot&quot;</span>)</code></pre></div>
+<p><code>print()</code>を使わずにggplotで作ったオブジェクト名だけで図を出力することもできる（つまり、<code>print(scatter1)</code> とする代わりに <code>scatter1</code> だけでよい）が、<code>print()</code> を使っておくほうが安全である（特に、Rマークダウンを使うとき）。</p>
+<p>次に、選挙費用のヒストグラムを作ってみよう。 ヒストグラムは1変数の図なので、<code>aes</code> にはxのみを与える。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">histogram1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> exp)) +
+<span class="st">    </span><span class="kw">geom_histogram</span>() +<span class="st"> </span>
+<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;Money Spent (yen)&quot;</span>) +
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Histogram - Frequnecy&quot;</span>)
+<span class="kw">print</span>(histogram1)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/gg-eg2-hist-1.png" title="" alt="" width="576" /></p>
+<p>このヒストグラムの縦軸は度数 (count) である。 縦軸を密度 (density) に変えるには、次のようにする。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">histogram2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> exp)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..)) +
+<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;Money Spent (yen)&quot;</span>) +
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Histogram - Density&quot;</span>)
+<span class="kw">print</span>(histogram2)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/gg-eg3-hist2-1.png" title="" alt="" width="576" /></p>
+<p>このように、ヒストグラムのy軸に “..density..”&quot; を指定する。 “density”の前後にある“..”は、densityという変数が元のデータに含まれるのものではなく、ggplot内で計算された値であることを示している。</p>
+<p>今度は、当選回数ごとに選挙費用の箱ひげ図を作ってみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">box1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">as.factor</span>(previous), <span class="dt">y =</span> exp)) +<span class="st"> </span><span class="kw">geom_boxplot</span>()
+box1 &lt;-<span class="st"> </span>box1 +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Previous Wins&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Money Spent (yen)&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Box Plot&quot;</span>)
+<span class="kw">print</span>(box1)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/gg-eg4-box-1.png" title="" alt="" width="576" /></p>
+<p>この図を作る際のポイントは、当選回数 (previous) をx軸に指定するときに、<code>as.factor()</code> をつかってそれがカテゴリー変数（したがって、箱ひげ図をグループ分けできる）であることをggplotに伝えているところである。</p>
+<p>続いて、得票率と選挙費用の関係を散布図にし、<code>geom_smooth()</code> を使って回帰直線を当てはめてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">scatter2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> exp, <span class="dt">y =</span> voteshare))  +<span class="st"> </span><span class="kw">geom_point</span>()
+scatter2 &lt;-<span class="st"> </span>scatter2 +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Money Spent (yen)&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Vote Share&quot;</span>)
+scatter3 &lt;-<span class="st"> </span>scatter2 +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)
+<span class="kw">print</span>(scatter3)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/gg-eg5-fitted-1.png" title="" alt="" width="576" /></p>
+<p>回帰直線の周りには、デフォルトで95%信頼区間が表示される。 信頼のレベルを変えるには、<code>level</code>を指定する。 たとえば、50パーセント信頼区間は</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">scatter4 &lt;-<span class="st"> </span>scatter2 +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">level =</span> .<span class="dv">5</span>)
+<span class="kw">print</span>(scatter4)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/gg-eg6-fiited2-1.png" title="" alt="" width="576" /></p>
+<p>で表示できる。 また、信頼区間を表示したくないときは、<code>se=FALSE</code>とする。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">scatter5 &lt;-<span class="st"> </span>scatter2 +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>)
+<span class="kw">print</span>(scatter5)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/gg-eg7-fiited3-1.png" title="" alt="" width="576" /></p>
+</div>
+<div id="ggplot2-" class="section level3">
+<h3>ggplot2 で日本語を使う</h3>
+<p>通常の図で日本語を表示できるようにしただけでは、ggplot2で日本語を使うことはできない。 試しに、簡単な図を作ってみると、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(exp ~<span class="st"> </span>previous, <span class="dt">data =</span> HR09,
+     <span class="dt">main =</span> <span class="st">&quot;日本語表示のテスト&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;選挙費用（円）&quot;</span>, <span class="dt">xlab =</span> <span class="st">&quot;当選回数&quot;</span>)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/plot-w-jpn-1.png" title="" alt="" width="576" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test.jpn &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> previous, <span class="dt">y =</span> exp)) +<span class="st"> </span><span class="kw">geom_point</span>()
+test.jpn &lt;-<span class="st"> </span>test.jpn +<span class="st"> </span>
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;当選回数&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;選挙費用（円）&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;日本語表示のテスト&quot;</span>)
+<span class="kw">print</span>(test.jpn)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/plot-w-jpn-2.png" title="" alt="" width="576" /></p>
+<p>のように、ggplotでは日本語が文字化けする。</p>
+<p>ggplot2で日本語を使う場合、ggplotのテーマで日本語を表示できるフォンとを選ぶ必要がある。 Macでヒラギノ角ゴシックを使うには、以下のようにテーマを設定する（もちろん、他に好みのフォントがあれば、違うフォントを選んでも良い）。Windowsの場合は特に何もしなくてよい（はず）。</p>
+<p>まず、Macの場合。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">theme_set</span>(<span class="kw">theme_gray</span>(<span class="dt">base_size =</span> <span class="dv">12</span>, <span class="dt">base_family =</span> <span class="st">&quot;HiraKakuProN-W3&quot;</span>))</code></pre></div>
+<p>これでうまくいかないときは以下を試す。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">quartzFonts</span>(<span class="dt">HiraKaku =</span> <span class="kw">quartzFont</span>(<span class="kw">rep</span>(<span class="st">&quot;Hiragino Kaku Gothic Pro W3&quot;</span>, <span class="dv">4</span>)))
+<span class="kw">theme_set</span>(<span class="kw">theme_gray</span>(<span class="dt">base_size =</span> <span class="dv">12</span>, <span class="dt">base_family =</span> <span class="st">&quot;HiraKaku&quot;</span>))</code></pre></div>
+<p>先ほどの図を表示してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(test.jpn)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/test-japanese-1.png" title="" alt="" width="576" /></p>
+<p>これで日本語が表示できるようになった。</p>
+</div>
+<div id="ggplot2-" class="section level3">
+<h3>ggplot2 で作った図の保存法</h3>
+<div id=".png-" class="section level4">
+<h4>画像（.png ファイル）として保存する場合</h4>
+<p>ggplotで作った図は、<code>ggsave()</code> で保存できる。 たとえば、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggsave</span>(<span class="dt">file =</span> <span class="st">&#39;scatter-eg1.png&#39;</span>, <span class="dt">plot =</span> test.jpn, <span class="dt">width =</span> <span class="fl">4.5</span>, <span class="dt">height =</span> <span class="dv">6</span>)</code></pre></div>
+</div>
+<div id="pdf" class="section level4">
+<h4>PDFとして保存する場合</h4>
+<p>Macで日本語を含む図をPDFとして保存する場合は<code>quartz()</code>を用いる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">quartz</span>(<span class="dt">file =</span> <span class="st">&quot;scatter-eg1.pdf&quot;</span>, <span class="dt">family =</span> <span class="st">&quot;sans&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;pdf&quot;</span>,
+       <span class="dt">width =</span> <span class="fl">4.5</span>, <span class="dt">height =</span> <span class="dv">6</span>)
+<span class="kw">print</span>(test.jpn)
+<span class="kw">dev.off</span>()</code></pre></div>
+<p><code>quartz()</code> でグラフィックデバイスを開き、<code>print()</code> でそのデバイス上に図をプリントし、<code>dev.off()</code> でデバイスを閉じている。デバイスを閉じ忘れないように注意すること。</p>
+<p>Windows では、<code>ggsave()</code> で保存できる（はず）。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggsave</span>(<span class="dt">file =</span> <span class="st">&quot;scatter-eg1a.pdf&quot;</span>, <span class="dt">plot =</span> test.jpn)</code></pre></div>
+<p>これがうまくいかないときは、<code>pdf()</code>を使う。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">pdf</span>(<span class="dt">file =</span> <span class="st">&quot;scatter-eg1b.pdf&quot;</span>, <span class="dt">family =</span> <span class="st">&quot;Japan1&quot;</span>, <span class="dt">widhth =</span> <span class="fl">4.5</span>, <span class="dt">height =</span> <span class="dv">6</span>)
+<span class="kw">print</span>(test.jpn)
+<span class="kw">dev.off</span>()</code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3>少し（だけ）高度な使用法</h3>
+<div class="section level4">
+<h4>グループごとに色、サイズを変える</h4>
+<p>グループごとに色（サイズ）を変えるときは、<code>aes</code>の引数color (size) にグループ分けに使うカテゴリ変数を渡せばよい。 凡例 (legend) は自動的に作られる。</p>
+<p>説明の単純化のために、候補者が民主党なら1、それ以外の場合は0という値をとる民主党ダミー変数 dpj を作る。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR09 &lt;-<span class="st"> </span><span class="kw">mutate</span>(HR09,
+               <span class="dt">dpj =</span> <span class="kw">as.numeric</span>(party ==<span class="st"> &quot;DPJ&quot;</span>),
+               <span class="dt">dpj =</span> <span class="kw">factor</span>(dpj, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;others&quot;</span>, <span class="st">&quot;DPJ&quot;</span>)))</code></pre></div>
+<p>このダミー変数を使い、民主党候補とそれ以外の候補を色分けし、選挙費用と得票率を散布図にしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sp.vs.ex &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> exp, <span class="dt">y =</span> voteshare)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;選挙費用（円）&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;得票率（%）&quot;</span>)
+sp.vs.ex1 &lt;-<span class="st"> </span>sp.vs.ex +<span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> dpj))
+<span class="kw">print</span>(sp.vs.ex1)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/scatter-group-1.png" title="" alt="" width="576" /></p>
+<p>これで政党ごとの色分けができた。 カテゴリごとに色分けした場合の凡例を修正するには、<code>scale_color_discrete()</code> を使う。 さらに、<code>guides()</code> で凡例の順番を逆にする。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dpj.legend &lt;-<span class="st"> </span><span class="kw">scale_color_discrete</span>(<span class="dt">name =</span> <span class="st">&quot;所属政党&quot;</span>, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;その他&quot;</span>, <span class="st">&quot;民主党&quot;</span>))
+sp.vs.ex2 &lt;-<span class="st"> </span>sp.vs.ex1 +<span class="st"> </span>
+<span class="st">    </span>dpj.legend +<span class="st"> </span>
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">color =</span> <span class="kw">guide_legend</span>(<span class="dt">reverse =</span> <span class="ot">TRUE</span>))
+<span class="kw">print</span>(sp.vs.ex2)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/sacatter-group-legend-1.png" title="" alt="" width="576" /></p>
+<p>この図の点の大きさ (size）を当選回数 (previous) によって変えてみよう。 当選回数を連続変数として扱うと、凡例は<code>scale_size_continuous()</code> で調整することになる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sp.vs.ex3 &lt;-<span class="st"> </span>sp.vs.ex +<span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color =</span> dpj, <span class="dt">size =</span> previous))
+prev.legend &lt;-<span class="st"> </span><span class="kw">scale_size_continuous</span>(<span class="dt">name =</span> <span class="st">&quot;当選回数&quot;</span>)
+sp.vs.ex3 &lt;-<span class="st"> </span>sp.vs.ex3 +
+<span class="st">    </span>dpj.legend +<span class="st"> </span>
+<span class="st">    </span>prev.legend +
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">color =</span> <span class="kw">guide_legend</span>(<span class="dt">reverse =</span> <span class="ot">TRUE</span>))
+<span class="kw">print</span>(sp.vs.ex3)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/scatter-group-color-size-1.png" title="" alt="" width="576" /></p>
+</div>
+<div id="faceting" class="section level4">
+<h4>グループごとに図を作って並べる：Faceting</h4>
+<p>グループごとに別の図を作って並べて表示するときは、facetを利用する。 自分で並べる行と列を指定する<code>facet_grid()</code> と、並べ方を指定しない<code>facet_wrap()</code> が利用可能である。</p>
+<p>まず、<code>facet_grid()</code>の使い方を説明する。 例として、民主党とそれ以外の場合を分けて、選挙費用 (exp) のヒストグラムを作ってみよう。 <code>facet_grid()</code> は、<code>facet_grid(行変数 ~ 列変数)</code> という使い方をする。 したがって、民主党とそれ以外を横に並べるときは、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">hist.exp.dpj &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> exp)) +<span class="st"> </span><span class="kw">geom_histogram</span>()
+hist.exp.dpj1 &lt;-<span class="st"> </span>hist.exp.dpj +<span class="st"> </span><span class="kw">facet_grid</span>(. ~<span class="st"> </span>dpj)
+hist.label &lt;-<span class="st"> </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;選挙費用（円）&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;度数&quot;</span>)
+<span class="kw">print</span>(hist.exp.dpj1 +<span class="st"> </span>hist.label)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/hist-facet1-1.png" title="" alt="" width="576" /></p>
+<p>縦に並べるときは、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">hist.exp.dpj2 &lt;-<span class="st"> </span>hist.exp.dpj +<span class="st"> </span><span class="kw">facet_grid</span>(dpj ~<span class="st"> </span>.)
+<span class="kw">print</span>(hist.exp.dpj2 +<span class="st"> </span>hist.label)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/hist-facet2-1.png" title="" alt="" width="576" /></p>
+<p>グループの名前を付け替えたいときは、<code>labeller</code>を指定する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dpj_labeller &lt;-<span class="st"> </span>function(var, value) {
+    value &lt;-<span class="st"> </span><span class="kw">as.character</span>(value)
+    if (var ==<span class="st"> &quot;dpj&quot;</span>) {
+        value[value==<span class="st">&quot;others&quot;</span>] &lt;-<span class="st"> &quot;民主党以外&quot;</span>
+        value[value==<span class="st">&quot;DPJ&quot;</span>] &lt;-<span class="st"> &quot;民主党&quot;</span>
+    }
+    <span class="kw">return</span>(value)
+}
+hist.exp.dpj3 &lt;-<span class="st"> </span>hist.exp.dpj +<span class="st"> </span><span class="kw">facet_grid</span>(. ~<span class="st"> </span>dpj, <span class="dt">labeller =</span> dpj_labeller)
+<span class="kw">print</span>(hist.exp.dpj3 +<span class="st"> </span>hist.label)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/hist-facet1-labeller-1.png" title="" alt="" width="576" /></p>
+<p>とすればよい。少し厄介なので、データフレームを用意するときに図で利用するラベルを使ってfactor変数を作るほうが楽である。</p>
+<p>行、列を別の変数でグループ分けすることもできる。 たとえば、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR09 &lt;-<span class="st"> </span><span class="kw">mutate</span>(HR09,
+               <span class="dt">dpj =</span> <span class="kw">factor</span>(dpj, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;民主党以外&quot;</span>, <span class="st">&quot;民主党&quot;</span>)),
+               <span class="dt">status =</span> <span class="kw">factor</span>(status, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;新人&quot;</span>, <span class="st">&quot;現職&quot;</span>, <span class="st">&quot;元職&quot;</span>)))
+hist.exp.dpj.st &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> exp)) +
+<span class="st">    </span><span class="kw">geom_histogram</span>() +
+<span class="st">    </span><span class="kw">facet_grid</span>(dpj ~<span class="st"> </span>status)
+<span class="kw">print</span>(hist.exp.dpj.st +<span class="st"> </span>hist.label)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/facet-dpj-status-1.png" title="" alt="" width="576" /></p>
+<p>次に、<code>facet_wrap()</code> の使い方を説明する。 これは、グループ分けに使うカテゴリ変数が1つで、そのカテゴリの数が多いために1行（または1列）に並べることが困難なときに便利である。 例として、当選回数別に選挙費用のヒストグラムを作ってみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">hist.wins &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> exp)) +
+<span class="st">    </span><span class="kw">geom_histogram</span>() +
+<span class="st">    </span><span class="kw">facet_wrap</span>( ~<span class="st"> </span>previous)
+<span class="kw">print</span>(hist.wins +<span class="st"> </span>hist.label)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/facet-wrap-1.png" title="" alt="" width="576" /></p>
+<p><br></p>
+</div>
+</div>
+<div class="section level3">
+<h3>表を図にする</h3>
+<div class="section level4">
+<h4>クロス表をモザイクプロットにする</h4>
+<p>再び、候補者の立場と選挙結果のクロス表を考える。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR09 &lt;-<span class="st"> </span><span class="kw">mutate</span>(HR09,
+               <span class="dt">wl =</span> <span class="kw">factor</span>(wl, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;落選&quot;</span>, <span class="st">&quot;当選&quot;</span>, <span class="st">&quot;復活当選&quot;</span>)))
+(tbl.st.wl2 &lt;-<span class="st"> </span><span class="kw">with</span>(HR09, <span class="kw">table</span>(wl,status)))</code></pre></div>
+<pre><code>##           status
+## wl         新人 現職 元職
+##   落選      559  168   15
+##   当選       81  174   45
+##   復活当選   43   52    2</code></pre>
+<p>これをモザイクプロットにしてみよう。 まず、ggplotで使えるように、データフレームdfを作る。 それから、dfをggplotの作図に使えるよう<strong>reshape2</strong> パッケージの<code>melt()</code> で整形し、作図する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 立場ごとに立候補者数の合計を求める
+tbl.st &lt;-<span class="st"> </span><span class="kw">table</span>(HR09$status)
+## 表を行列に変換する
+tbl.st.wl2 &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(tbl.st.wl2[<span class="dv">1</span>:<span class="dv">3</span>, <span class="dv">1</span>:<span class="dv">3</span>])
+tbl.st &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(tbl.st[<span class="dv">1</span>:<span class="dv">3</span>])
+## データフレームを作る
+## 各立場が全体に占める割合と、
+##   各立場についての当選、復活当選、落選の割合を変数にする
+df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">status =</span> <span class="kw">levels</span>(HR09$status),
+                 <span class="dt">status.pct =</span> <span class="dv">100</span> *<span class="st"> </span>tbl.st /<span class="st"> </span><span class="kw">sum</span>(tbl.st),
+                 <span class="dt">win =</span> <span class="dv">100</span> *<span class="st"> </span>tbl.st.wl2[<span class="dv">2</span>,] /<span class="st"> </span>tbl.st,
+                 <span class="dt">zombie =</span> <span class="dv">100</span> *<span class="st"> </span>tbl.st.wl2[<span class="dv">3</span>,] /<span class="st"> </span>tbl.st,
+                 <span class="dt">lose =</span> <span class="dv">100</span> *<span class="st"> </span>tbl.st.wl2[<span class="dv">1</span>,] /<span class="st"> </span>tbl.st)
+## x軸上のカテゴリの境界値を計算する
+df &lt;-<span class="st"> </span><span class="kw">mutate</span>(df,
+             <span class="dt">xmax =</span> <span class="kw">cumsum</span>(status.pct),
+             <span class="dt">xmin =</span> xmax -<span class="st"> </span>status.pct)
+## 今後使わない変数status.pct を除外する
+df$status.pct &lt;-<span class="st"> </span><span class="ot">NULL</span>
+## reshape2 パッケージを読み込む
+## インストールされていないなら、まずインストールする
+<span class="co"># install.packages(&quot;reshape2&quot;, dependencies = TRUE)</span>
+<span class="kw">library</span>(<span class="st">&quot;reshape2&quot;</span>)
+## ggplot2 で使いやすい形式に変える
+dfm &lt;-<span class="st"> </span><span class="kw">melt</span>(df, <span class="dt">id =</span> <span class="kw">c</span>(<span class="st">&quot;status&quot;</span>, <span class="st">&quot;xmin&quot;</span>, <span class="st">&quot;xmax&quot;</span>))
+dfm</code></pre></div>
+<pre><code>##   status     xmin      xmax variable     value
+## 1   新人  0.00000  59.96488      win 11.859444
+## 2   現職 59.96488  94.55663      win 44.162437
+## 3   元職 94.55663 100.00000      win 72.580645
+## 4   新人  0.00000  59.96488   zombie  6.295754
+## 5   現職 59.96488  94.55663   zombie 13.197970
+## 6   元職 94.55663 100.00000   zombie  3.225806
+## 7   新人  0.00000  59.96488     lose 81.844802
+## 8   現職 59.96488  94.55663     lose 42.639594
+## 9   元職 94.55663 100.00000     lose 24.193548</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## y軸上のカテゴリの境界値を求める
+dfm1 &lt;-<span class="st"> </span>dfm %&gt;%
+<span class="st">    </span><span class="kw">group_by</span>(status) %&gt;%
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">ymax =</span> <span class="kw">cumsum</span>(value),
+           <span class="dt">ymin =</span> ymax -<span class="st"> </span>value)
+## 文字を上書きする位置を決める
+dfm1 &lt;-<span class="st"> </span><span class="kw">mutate</span>(dfm1,
+               <span class="dt">xtext =</span> xmin +<span class="st"> </span>(xmax -<span class="st"> </span>xmin) /<span class="st"> </span><span class="dv">2</span>,
+               <span class="dt">ytext =</span> ymin +<span class="st"> </span>(ymax -<span class="st"> </span>ymin) /<span class="st"> </span><span class="dv">2</span>)
+## ggplot2 で作図する
+mosaic &lt;-<span class="st"> </span><span class="kw">ggplot</span>(dfm1, <span class="kw">aes</span>(<span class="dt">ymin =</span> ymin, <span class="dt">ymax =</span> ymax,
+                           <span class="dt">xmin =</span> xmin, <span class="dt">xmax =</span> xmax,
+                           <span class="dt">fill =</span> variable))
+mosaic &lt;-<span class="st"> </span>mosaic +
+<span class="st">    </span><span class="kw">geom_rect</span>(<span class="dt">color =</span> <span class="kw">I</span>(<span class="st">&quot;grey&quot;</span>)) +
+<span class="st">    </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">x =</span> xtext, <span class="dt">y =</span> ytext, <span class="dt">label =</span> <span class="kw">paste0</span>(<span class="kw">round</span>(value), <span class="st">&quot;%&quot;</span>))) +
+<span class="st">    </span><span class="kw">geom_text</span>(<span class="kw">aes</span>(<span class="dt">x =</span> xtext, <span class="dt">y =</span> <span class="dv">103</span>, <span class="dt">label =</span> status), <span class="dt">family =</span> <span class="st">&quot;HiraKakuProN-W3&quot;</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;&quot;</span>) +
+<span class="st">    </span><span class="kw">scale_fill_discrete</span>(<span class="dt">name=</span><span class="st">&quot;&quot;</span>, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;当選&quot;</span>, <span class="st">&quot;復活当選&quot;</span>, <span class="st">&quot;落選&quot;</span>)) +
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="kw">guide_legend</span>(<span class="dt">reverse =</span> <span class="ot">TRUE</span>))
+<span class="kw">print</span>(mosaic)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/table-df-1.png" title="" alt="" width="576" /></p>
+<p>これでモザイクプロットができた。 作図は大変だが、図の意味が直感的にわかるので、結果の提示法としては優れている。 ただし、表より場所をとるのが難点である。</p>
+<p><br></p>
+</div>
+<div class="section level4">
+<h4>回帰分析の結果をキャタビラプロットにする</h4>
+<p>例として簡単な重回帰モデルを考える。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span><span class="kw">I</span>(exp /<span class="st"> </span>(<span class="dv">10</span>^<span class="dv">6</span>)) +<span class="st"> </span>previous, <span class="dt">data =</span> HR09)
+tbl.fit<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">xtable</span>(fit<span class="fl">.1</span>)
+<span class="kw">print</span>(tbl.fit<span class="fl">.1</span>, <span class="dt">type =</span> <span class="st">&#39;html&#39;</span>)</code></pre></div>
+<!-- html table generated in R 3.1.3 by xtable 1.7-4 package -->
+<!-- Sat Jun  6 17:40:38 2015 -->
+<table border="1">
+<tr>
+<th>
+</th>
+<th>
+Estimate
+</th>
+<th>
+Std. Error
+</th>
+<th>
+t value
+</th>
+<th>
+Pr(&gt;|t|)
+</th>
+</tr>
+<tr>
+<td align="right">
+(Intercept)
+</td>
+<td align="right">
+8.4151
+</td>
+<td align="right">
+0.7071
+</td>
+<td align="right">
+11.90
+</td>
+<td align="right">
+0.0000
+</td>
+</tr>
+<tr>
+<td align="right">
+I(exp/(10^6))
+</td>
+<td align="right">
+2.1408
+</td>
+<td align="right">
+0.1143
+</td>
+<td align="right">
+18.74
+</td>
+<td align="right">
+0.0000
+</td>
+</tr>
+<tr>
+<td align="right">
+previous
+</td>
+<td align="right">
+2.8486
+</td>
+<td align="right">
+0.2182
+</td>
+<td align="right">
+13.06
+</td>
+<td align="right">
+0.0000
+</td>
+</tr>
+</table>
+<p>これをキャタピラプロット (caterpillar plot) にしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## ggplot用のデータフレームを作る
+## 説明変数の名前、推定値と95%信頼区間の下限値、上限値を入れる
+fit<span class="fl">.1</span>.df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">variable =</span> <span class="kw">c</span>(<span class="st">&quot;選挙費用（100万円）&quot;</span>,<span class="st">&quot;当選回数&quot;</span>),
+                       <span class="dt">mean =</span> <span class="kw">coef</span>(fit<span class="fl">.1</span>)[-<span class="dv">1</span>],
+                       <span class="dt">lower =</span> <span class="kw">confint</span>(fit<span class="fl">.1</span>)[-<span class="dv">1</span>,<span class="dv">1</span>],
+                       <span class="dt">upper =</span> <span class="kw">confint</span>(fit<span class="fl">.1</span>)[-<span class="dv">1</span>,<span class="dv">2</span>])
+<span class="kw">row.names</span>(fit<span class="fl">.1</span>.df) &lt;-<span class="st"> </span><span class="ot">NULL</span>
+
+## キャタピラプロットを作る
+ctplr &lt;-<span class="st"> </span><span class="kw">ggplot</span>(fit<span class="fl">.1</span>.df, <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">reorder</span>(variable, lower),
+                              <span class="dt">y =</span> mean,
+                              <span class="dt">ymin =</span> lower,
+                              <span class="dt">ymax =</span> upper)) +
+<span class="st">    </span><span class="kw">geom_pointrange</span>(<span class="dt">size=</span><span class="fl">1.4</span>) +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="kw">aes</span>(<span class="dt">intercept =</span> <span class="dv">0</span>), <span class="dt">linetype =</span> <span class="st">&quot;dotted&quot;</span>) +
+<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;説明変数&quot;</span>) +<span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;係数の推定値&quot;</span>) +
+<span class="st">    </span><span class="kw">coord_flip</span>()
+<span class="kw">print</span>(ctplr)</code></pre></div>
+<p><img src="tables-n-figures_files/figure-html/ols-caterpillar-1.png" title="" alt="" width="576" /></p>
+<p>これでキャタピラプロットができた。</p>
+<br> <br>
+<div style="text-align: right;">
+<p><a href="../">授業の内容に戻る</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

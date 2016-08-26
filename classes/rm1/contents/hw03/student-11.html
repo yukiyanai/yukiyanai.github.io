@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="tanichi" />
+
+
+<title>Research Methods in Political Science I  Homework Assignment 3</title>
+
+<script src="hw03-Tanichi_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="hw03-Tanichi_files/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="hw03-Tanichi_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="hw03-Tanichi_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="hw03-Tanichi_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; }
+code > span.dt { color: #204a87; }
+code > span.dv { color: #0000cf; }
+code > span.bn { color: #0000cf; }
+code > span.fl { color: #0000cf; }
+code > span.ch { color: #4e9a06; }
+code > span.st { color: #4e9a06; }
+code > span.co { color: #8f5902; font-style: italic; }
+code > span.ot { color: #8f5902; }
+code > span.al { color: #ef2929; }
+code > span.fu { color: #000000; }
+code > span.er { font-weight: bold; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">Research Methods in Political Science I <br> Homework Assignment 3</h1>
+<h4 class="author"><em>tanichi</em></h4>
+<h4 class="date"><em>2015/10/28</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#q1">Q1</a></li>
+<li><a href="#q2">Q2</a></li>
+<li><a href="#q3">Q3</a></li>
+<li><a href="#q4">Q4</a></li>
+</ul>
+</div>
+
+<p>worl<strong>d</strong></p>
+<div id="q1" class="section level2">
+<h2>Q1</h2>
+<p><em>factorial()</em> is R’s equipped function of calculates factorial of argument.</p>
+<p>Q1 requires me create same function.</p>
+<p>For example,</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">factorial</span>(<span class="dv">41</span>)</code></pre>
+<pre><code>## [1] 3.345253e+49</code></pre>
+<p>I create two tyep of function to calculate factorial.</p>
+<p>First type is this.</p>
+<pre class="sourceCode r"><code class="sourceCode r">f0a &lt;-<span class="st"> </span>function(n){ ## function of factorial
+    a &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>:n) ## create vector which size is n
+    b &lt;-<span class="st"> </span><span class="kw">prod</span>(a)    ## multiply all elements in vector(a)
+    <span class="kw">return</span>(b)
+}</code></pre>
+<p>check this</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">f0a</span>(<span class="dv">41</span>)</code></pre>
+<pre><code>## [1] 3.345253e+49</code></pre>
+<p>Second type is this.</p>
+<pre class="sourceCode r"><code class="sourceCode r">f0b &lt;-<span class="st"> </span>function(n){ ## function of factorial
+    x &lt;-<span class="st"> </span>n
+    for (i in <span class="dv">1</span>:(n<span class="dv">-1</span>)){ ## needs n-1 multiply not n
+        x &lt;-<span class="st"> </span>x*(n<span class="dv">-1</span>)
+        n &lt;-<span class="st"> </span>n<span class="dv">-1</span>    ## update the n 
+        }
+    <span class="kw">return</span>(x)
+}</code></pre>
+<p>also</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">f0b</span>(<span class="dv">41</span>)</code></pre>
+<pre><code>## [1] 3.345253e+49</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">f0b</span>(<span class="dv">0</span>)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>Incedentally, factorial of 0 is 1 by the definition.</p>
+<p>So I have to insert this.</p>
+<pre class="sourceCode r"><code class="sourceCode r">f1 &lt;-<span class="st"> </span>function(n){  ## true function of factorial
+    if(n==<span class="dv">1</span>){   ## by the definition
+        <span class="kw">return</span>(<span class="dv">1</span>)
+    }else{
+        <span class="kw">return</span>(<span class="kw">f0b</span>(n))  ## call my factorial function
+    }
+}
+<span class="kw">f1</span>(<span class="dv">41</span>)</code></pre>
+<pre><code>## [1] 3.345253e+49</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">f1</span>(<span class="dv">0</span>)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p><em>f1()</em> was completed as factorial function.</p>
+</div>
+<div id="q2" class="section level2">
+<h2>Q2</h2>
+<p>I create function of calculate the number of combinations.</p>
+<p>Formula is below, and it is implemented as <em>choose()</em>.</p>
+<p><span class="math">\[_nc_k=\frac{n!}{k!(n-k)!}\]</span></p>
+<pre class="sourceCode r"><code class="sourceCode r">f2 &lt;-<span class="st"> </span>function(n,k){
+    if(n==k){   ## this is take all
+        <span class="kw">return</span>(<span class="dv">1</span>)   ## its only one pattern
+    }else{
+        if(k==<span class="dv">0</span>){
+            <span class="kw">return</span>(<span class="dv">1</span>)
+        }else{
+            a &lt;-<span class="st"> </span><span class="kw">f1</span>(n)/<span class="kw">f1</span>(n-k)
+            b &lt;-<span class="st"> </span>a/<span class="kw">f1</span>(k)
+            <span class="kw">return</span>(b)
+        }
+    }
+}</code></pre>
+<p>Strictly speaking,I should suppose k larger than n(when the number of combination is 0).</p>
+<p>But person who knows <em>f2()</em>’s role will not input larger k.</p>
+<p>Check this.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">choose</span>(<span class="dv">10</span>,<span class="dv">6</span>)</code></pre>
+<pre><code>## [1] 210</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">f2</span>(<span class="dv">10</span>,<span class="dv">6</span>)</code></pre>
+<pre><code>## [1] 210</code></pre>
+</div>
+<div id="q3" class="section level2">
+<h2>Q3</h2>
+<p><span class="math">\[f(x)=_nc_x p^x (1-p)^{n-x}\]</span></p>
+<p>According to below formula, I create function to calculate the PMF of binomial distributions.</p>
+<p>aruguments is threee, the number of trials(n) and success(x), probability of success(p).</p>
+<pre class="sourceCode r"><code class="sourceCode r">f3 &lt;-<span class="st"> </span>function(n,x,p){
+    a &lt;-<span class="st"> </span><span class="kw">f2</span>(n,x)
+    b &lt;-<span class="st"> </span>p^x
+    c &lt;-<span class="st"> </span>(<span class="dv">1</span>-p)^(n-x)
+    d &lt;-<span class="st"> </span>a*b*c  ## I had taken a long time to notice order of dbinom is (x,n,p) not (n,x,p)
+    <span class="kw">return</span>(d)   ## therefore this function is uselessly polite
+}</code></pre>
+<p>Check this.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dbinom</span>(<span class="dv">6</span>,<span class="dv">10</span>,<span class="fl">0.46</span>)</code></pre>
+<pre><code>## [1] 0.169177</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">f3</span>(<span class="dv">10</span>,<span class="dv">6</span>,<span class="fl">0.46</span>)</code></pre>
+<pre><code>## [1] 0.169177</code></pre>
+</div>
+<div id="q4" class="section level2">
+<h2>Q4</h2>
+<p>Basically, (under the holds constant p,) Q4 requires probability mass as function of the number of success(n).</p>
+<pre class="sourceCode r"><code class="sourceCode r">f4 &lt;-<span class="st"> </span>function(n,p){    ## if coding 0.5 instead p, p is held as constant.
+    book1 &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>,n<span class="dv">+1</span>)    ## prepare null vector to input answer
+    hit &lt;-<span class="st"> </span><span class="dv">0</span>    ## the number of success is hit
+    if(hit &gt;<span class="st"> </span>n){
+        <span class="kw">return</span>(book1)   ## when hit beyonds n, calculates are not executed
+    }else{
+        for(i in <span class="dv">1</span>:(n<span class="dv">+1</span>)){  ## answer vector is larger than n because of nC0=1 pattern
+            book1[i] &lt;-<span class="st"> </span><span class="kw">f3</span>(n,hit,p) ## inputting answer according to order
+            hit &lt;-<span class="st"> </span>hit +<span class="st"> </span><span class="dv">1</span>
+        }
+    }
+    <span class="kw">return</span>(book1)
+}</code></pre>
+<p>Check this.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dbinom</span>(<span class="kw">c</span>(<span class="fl">0.4</span>),<span class="dv">4</span>,<span class="fl">0.46</span>)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">f4</span>(<span class="dv">4</span>,<span class="fl">0.46</span>)</code></pre>
+<pre><code>## [1] 0.08503056 0.28973376 0.37021536 0.21024576 0.04477456</code></pre>
+<p>Eventually, I need to draw graph.</p>
+<p>For the sake of simplicity, function is separated getting answer vector function and histogram drawing function.</p>
+<p>If integrates f4a and zu, get error.</p>
+<p>Error: evaluation has nested too deeply. Or infinite recursion</p>
+<pre class="sourceCode r"><code class="sourceCode r">zu &lt;-<span class="st"> </span>function(n){  ### drawing graph
+    a &lt;-<span class="st"> </span><span class="kw">length</span>(n)
+    <span class="kw">barplot</span>(n, <span class="dt">col =</span> <span class="st">&quot;gray&quot;</span>,<span class="dt">axes=</span><span class="ot">TRUE</span>,
+    <span class="dt">xlab =</span> <span class="st">&quot;The number of success&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Probability&quot;</span>, <span class="dt">main =</span><span class="st">&quot;&quot;</span>)
+    <span class="kw">axis</span>(<span class="dv">1</span>,<span class="dv">0</span>:a,<span class="dt">labels =</span> <span class="dv">0</span>:a)
+}</code></pre>
+<p>Function is complete once. so I drawing probability mass of n=2,5,10,50 by two different p.</p>
+<p>n=2, p=0.23</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">zu</span>(<span class="kw">f4</span>(<span class="dv">2</span>,<span class="fl">0.23</span>))</code></pre>
+<p><img src="hw03-Tanichi_files/figure-html/unnamed-chunk-14-1.png" title="" alt="" width="576" /></p>
+<p>n=5,p=0.23</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">zu</span>(<span class="kw">f4</span>(<span class="dv">5</span>,<span class="fl">0.23</span>))</code></pre>
+<p><img src="hw03-Tanichi_files/figure-html/unnamed-chunk-15-1.png" title="" alt="" width="576" /></p>
+<p>n=10,p=0.23</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">zu</span>(<span class="kw">f4</span>(<span class="dv">10</span>,<span class="fl">0.23</span>))</code></pre>
+<p><img src="hw03-Tanichi_files/figure-html/unnamed-chunk-16-1.png" title="" alt="" width="576" /></p>
+<p>n=50,p=0.23</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">zu</span>(<span class="kw">f4</span>(<span class="dv">50</span>,<span class="fl">0.23</span>))</code></pre>
+<p><img src="hw03-Tanichi_files/figure-html/unnamed-chunk-17-1.png" title="" alt="" width="576" /></p>
+<p>n=2,p=0.6826</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">zu</span>(<span class="kw">f4</span>(<span class="dv">2</span>,<span class="fl">0.6826</span>))</code></pre>
+<p><img src="hw03-Tanichi_files/figure-html/unnamed-chunk-18-1.png" title="" alt="" width="576" /></p>
+<p>n=5,p=0.6826</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">zu</span>(<span class="kw">f4</span>(<span class="dv">5</span>,<span class="fl">0.6826</span>))</code></pre>
+<p><img src="hw03-Tanichi_files/figure-html/unnamed-chunk-19-1.png" title="" alt="" width="576" /></p>
+<p>n=10,p=0.6826</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">zu</span>(<span class="kw">f4</span>(<span class="dv">10</span>,<span class="fl">0.6826</span>))</code></pre>
+<p><img src="hw03-Tanichi_files/figure-html/unnamed-chunk-20-1.png" title="" alt="" width="576" /></p>
+<p>n=50,p=0.6826</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">zu</span>(<span class="kw">f4</span>(<span class="dv">50</span>,<span class="fl">0.6826</span>))</code></pre>
+<p><img src="hw03-Tanichi_files/figure-html/unnamed-chunk-21-1.png" title="" alt="" width="576" /></p>
+<p>end</p>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

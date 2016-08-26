@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- TemplateBeginEditable name="doctitle" -->
+<title>Yuki Yanai</title>
+<!-- TemplateEndEditable -->
+<link href="../css/yy_style.css" rel="stylesheet" type="text/css">
+<link rel="shortcut icon" href="../images/favicon.ico">
+</head>
+
+<body>
+<div class="container">
+  <div class="header">
+  <h1>Yuki Yanai</h1>
+  <p>
+  <!-- TemplateBeginEditable name="header" -->
+  <a class="white-red" href="http://yukiyanai.com/">home</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a class="white-red" href="/~yyanai/cv/">cv</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a class="white-red" href="/~yyanai/publications/">publications</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a class="white-red" href="/~yyanai/research/">research</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a class="white-red" href="/~yyanai/classes/">classes</a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a class="white-red" href="/~yyanai/resources/">resources</a>
+  <!-- TemplateEndEditable -->
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a class="white-red fltrt" href="http://www.yukiyanai.com/">日本語</a>
+  </p>
+  <!-- end .header --></div>
+  <!-- TemplateBeginEditable name="content" -->
+  <div class="content">
+   <h2>Page title</h2>
+   
+   <h3>Section 1</h3>
+   
+   <h3>Section 2</h3>
+   
+  <!-- end .content -->
+  </div>
+  <!-- TemplateEndEditable -->
+  <div class="footer">
+  <table width="100%">
+    <tr>
+      <td align="left">&nbsp;&nbsp;<a class="white-white" href="http://www.law.kobe-u.ac.jp/kobe_univ_global/english.html" target="_blank">Graduate School of Law</a>, <a class="white-white" href="http://www.kobe-u.ac.jp/en/" target="_blank">Kobe University</a></td>
+    </tr>
+    <tr>
+      <td align="left">&nbsp;&nbsp;2-1 Rokkodai-cho, Nada-ku, Kobe, Hyogo 657-8501, JAPAN</td>
+    </tr>
+    <tr>
+      <td align="left">&nbsp;&nbsp;Email: yanai [at] lion.kobe-u.ac.jp</td>
+      <td align="right"> &copy; 2014 Yuki Yanai&nbsp;&nbsp;</td>
+    </tr>
+  </table>
+  <!-- end .footer --></div>
+<!-- end .container --></div>
+</body>
+</html>

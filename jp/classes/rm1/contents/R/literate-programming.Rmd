@@ -1,0 +1,366 @@
+---
+title: "政治学方法論 I"
+author: "矢内　勇生"
+date: "2016年5月22日"
+output:
+  html_document:
+    css: my-markdown.css
+    highlight: tango
+    self_contained: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    highlight: tango
+    latex_engine: lualatex
+    toc: yes
+subtitle: Rマークダウンを用いた文芸的プログラミング入門
+documentclass: ltjsarticle
+---
+
+# 準備
+
+Rマークダウン (R Markdown、拡張子は.Rmd) ファイルはテキストエディタやRStudio をはじめとするIDEで編集する。編集したファイルをHTML やPDF に出力するために、`rmarkdown::render()` や`knitr::knit()` を利用する。また、日本語を含む図の出力には**Cario**パッケージを使う。これらがインストール済みでない場合はインストールし、パッケージを読み込む。
+```{r rmarkdown-package, message=FALSE}
+if (!require(rmarkdown)) {
+    install.packages('rmarkdown', dependencies = TRUE)
+    library('rmarkdown')
+}
+if (!require(knitr)) install.packages('knitr', dependencies = TRUE)
+# 開発版もインストールする
+if (!require(devtools)) install.packages('devtools', dependencies = TRUE)
+devtools::install_github('yihui/knitr')
+library('knitr')
+if (!require(Cairo)) {
+    install.packages('Cairo', dependencies = TRUE)
+    library('Cairo')
+}
+```
+
+```{r global_option, include=FALSE}
+# まず、マークダウン全体のオプションを指定する
+# "include = FALSE" なので、このチャンクは出力に表示されない
+knitr::opts_chunk$set(warning = FALSE, echo = TRUE, message = TRUE,
+                      fig.width = 6, fig.height = 5)
+```
+
+<br>
+
+# Rマークダウンの使い方
+
+マークダウンファイル ([literate-programming.Rmd](http://www2.kobe-u.ac.jp/~yyanai/jp/classes/rm1/contents/R/literate-programming.Rmd)) とそのファイルを元に生成されたhtmlファイル（[lieterate-programming.html](http://www2.kobe-u.ac.jp/~yyanai/jp/classes/rm1/contents/R/literate-programming.html)) やPDFファイル（[literate-programming.pdf](http://www2.kobe-u.ac.jp/~yyanai/jp/classes/rm1/contents/R/literate-programming.pdf)）を見比べながら、RStudio でRマークダウンファイルを扱えるようにするのが今日の目標である。
+
+このマークダウンをそのまま使うためには、担当教員が作ったスタイルシート（[my-markdown.css](http://www2.kobe-u.ac.jp/~yyanai/jp/classes/rm1/contents/R/my-markdown.css)）をホームディレクトリに保存する必要がある。
+スタイルをカスタマイズしたいなら、このファイルを変更すればよい。
+デフォルトのスタイルのままでいいとき（あまり良くないと思うが）は、ヘッダの'css'オプションの指定をやめる（このRmdファイル [htmlではない] のヘッダ部分にある "css: my-markdown.css" の行を削除する）。
+
+
+## マークダウン記法を利用した文書の書き方
+
+文章は、いつもどおり書けばよい。
+文章の一部をイタリックにしたいときは*this is italic* あるいは _this is also italic_ とする。
+太字は、**ここが太字** または __ここも太字__ とする。
+太字のイタリックは、***here is bold italic*** または ___here is also bold italic___ とする。
+
+改行するときは、文章の間を1行以上空ける。
+
+箇条書きは、
+
+ * 項目1
+ * 項目2
+    * 項目2-1
+    * 項目2-2
+
+あるいは、
+
+- 項目1
+    - 項目1-1
+    - 項目1-2
+- 項目2
+
+のようにする。* や - の後は半角スペースを空ける。箇条書きを入れ子ににするとき、字下げはTabで行う
+
+番号付きの箇条書きは、
+
+1. First item
+2. Second item
+    1. What?
+    2. How?
+3. Third item
+
+のようにする。
+
+また、リンクを貼ることもできる：[矢内のウェブサイト](http://www.yukiyanai.com/)。
+
+画像も貼れる：![Rのロゴ](figs/Rlogo.png)
+（画像ファイルは、[ココ](http://www.r-project.org/Rlogo.png) にある）
+
+### 数式の書き方
+
+LaTeX と同じように数式を書くこともできる。
+文章中と同じ行に数式を書きたいときは、`$`で挟む。
+たとえば、$\bar{x} = \sum_{i=1}^n x_i / n$ と、する。
+数式を独立したブロックとして書きたいときは、`$$`で挟み、
+$$\sigma^2 = \frac{\sum_{i=1}^n (x_i - \mu)^2}{n}$$
+のようにする。
+
+## コードチャンクの書き方
+
+Rのコードは、コードチャンクと呼ばれる部分に書き込む。
+コードチャンクは、たとえば以下のように書ける。
+```{r example-chunk}
+a <- 1:10
+b <- -1:-10
+```
+
+Rコードチャンクの始めには、3つの「\`」の後に{r}をつける。
+rとスペースの後（{}の中）には、チャンクの名前を付ける。
+好きな名前を付けてよいが、他のチャンクとまったく同じ名前は付けられない。
+チャンクの終わりには3つの「\`」を書く。
+
+文章中にRコードを書きたいときは`mean(x)` のように書く。
+関数を実行（評価, evaluate）した後の結果を文章中に入れたいときは、「$a$ の平均値は`r mean(a)` です」のように"r"を入れて書く。この方法を使えば、シミュレーションなどで結果が変わっても文章を書き直す必要がない。
+
+図を含めた文章も作れる。
+```{r example-plot4html}
+plot(a, b, main = 'aとbの散布図')
+```
+
+日本語を含む図をPDFに出力したいときは、オプションで **cairo_pdf** をグラフィックデバイスに指定し、`par(family = ...)` で日本語が表示できるフォントを選ぶ。（PDF用なので、HTML上では適切に表示されない）
+```{r example-plot4pdf, dev='cairo_pdf'}
+# フォントは利用可能なものの中から好きなものを選ぶ
+par(family = 'Hiragino Sans')  # Mac用
+# par(family = 'Meiryo')  # Windows用
+plot(a, b, main = 'aとbの散布図')
+```
+
+この方法だと、図のタイトルが図の上にできてしまう。図のキャプションは下にある方がいいので、次のようにする。
+```{r example-plot-2, fig.cap='aとbの散布図'}
+# フォントを欧文フォントに戻す
+par(family = 'Helvetica')  # Mac
+# par(family = 'Arial')  # Windows
+plot(a, b, main = '')
+```
+
+
+何もオプションを指定しない状態では、チャンクは1行ずつ評価され、結果も順番に次々出力される。
+たとえば、
+```{r sd-and-var}
+sd(a)
+var(a)
+```
+
+チャンクの最後まで評価してからまとめて結果表示したいときは、チャンクオプション**results** を'hold'にする。
+オプションは、チャンク名の後に「,（comma）」を打ち、その後に書く。
+```{r example-option, results='hold'}
+sd(a)
+var(a)
+```
+
+チャンクオプションについてより詳しくは [ココ](http://d.hatena.ne.jp/teramonagi/20130615/1371303616) などを参照されたい。
+
+また、Rマークダウン全般（特に、RStudioを使う場合）については、[ココ](http://rmarkdown.rstudio.com/index.html) を参照。
+
+<br>
+
+
+## R Markdownファイルを他のファイル形式に出力する
+
+### R Makdown から HTML へ
+
+R Markdown を HTM ファイルに出力するときは、`rmarkdown::render()`を使う。
+
+HTML ファイルに変換する際のオプションは、ヘッダ部分で指定する。このRmdファイルでは、第1行から第18行の間がヘッダであり、そのうち、"html_document:" のブロックでHTML出力のためのオプションが指定されている。例えば、"toc: yes" は目次 (table of contents; toc) を表示するという指定である。非表示にするには "toc: no" とする。 
+
+試しに、"literate-programming.Rmd" を "literate-programming.html" に変換してみよう。
+Rmd ファイルをRStudio で編集している場合、コード編集画面の上にある "Knit HTML" ボタンを押してもHTMLファイルを作る。
+
+出力されたHTMLファイルは（他のディレクトリを指定しない限り）現在の作業ディレクトリに保存される。
+出来上がったHTMLファイルをブラウザで開いて確認してみよう。
+
+コマンドを使ってHTMLファイルを作るときは、`rmarkdown::render()` を使う。
+```{r render-html, eval=FALSE}
+render('literate-programming.Rmd', output_format = 'html_document',
+       output_file = 'literate-programming.html', run_pandoc = FALSE)
+```
+**run_pandoc = FALSE** を指定しないと日本語が文字化けするので注意が必要である。
+
+### R Markdown から PDF へ
+
+RマークダウンファイルからPDFファイルに出力することも可能である。
+PDFに出力する際のオプションは、ヘッダの"pdf_document:"のブロックで指定されている。
+ただし、PDF出力には**LaTeX** と **[Pandoc](http://pandoc.org/)** が必要である。
+
+LaTeX と Pandoc が使えるなら、"Knit PDF"ボタン（"Knit HTML"ボタンの右にあるプルダウンメニューから選択）をクリックすればPDFファイルができる。
+現在の作業ディレクトリに[このようなPDFファイル](literate-programming.pdf) ができるはずである。
+
+コマンドでPDF を作るときは、次のようにする。
+```{r render-pdf, eval=FALSE}
+render('literate-programming.Rmd', output_format = 'pdf_document',
+       output_file = 'literate-programming.pdf')
+```
+<br>
+
+
+# R Markdown の例：Rによるシミュレーション
+
+## 分散と不偏分散
+
+確率変数$X$の母分散が$\sigma^2$だとする。
+このとき、$X$の標本分散を
+$$s^2 = \frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n}$$
+とすると、
+$$\mathrm{E}(s^2) = \frac{n-1}{n} \sigma^2$$となる。
+つまり、$s^2$は$\sigma^2$の不偏推定量ではない。
+代わりに、$$u^2 = \frac{n}{n-1}s^2 = \frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}$$ と定義すると、
+この$u^2$が$\sigma^2$の不偏推定量になる。
+このことは簡単に証明できるが、ここではRでシミュレーションを行うことによって確認してみよう。
+
+### シミュレーション条件の設定
+
+まず、シミュレーションの条件として、サンプルサイズ ($n$)、シミュレーションの繰り返し回数 (trials)、真の母分散の値 ($\sigma^2$) を決める。
+また、シミュレーションの結果を保存するための変数を用意する。
+
+```{r setup}
+n <- 10
+trials <- 1000
+sigma2 <- 10    # True Variance
+# prepare vectors to save the results
+s2 <- rep(NA, trials)
+u2 <- rep(NA, trials)
+```
+
+ここまでで準備ができたので、実際にシミュレーションを行う。
+ここでは、`for` ループを利用する。
+```{r run-simulation1}
+for (i in 1:trials) {  ## シミュレーションを実行するループ
+    x <- rnorm(n, sd = sqrt(sigma2))　 # N(0, sigma^2)からの無作為抽出
+    s2[i] <- sum((x - mean(x))^2) / n  # 標本分散の計算
+    u2[i] <- sum((x - mean(x))^2) / (n - 1)　# 不偏分散の計算
+}
+```
+
+シミュレーションが終わったので、結果を確認してみよう。
+```{r show-sim1}
+# variance
+mean(s2)  # 標本分散の平均値
+mean(u2)  # 不偏分散の平均値
+```
+このように、$s^2$ (s2) は平均すると真の値よりも小さめの値を出してしまうことがわかる。
+
+<br>
+
+## 関数を定義してシミュレーションを効率的に行う
+
+上の例では、シミュレーションの条件を変更するたびに複数のコードを実行し直す必要があって不便である。
+そこで、シミュレーションを1行でやり直せるよう、シミュレーション用の関数を定義する。
+
+```{r sim-funtion1}
+sim_var <- function(n, trials, true_var) {# 不偏分散をシミュレートする関数
+    ## 引数 (arguments)：
+    ##    n = 1つのサンプルのサイズ
+    ##    trials = シミュレーションの繰り返し回数
+    ##    true_var = sigma^2 （真の母平均）
+    ## 返り値 (return)：s2とu2の平均と標準偏差（行列）
+    s2 <- rep(NA, trials)
+    u2 <- rep(NA, trials)
+    for (i in 1:trials) { # シミュレーションを実行するループ
+        x <- rnorm(n, sd = sqrt(true_var))  ## N(0, true.var) からの無作為抽出
+        s2[i] <- sum((x - mean(x))^2) / n   ## 標本分散を計算する
+        u2[i] <- sum((x - mean(x))^2) / (n - 1) ## 不偏分散を計算する
+    }
+    res <- matrix(c(mean(s2), mean(u2), sd(s2), sd(u2)), nrow = 2)
+    row.names(res) <- c('sample var', 'unbiased var')
+    colnames(res) <- c('mean', 'sd')
+    return(res)
+}
+```
+これで関数が定義できた。
+
+この関数を使ってシミュレーションを行ってみよう。
+まず、$n=5$ で1,000回繰り返してみる。
+```{r simvar-n5}
+sim_var(n = 5, trials = 1000, true_var = 10)
+```
+これでシミュレーションの結果が出た。
+
+$n$の値を10に変えると、
+```{r simvar-n10}
+sim_var(n = 10, trials = 1000, true_var = 10)
+```
+となる。
+
+この関数を使い、複数の$n$についてのシミュレーションを一挙に行う関数を新たに定義しよう。
+ここでは、シミュレーションを行いたいうちで最も小さな$n$の値**n_min** と最も大きな値 **n_max** を与えたとき、その間（端点を含む）にあるすべての$n$についてシミュレーションを実施する関数を作る。
+```{r sim-function2}
+sim_var2 <- function(n_min = 1, n_max, trials = 1000, true_var){
+    ## 引数：n_min = 最も小さなn, 既定値は1
+    ##       n_max = 最も大きなn
+    ##       trials = シミュレーションの繰り返し回数, 既定値は1000
+    ##       true_var = sigma^2 （真の母平均）
+    ## 返り値：行列（行数 = nの数, 列数 = 3）
+    
+    # 入力がおかしいときはエラーを出す
+    if (n_min < 1) stop('n_min には1以上の整数を指定してください')
+    if (n_max < 1) stop('n_max には1以上の整数を指定してください')
+    if (trials < 1) stop('trials には1以上の整数を指定してください')
+    if (true_var < 0) stop('true_var には0以上の実数を指定してください')
+    
+    # シミュレーションに利用するn
+    n_vec <- n_min:n_max
+    # 結果を保存するための行列
+    output <- matrix(NA, ncol = 5, nrow = length(n_vec))
+    colnames(output) <- c('n', 's2_mean', 'u2_mean', 's2_sd', 'u2_sd')
+    # ループを使ってシミュレーションを実行する
+    for (i in seq_along(n_vec)) {
+        # 既に定義済みの関数を利用する
+        output[i, 1] <- n_vec[i]
+        output[i, 2:5] <- sim_var(n = n_vec[i], 
+                                  trials = trials, true_var = true_var)
+    }
+    return(output)
+}      
+```
+これで、関数ができた。
+
+
+ためしに、$n = 10, 11, \dots, 100$について、この関数を使ってシミュレーションを実行し、結果を図示してみよう。
+```{r sim-var-10to100, results='hold', message=FALSE, dev='cairo_pdf'}
+library('ggplot2')
+library('dplyr')
+sim1 <- sim_var2(n_min = 10, n_max = 100, trials = 1000, true_var = 10)
+df <- data.frame(n = rep(sim1[, 1], 2),
+                 mean = c(sim1[, 2], sim1[, 3]),
+                 sd = c(sim1[, 4], sim1[, 5]))
+df <- df %>%
+    mutate(type = c(rep('標本分散', n()/2), rep('標本不偏分散', n()/2)),
+           lb = mean - sd, ub = mean + sd)
+res_sim <- ggplot(df, aes(x = n, y = mean, ymin = lb, ymax = ub)) +
+    facet_grid( . ~ type) +
+    geom_ribbon(fill = 'lightblue') + 
+    geom_hline(yintercept = 10, color = 'firebrick') +
+    geom_line(color = 'darkblue') +
+    ylab('分散')
+```
+
+
+```{r plot-sim-var4pdf, dev='cairo_pdf', fig.cap='不偏分散のシミュレーション'}
+# PDF にはこのチャンクを使う
+#print(res_sim + theme_gray(base_family = 'Hiragino Sans'))  # Mac
+#print(res_sim + theme_gray(base_family = 'Meiryo'))  # Windows
+```
+
+```{r plot-sim-var4html}
+# HTML にはこのチャンクを使う
+print(res_sim + theme_gray(base_family = 'Osaka'))  # Mac
+#print(res_sim + theme_gray(base_family = 'Meiryo'))  # Windows
+```
+
+
+このように、偏差平方和を標本数で割ると、分散を過小推定する傾向があることがわかる。
+
+
+<br>
+<br>
+<div align="right">
+[授業の内容に戻る](http://www2.kobe-u.ac.jp/~yyanai/jp/classes/rm1/contents/)
+</div>

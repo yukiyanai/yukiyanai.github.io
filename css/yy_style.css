@@ -1,0 +1,152 @@
+@charset "UTF-8";
+body {
+	font: 100%/1.4 "Helvetica", "Verdana", "Lucida Grande", "Lucida Sans Unicode",  sans-serif, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS P Gothic", sans-serif;
+	background: #CCCCCC;
+	margin: 0;
+	padding: 0;
+	color: #000;
+}
+
+
+ul, ol, dl {
+	padding: 0;
+	margin: 0;
+	margin-bottom: 50px;
+	clip: rect(auto,auto,auto,auto);
+	left: 50px;
+}
+ul {
+	list-style-type: none;
+}
+li{
+	margin-left: 80px;
+	margin-right: 50px;
+	margin-bottom: 20px;
+	text-indent: -2em;
+}
+p, h1, h2, h3, h4, h5, h6 {
+	margin-top: 0;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+a img {
+	border: none;
+}
+a:link {
+	color: #4169E1;
+	text-decoration: underline;
+}
+a:visited {
+	color: #DDA0DD;
+	text-decoration: underline;
+}
+a:hover, a:active, a:focus {
+	text-decoration: none;
+}
+
+
+.container {
+	width: 960px;
+	background: #FFF;
+	margin: 0 auto; 
+}
+
+
+.header {
+	background: #000;
+	color: #FFF;
+}
+
+.content {
+
+	padding: 10px 0;
+}
+
+.footer {
+	padding: 10px 0;
+	background: #666;
+	color: #FFF;
+	font-size: small;
+	height: 60px;
+}
+
+.fltrt { 
+	float: right;
+	margin-left: 8px;
+}
+.fltlft { 
+	float: left;
+	margin-right: 8px;
+}
+.clearfloat { 
+	clear:both;
+	height:0;
+	font-size: 1px;
+	line-height: 0px;
+}
+
+a.white-red:link, a.white-red:visited {
+	color : #FFF;
+	text-decoration: none;
+}
+a.white-red:active, a.white-red:hover, a.white-red:focus {
+	color: #F00;
+}
+
+a.white-white:link, a.white-white:visited {
+	color : #FFF;
+	text-decoration: underline;
+}
+a.white-white:active, a.white-white:hover, a.white-white:focus {
+	color: #FFF;
+	text-decoration: none;
+}
+
+.booktitle{
+	font-style: italic;
+}
+a.booktitle:link, a.booktitle:visited  {
+	color: #000;
+	text-decoration: none;
+}
+a.booktitle:active, a.booktitle:hover, a.booktitle:focus {
+	color: #000;
+	text-decoration: underline;
+}
+
+a.abst:link, a.abst:visited  {
+	color: #C00;
+	text-decoration: underline;
+}
+a.abst:active, a.abst:hover, a.abst:focus {
+	color: #C00;
+	text-decoration: none
+}
+
+.exp{
+	font-size: small;
+	text-indent:0px;
+}
+
+a.black:link, a.black:visited {
+	color: #000;
+	text-decoration: underline;
+}
+a.black:active, a.black:hover, a.black:focus {
+	color: #000;
+	text-decoration: none;
+}
+
+a.current:link, a.current:visited, a.current:active, a.current:hover, a.current:focus {
+	color: #666;
+	text-decoration: none;
+}
+
+a.red:link, a.red:visited {
+	color: #C00;
+	text-decoration: underline;
+}
+a.red:active, a.red:hover, a.red:focus {
+	color: #C00;
+	text-decoration: none;
+}

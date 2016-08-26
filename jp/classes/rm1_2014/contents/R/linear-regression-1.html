@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="矢内　勇生" />
+
+
+<title>政治学方法論 I：線形回帰分析（1）</title>
+
+<script src="linear-regression-1_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="linear-regression-1_files/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="linear-regression-1_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="linear-regression-1_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="linear-regression-1_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link rel="stylesheet" href="my-markdown.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">政治学方法論 I：線形回帰分析（1）</h1>
+<h4 class="author"><b>矢内　勇生</b></h4>
+<h4 class="date"><em>November 1, 2014 (rev. June 6, 2015)</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a>準備</a></li>
+<li><a href="#r">Rで線形回帰分析を行う</a><ul>
+<li><a href="#1">説明変数が二値しかとらないとき（モデル1）</a></li>
+<li><a href="#2">説明変数が連続値をとるとき（モデル2）</a></li>
+<li><a href="#3">複数の説明変数を使った回帰（モデル3）</a></li>
+<li><a href="#4">相互作用を考える（モデル4）</a></li>
+</ul></li>
+<li><a>シミュレーションで回帰分析を理解する</a><ul>
+<li><a>係数の推定値を理解する</a></li>
+<li><a>標準誤差を理解する</a></li>
+<li><a>信頼区間を理解する</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div class="section level3">
+<h3>準備</h3>
+<p>まず、必要なパッケージを読み込む。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;foreign&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;dplyr&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;arm&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;ggplot2&quot;</span>)
+## Windows ユーザは次の行をコメントアウト
+<span class="kw">theme_set</span>(<span class="kw">theme_gray</span>(<span class="dt">base_size =</span> <span class="dv">12</span>, <span class="dt">base_family =</span> <span class="st">&quot;HiraKakuProN-W3&quot;</span>))</code></pre></div>
+<p>説明のために『Stataによる計量政治学』（浅野正彦, 矢内勇生. 2013）で使用されているデータ（<a href="http://www2.kobe-u.ac.jp/~yyanai/jp/quant-methods-stata/data/hr96-09.dta">hr96-09.dta</a>） を使う。 まず、このデータを読み込む（データへのパスは各自の状況に応じて変えること。ここでは、RStudioのプロジェクトを利用していて、プロジェクトが存在するフォルダ内にdata という名前のフォルダがあり、その中にデータセットが保存されていると仮定している）。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR &lt;-<span class="st"> </span><span class="kw">read.dta</span>(<span class="st">&quot;data/hr96-09.dta&quot;</span>)
+<span class="co">#head(HR)</span>
+<span class="co">#tail(HR)</span></code></pre></div>
+<p>衆議院議員経験があることを表すダミー変数と選挙費用を100万円単位で測定する変数を作る。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR &lt;-<span class="st"> </span><span class="kw">mutate</span>(HR,
+             <span class="dt">experience =</span> <span class="kw">as.numeric</span>(status ==<span class="st"> &quot;incumbent&quot;</span> |<span class="st"> </span>status ==<span class="st"> &quot;moto&quot;</span>),
+             <span class="dt">expm =</span> exp /<span class="st"> </span><span class="dv">10</span>^<span class="dv">6</span>)</code></pre></div>
+<p>2009年の結果だけ抜き出し、HR09として保存する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR09 &lt;-<span class="st"> </span><span class="kw">filter</span>(HR, year==<span class="dv">2009</span>)</code></pre></div>
+<p><br></p>
+</div>
+<div id="r" class="section level2">
+<h2>Rで線形回帰分析を行う</h2>
+<div id="1" class="section level3">
+<h3>説明変数が二値しかとらないとき（モデル1）</h3>
+<p>得票率（応答変数）を議員経験（説明変数）で説明するモデルを考えよう。 議員経験は、現職または元職の候補者なら1、そうでなければ0をとる二値 (binary) 変数（ダミー変数）である。 このモデルを式で表すと、 <span class="math display">\[得票率_i \sim \mathrm{N}(\beta_1 + \beta_2 \cdot 議員経験_i, \sigma^2)\]</span> と、なる。</p>
+<p>Rでは、<code>lm()</code> で回帰式を求める。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>experience, <span class="dt">data =</span> HR09)</code></pre></div>
+<p>これで、<code>fit.1</code> に推定結果（係数の推定値など）が保存される。</p>
+<p>基本的な結果は、<code>summary()</code> で見ることができる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(fit<span class="fl">.1</span>)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = voteshare ~ experience, data = HR09)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -43.843 -12.134  -5.484   8.707  52.016 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)  13.9840     0.6221   22.48   &lt;2e-16
+## experience   30.8589     0.9832   31.39   &lt;2e-16
+## 
+## Residual standard error: 16.26 on 1137 degrees of freedom
+## Multiple R-squared:  0.4642, Adjusted R-squared:  0.4637 
+## F-statistic:   985 on 1 and 1137 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>この結果は少し読みにくいので、代わりに<strong>arm</strong> パッケージの<code>display()</code> を利用しよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">display</span>(fit<span class="fl">.1</span>)</code></pre></div>
+<pre><code>## lm(formula = voteshare ~ experience, data = HR09)
+##             coef.est coef.se
+## (Intercept) 13.98     0.62  
+## experience  30.86     0.98  
+## ---
+## n = 1139, k = 2
+## residual sd = 16.26, R-Squared = 0.46</code></pre>
+<p>この出力の、<strong>coef.est</strong> の列に係数の推定値 (coefficient estimates) が示されている。 これにより、<span class="math inline">\(\hat{\beta}_1=\)</span> 13.98, <span class="math inline">\(\hat{\beta}_2=\)</span> 30.86, <span class="math inline">\(\hat{\sigma}=\)</span> 16.26 が得られた。 したがって、 <span class="math display">\[\widehat{得票率} = 13.98 + 30.86 \cdot 議員経験\]</span> と、なる。</p>
+<p>この結果を図示しよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> experience, <span class="dt">y =</span> voteshare)) +
+<span class="st">    </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))
+p1 &lt;-<span class="st"> </span>p1 +<span class="st"> </span><span class="kw">geom_jitter</span>(<span class="dt">position =</span> <span class="kw">position_jitter</span>(<span class="dt">width =</span> <span class="fl">0.05</span>), <span class="dt">size =</span> <span class="dv">1</span>)
+p1 &lt;-<span class="st"> </span>p1 +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>) +
+<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;議員経験&quot;</span>) +<span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;得票率（%）&quot;</span>)
+<span class="kw">print</span>(p1 +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;得票率と議員経験の関係&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/plot-fit1-1.png" title="" alt="" width="672" /></p>
+<p>この図に推定の不確実性を示すには、<code>geom_smooth(method = 'lm', se =TRUE)</code> とすればよい（が、 se=TRUE は規定値なので、seを指定する必要はない）。 規定値では、95パーセント信頼区間が回帰直線の周りに表示される。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1.ci95 &lt;-<span class="st"> </span>p1 +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)
+<span class="kw">print</span>(p1.ci95 +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;得票率と議員経験の関係&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/plot-fit1-ci95-1.png" title="" alt="" width="672" /></p>
+<p>信頼度を変えたいとき、例えば50パーセント信頼区間を表示したいときは、次のように<strong>level</strong>を指定する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p1.ci50 &lt;-<span class="st"> </span>p1 +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">level =</span> .<span class="dv">5</span>)
+<span class="kw">print</span>(p1.ci50 +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;得票率と議員経験の関係&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/plot-fit1-ci50-1.png" title="" alt="" width="672" /></p>
+<p>この直線の切片である13.98は、議員経験がない候補者の平均得票率（予測得票率）である。 予測値の式の「議員経験」に0を代入すれば、これは明らかである。 議員経験がある候補者の平均得票率（予測得票率）は、「議員経験」に1を代入することで得られる。 代入してみると、<span class="math inline">\(13.98 + 30.86 \cdot 1 = 44.84\)</span> となる。</p>
+<p>Rで議員経験ごとに平均得票率を求め、上の式から求めた予測値と一致するか確かめよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR09 %&gt;%
+<span class="st">    </span><span class="kw">filter</span>(experience ==<span class="st"> </span><span class="dv">0</span>) %&gt;%
+<span class="st">    </span><span class="kw">with</span>(<span class="kw">mean</span>(voteshare)) %&gt;%
+<span class="st">    </span><span class="kw">round</span>(<span class="dv">2</span>)</code></pre></div>
+<pre><code>## [1] 13.98</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR09 %&gt;%
+<span class="st">    </span><span class="kw">filter</span>(experience ==<span class="st"> </span><span class="dv">1</span>) %&gt;%
+<span class="st">    </span><span class="kw">with</span>(<span class="kw">mean</span>(voteshare)) %&gt;%
+<span class="st">    </span><span class="kw">round</span>(<span class="dv">2</span>)</code></pre></div>
+<pre><code>## [1] 44.84</code></pre>
+<p>このように、予測値は説明変数の値を与えられたときの、応答変数の平均値であることがわかる。</p>
+<p><br></p>
+</div>
+<div id="2" class="section level3">
+<h3>説明変数が連続値をとるとき（モデル2）</h3>
+<p>同様に、得票率を選挙費用（測定単位：100万円）で説明するモデルは、次のように推定できる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>expm, <span class="dt">data =</span> HR09)
+<span class="kw">display</span>(fit<span class="fl">.2</span>)</code></pre></div>
+<pre><code>## lm(formula = voteshare ~ expm, data = HR09)
+##             coef.est coef.se
+## (Intercept) 7.74     0.76   
+## expm        3.07     0.10   
+## ---
+## n = 1124, k = 2
+## residual sd = 16.04, R-Squared = 0.48</code></pre>
+<p>回帰直線を図示する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> expm, <span class="dt">y =</span> voteshare)) +<span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="dv">1</span>)
+p2 &lt;-<span class="st"> </span>p2 +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>)
+p2 &lt;-<span class="st"> </span>p2 +<span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;選挙費用（100万円）&quot;</span>) +<span class="st"> </span><span class="kw">ylab</span>(<span class="st">&quot;得票率（%）&quot;</span>)
+<span class="kw">print</span>(p2 +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;得票率と選挙費用の関係&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/plot-fit2-1.png" title="" alt="" width="672" /></p>
+<p>95パーセント信頼区間を加える。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p2.ci95 &lt;-<span class="st"> </span>p2 +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)
+<span class="kw">print</span>(p2.ci95 +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;得票率と選挙費用の関係&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/plot-fit2-ci95-1.png" title="" alt="" width="672" /></p>
+<p><br></p>
+</div>
+<div id="3" class="section level3">
+<h3>複数の説明変数を使った回帰（モデル3）</h3>
+<p>次に、得票率を議員経験と選挙費用で説明するモデルに最小二乗法を当てはめる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.3</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>experience +<span class="st"> </span>expm, <span class="dt">data =</span> HR09)
+<span class="kw">display</span>(fit<span class="fl">.3</span>)</code></pre></div>
+<pre><code>## lm(formula = voteshare ~ experience + expm, data = HR09)
+##             coef.est coef.se
+## (Intercept)  7.91     0.69  
+## experience  18.10     1.23  
+## expm         1.85     0.12  
+## ---
+## n = 1124, k = 3
+## residual sd = 14.69, R-Squared = 0.56</code></pre>
+<p>この結果を図示する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 予測値のデータフレームを作る
+pred &lt;-<span class="st"> </span><span class="kw">with</span>(HR09, <span class="kw">expand.grid</span>(
+    <span class="dt">expm =</span> <span class="kw">seq</span>(<span class="kw">min</span>(expm, <span class="dt">na.rm=</span><span class="ot">TRUE</span>), <span class="kw">max</span>(expm, <span class="dt">na.rm=</span><span class="ot">TRUE</span>), <span class="dt">length =</span> <span class="dv">100</span>),
+    <span class="dt">experience =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)
+    ))
+## 予測値を計算する
+pred &lt;-<span class="st"> </span><span class="kw">mutate</span>(pred, <span class="dt">voteshare =</span> <span class="kw">predict</span>(fit<span class="fl">.3</span>, <span class="dt">newdata =</span> pred))
+## 散布図 (point) は元データ (HR09) で描き、回帰直線は予測値 (pred) で描く
+p3 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> expm, <span class="dt">y =</span> voteshare, <span class="dt">color =</span> <span class="kw">as.factor</span>(experience))) +
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">size =</span> <span class="dv">1</span>) +
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">data =</span> pred)
+p3 &lt;-<span class="st"> </span>p3 +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;選挙費用（100万円）&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;得票率（%）&quot;</span>)
+p3 &lt;-<span class="st"> </span>p3 +
+<span class="st">    </span><span class="kw">scale_color_discrete</span>(<span class="dt">name =</span> <span class="st">&quot;議員経験&quot;</span>, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;なし&quot;</span>,<span class="st">&quot;あり&quot;</span>)) +
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">color =</span> <span class="kw">guide_legend</span>(<span class="dt">reverse =</span> <span class="ot">TRUE</span>))
+<span class="kw">print</span>(p3 +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;得票率と選挙費用の関係&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/plot-fit3-1.png" title="" alt="" width="672" /></p>
+<p>この図からわかるように、このモデルは2つの直線が平行になる（傾きが同じになる）ように設定されている。</p>
+<p>この図に95パーセント信頼区間を加える。 信頼区間を求めるために標準誤差を利用する。 また、標準誤差は<span class="math inline">\(t\)</span> 分布に従うので、<code>qt()</code> で分布の95%が収まる範囲を求める （標準正規分布で近似し、<span class="math inline">\(\pm 1.96\)</span> を使っても結果に大きな違いはないが、せっかくRを使っているのだから、より正確な数値を利用したほうがよい）。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 信頼区間の下限と上限を計算する
+## まず、予測値と標準誤差を求める
+err &lt;-<span class="st"> </span><span class="kw">predict</span>(fit<span class="fl">.3</span>, <span class="dt">newdata =</span> pred, <span class="dt">se.fit =</span> <span class="ot">TRUE</span>)
+## 予測値と標準誤差を使って信頼区間を求める
+pred$lower &lt;-<span class="st"> </span>err$fit +<span class="st"> </span><span class="kw">qt</span>(<span class="fl">0.025</span>, <span class="dt">df =</span> err$df) *<span class="st"> </span>err$se.fit
+pred$upper &lt;-<span class="st"> </span>err$fit +<span class="st"> </span><span class="kw">qt</span>(<span class="fl">0.975</span>, <span class="dt">df =</span> err$df) *<span class="st"> </span>err$se.fit
+
+p3.ci95 &lt;-<span class="st"> </span>p3 +
+<span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">data =</span> pred, <span class="kw">aes</span>(<span class="dt">ymin =</span> lower, <span class="dt">ymax =</span> upper), <span class="dt">stat =</span><span class="st">&quot;identity&quot;</span>)
+<span class="kw">print</span>(p3.ci95 +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;得票率と選挙費用の関係&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/plot-fit3-ci95-1.png" title="" alt="" width="672" /></p>
+<p><br></p>
+</div>
+<div id="4" class="section level3">
+<h3>相互作用を考える（モデル4）</h3>
+<p>モデル3では回帰直線が平行になるようにモデルを制限していたが、この制限を緩めてみよう。 そのために、議員経験 <span class="math inline">\(\times\)</span> 選挙費用という説明変数を追加する。</p>
+<p>Rでは、<code>lm()</code> 内の説明変数に、<code>変数A * 変数B</code> と書くと、変数A、変数B、変数A <span class="math inline">\(\times\)</span> 変数B を説明変数として加えてくれるので、これを利用する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.4</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>experience *<span class="st"> </span>expm, <span class="dt">data =</span> HR09)
+<span class="kw">display</span>(fit<span class="fl">.4</span>)</code></pre></div>
+<pre><code>## lm(formula = voteshare ~ experience * expm, data = HR09)
+##                 coef.est coef.se
+## (Intercept)     -2.07     0.72  
+## experience      45.91     1.58  
+## expm             4.87     0.16  
+## experience:expm -4.76     0.21  
+## ---
+## n = 1124, k = 4
+## residual sd = 12.11, R-Squared = 0.70</code></pre>
+<p>この結果を図示する。</p>
+<p><img src="linear-regression-1_files/figure-html/fit04-plot-1.png" title="" alt="" width="672" /></p>
+<p>95パーセント信頼区間を加える。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p4.ci95 &lt;-<span class="st"> </span>p4 +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)
+<span class="kw">print</span>(p4.ci95 +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;得票率と選挙費用の関係&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/fit04-plot-ci9-1.png" title="" alt="" width="672" /></p>
+<p><br></p>
+</div>
+</div>
+<div class="section level2">
+<h2>シミュレーションで回帰分析を理解する</h2>
+<p>回帰分析のしくみ（特に信頼区間の意味）を理解するために、簡単なモンテ・カルロシミュレーションを行おう。 シミュレーンでは、自分で母数を設定し、データを生成する。 そのうえで、特徴を知りたい分析手法（今回の場合はOLS）を生成したデータに当てはめ、母数をうまく推測できるかどうか確認する。</p>
+<p>今回は、単回帰を例にシミュレーションを行う（重回帰のシミュレーションは課題で）。 このシミュレーションを行う主な目的は以下の3つである。</p>
+<ol style="list-style-type: decimal">
+<li>最小二乗法（OLS）が想定するデータ生成過程 (data generating process) を理解する</li>
+<li>最小二乗推定量（OLSE）の基本的な性質を理解する</li>
+<li>信頼区間の意味を理解する</li>
+</ol>
+<p>単回帰モデルは <span class="math display">\[y \sim \mathrm{N}(X\beta, \sigma^2 I)\]</span> または、 <span class="math display">\[y_i \sim \mathrm{N}(\beta_1 + \beta_2 x_i, \sigma^2)\]</span> (<span class="math inline">\(i = 1, 2, \dots, n\)</span>)と表すことができる。 したがって、設定する母数は3つある。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">beta1 &lt;-<span class="st"> </span><span class="dv">10</span>   ## 切片の値を決める
+beta2 &lt;-<span class="st"> </span><span class="dv">3</span>    ## 傾き（説明変数の係数）を決める
+sigma &lt;-<span class="st"> </span><span class="dv">6</span>    ## 誤差の標準偏差を決める</code></pre></div>
+<p>次に、単回帰モデルが想定する<strong>データ生成過程</strong>に従って、データを生成する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n &lt;-<span class="st"> </span><span class="dv">100</span>   ## サンプルサイズを決める
+## x ~ U(0, 10) とする：他の設定でもかまわない
+x &lt;-<span class="st"> </span><span class="kw">runif</span>(n, <span class="dv">0</span>, <span class="dv">10</span>)   ## 最小値0, 最大値10の一様分布から長さnのxベクトルを抽出する
+y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, beta1 +<span class="st"> </span>beta2 *<span class="st"> </span>x, <span class="dt">sd =</span> sigma)  ## 設定に従って、yを正規分布から抽出する</code></pre></div>
+<p>ここで、手に入れたデータを散布図にして直線を当てはめてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">y=</span>y, <span class="dt">x=</span>x)
+scat &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df, <span class="kw">aes</span>(x, y)) +<span class="st"> </span><span class="kw">geom_point</span>() +<span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>)
+<span class="kw">print</span>(scat)</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/sim1-scatter1-1.png" title="" alt="" width="672" /></p>
+<p>回帰式を推定すると、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">eg<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(y ~<span class="st"> </span>x, <span class="dt">data =</span> df)
+<span class="kw">display</span>(eg<span class="fl">.1</span>)</code></pre></div>
+<pre><code>## lm(formula = y ~ x, data = df)
+##             coef.est coef.se
+## (Intercept) 9.14     1.28   
+## x           3.10     0.22   
+## ---
+## n = 100, k = 2
+## residual sd = 6.29, R-Squared = 0.68</code></pre>
+<p>3つの母数<span class="math inline">\(\beta_1=10, \beta_2=3, \sigma=6\)</span> に対する推定値は、それぞれ9.14, 3.1, 6.29 であることがわかる。</p>
+<p>このとき、係数の95パーセント信頼区間は、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">confint</span>(eg<span class="fl">.1</span>)</code></pre></div>
+<pre><code>##                2.5 %    97.5 %
+## (Intercept) 6.602367 11.686254
+## x           2.672670  3.526034</code></pre>
+<p>で求められる。 95パーセント信頼区間は、切片が[6.60, 11.69]、傾きが[2.67, 3.53] であり、どちらの信頼区間も母数を含んでいる。 つまり、ここで得られた信頼区間が母数を含む確率は1（100%）である！</p>
+<p>以上の過程を、母数とサンプルサイズは変えずに何度も繰り返す。 同じコードを何度も繰り返し使うのは面倒なので、関数にしてしまおう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim_ols1 &lt;-<span class="st"> </span>function(beta, sigma, <span class="dt">n =</span> <span class="dv">100</span>, <span class="dt">trials =</span> <span class="dv">10000</span>, <span class="dt">x.rng =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">10</span>)) {
+    ## Function to simulate simple OLS regressions
+    ## Arguments:
+    ##   beta: vector of coefficient parameters
+    ##   sigma: standard deviation of the error
+    ##   n: sample size, default n=100
+    ##   trials: the number of simulation trials
+    ##           default trials=10000
+    ##   x.rng: range of the explanatory variable x
+    ##          default x.rng=c(0,10)
+    ## Return:
+    ##   df: data frame containing
+    ##      (1) parameter estimates,
+    ##      (2) se of coefficient estimates, and
+    ##      (3) 95% CI of coefficient estimates
+    ##      for each trial of the simulation.
+    
+    ## create a data frame to save the results
+    empty &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, trials)
+    df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+        <span class="dt">b1 =</span> empty,
+        <span class="dt">b1.se =</span> empty,
+        <span class="dt">b1.lower =</span> empty,
+        <span class="dt">b1.upper =</span> empty,
+        <span class="dt">b2 =</span> empty,
+        <span class="dt">b2.se =</span> empty,
+        <span class="dt">b2.lower =</span> empty,
+        <span class="dt">b2.upper =</span> empty,
+        <span class="dt">sigma.hat =</span> empty
+        )
+    
+    for (i in <span class="dv">1</span>:trials) { ## loop for trials
+        ## generate data
+        x &lt;-<span class="st"> </span><span class="kw">runif</span>(n, x.rng[<span class="dv">1</span>], x.rng[<span class="dv">2</span>])
+        y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, beta[<span class="dv">1</span>] +<span class="st"> </span>beta[<span class="dv">2</span>] *<span class="st"> </span>x, sigma)
+        
+        ## fit OLS
+        fit &lt;-<span class="st"> </span><span class="kw">lm</span>(y ~<span class="st"> </span>x)
+        
+        ## sum of squared residuals
+        sigma.hat &lt;-<span class="st"> </span><span class="kw">summary</span>(fit)$sigma
+        
+        ## coefficient estimates
+        b1 &lt;-<span class="st"> </span><span class="kw">coef</span>(fit)[<span class="dv">1</span>]
+        b2 &lt;-<span class="st"> </span><span class="kw">coef</span>(fit)[<span class="dv">2</span>]
+        
+        ## standard errors of coefficient estimates
+        b1.se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">summary</span>(fit)$cov.unscaled[<span class="dv">1</span>,<span class="dv">1</span>]) *<span class="st"> </span>sigma.hat
+        b2.se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">summary</span>(fit)$cov.unscaled[<span class="dv">2</span>,<span class="dv">2</span>]) *<span class="st"> </span>sigma.hat
+        
+        ## 95% CI
+        b1.ci95 &lt;-<span class="st"> </span><span class="kw">confint</span>(fit)[<span class="dv">1</span>,]
+        b2.ci95 &lt;-<span class="st"> </span><span class="kw">confint</span>(fit)[<span class="dv">2</span>,]
+        
+        ## save the results
+        df[i,] &lt;-<span class="st"> </span><span class="kw">c</span>(b1, b1.se, b1.ci95,
+                    b2, b2.se, b2.ci95,
+                    sigma.hat)      
+    }
+    ## return the data frame
+    <span class="kw">return</span>(df)
+}</code></pre></div>
+<p>この関数を利用して、実際にシミュレーションを行ってみよう。 自分で母数とサンプルサイズ（ここでは規定値のn=100を利用）を指定し、データの生成と回帰式の推定を1,000回繰り返すことにする。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">beta1 &lt;-<span class="st"> </span><span class="dv">10</span>; beta2 &lt;-<span class="st"> </span><span class="dv">3</span>; sigma =<span class="st"> </span><span class="dv">6</span>
+sim<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">sim_ols1</span>(<span class="dt">beta =</span> <span class="kw">c</span>(beta1, beta2), <span class="dt">sigma =</span> sigma, <span class="dt">trials =</span> <span class="dv">1000</span>)
+<span class="kw">head</span>(sim<span class="fl">.1</span>)</code></pre></div>
+<pre><code>##          b1    b1.se b1.lower b1.upper       b2     b2.se b2.lower
+## 1 10.519381 1.333821 7.872455 13.16631 2.840636 0.2276824 2.388807
+## 2  9.195160 1.558476 6.102415 12.28790 3.157845 0.2427141 2.676187
+## 3  8.675866 1.365326 5.966421 11.38531 3.169810 0.2311890 2.711023
+## 4  9.693470 1.422950 6.869673 12.51727 2.911867 0.2347170 2.446079
+## 5  8.809144 1.111461 6.603487 11.01480 3.040280 0.2021615 2.639097
+## 6  9.211938 1.086019 7.056770 11.36711 3.375313 0.1891709 2.999909
+##   b2.upper sigma.hat
+## 1 3.292464  6.304427
+## 2 3.639503  6.559746
+## 3 3.628597  6.609825
+## 4 3.377655  6.311905
+## 5 3.441463  5.704105
+## 6 3.750716  5.662732</code></pre>
+<p>これで、シミュレーションで得られた数字は<strong>sim.1</strong>に保存された。</p>
+<p><br></p>
+<div class="section level3">
+<h3>係数の推定値を理解する</h3>
+<p>説明変数 <span class="math inline">\(x\)</span> の係数の推定値 b2 の分布を確認してみよう。 私たちは母数<span class="math inline">\(\beta_2=3\)</span>であることを知っているが、OLSはこの数値をうまく推定してくれただろうか？</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">hist.b2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(sim<span class="fl">.1</span>, <span class="kw">aes</span>(<span class="dt">x =</span> b2, <span class="dt">y=</span>..density..)) +
+<span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> .<span class="dv">1</span>)
+hist.b2 &lt;-<span class="st"> </span>hist.b2 +<span class="st"> </span>
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">y =</span> <span class="st">&quot;確率密度&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;シミュレーションで得たb2の分布&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="dv">3</span>, <span class="dt">color =</span> <span class="st">&quot;violetred&quot;</span>)
+<span class="kw">print</span>(hist.b2)</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/sim1-hist-b2-1.png" title="" alt="" width="672" /></p>
+<p>このヒストグラムが示すように、OLSは<strong>平均すると</strong>、母数をうまく推定してくれる（<strong>不偏性, unbiasedness</strong>）。しかし、常に正しい推定をするわけではなく、係数の値を過小推定することもあれば、過大推定することもある。実際の分析では、データセットが1つしかないのが普通であり、自分のデータ分析が係数を「正しく」推定しているとは限らならい。そのために、推定の不確実性を明示することが求められるのである。</p>
+<p><br></p>
+</div>
+<div class="section level3">
+<h3>標準誤差を理解する</h3>
+<p>次に、b2の標準誤差をヒストグラムにしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">hist.se &lt;-<span class="st"> </span><span class="kw">ggplot</span>(sim<span class="fl">.1</span>, <span class="kw">aes</span>(<span class="dt">x =</span> b2.se, <span class="dt">y =</span>..density..)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> .<span class="dv">01</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;b2の標準誤差&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;確率密度&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;b2の標準誤差の分布&quot;</span>)
+<span class="kw">print</span>(hist.se)</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/sim1-hist-b2.se-1.png" title="" alt="" width="672" /></p>
+<p>このように、標準誤差自体が推定量なので、値はサンプルごとに異なる（分布する）。</p>
+<p>標準誤差をseとすると、 <span class="math display">\[\frac{\hat{\beta} - \beta}{\mathrm{se}}\]</span> は自由度<span class="math inline">\(n-k\)</span>（ここでは、100-2=98）の<span class="math inline">\(t\)</span>分布にしたがうはずである。 まず、この値をヒストグラムにして、自由度98の<span class="math inline">\(t\)</span>分布の確率密度曲線を重ね書きしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">mutate</span>(sim<span class="fl">.1</span>, <span class="dt">b2.t =</span> (b2 -<span class="st"> </span>beta2) /<span class="st"> </span>b2.se)
+## t分布の確率密度を求め、true.tという名前のデータフレームに保存する
+true.t &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="kw">seq</span>(-<span class="dv">4</span>, <span class="dv">4</span>, <span class="dt">length =</span> <span class="dv">100</span>))
+true.t &lt;-<span class="st"> </span><span class="kw">mutate</span>(true.t, <span class="dt">density =</span> <span class="kw">dt</span>(x, <span class="dt">df =</span> <span class="dv">98</span>))
+hist.t &lt;-<span class="st"> </span><span class="kw">ggplot</span>(sim<span class="fl">.1</span>, <span class="kw">aes</span>(<span class="dt">x =</span> b2.t, <span class="dt">y =</span>..density..)) +
+<span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="fl">0.5</span>) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">data =</span> true.t, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> density), <span class="dt">color =</span> <span class="st">&quot;violetred&quot;</span>)
+hist.t &lt;-<span class="st"> </span>hist.t +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="kw">expression</span>(<span class="kw">frac</span>(<span class="kw">hat</span>(beta) -<span class="st"> </span>beta, <span class="st">&quot;se&quot;</span>)),
+         <span class="dt">y=</span><span class="st">&quot;確率密度&quot;</span>, <span class="dt">title=</span><span class="st">&quot;標準化されたb2と自由度98のt分布&quot;</span>)
+<span class="kw">print</span>(hist.t)</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/sim1-hist-b2.se-2-1.png" title="" alt="" width="672" /></p>
+<p>この図から、<span class="math inline">\(t\)</span>分布に近い分布であることがわかる。 Q-Qプロットでも確かめてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">qqplot.t &lt;-<span class="st"> </span><span class="kw">ggplot</span>(sim<span class="fl">.1</span>, <span class="kw">aes</span>(<span class="dt">sample =</span> b2.t)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">stat_qq</span>(<span class="dt">distribution =</span> qt, <span class="dt">dparams =</span> <span class="kw">list</span>(<span class="dt">df =</span> <span class="dv">98</span>)) +
+<span class="st">    </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">color =</span> <span class="st">&quot;violetred&quot;</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Q-Q プロット&quot;</span>, 
+         <span class="dt">x =</span> <span class="st">&quot;自由度n-k=98のt分布&quot;</span>,
+         <span class="dt">y =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;シミュレートした &quot;</span>, <span class="kw">frac</span>(<span class="kw">hat</span>(beta) -<span class="st"> </span>beta, <span class="st">&quot;se&quot;</span>), <span class="st">&quot; の分布&quot;</span>)))
+<span class="kw">print</span>(qqplot.t)</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/sim1-qq-b2.se-1.png" title="" alt="" width="672" /></p>
+<p>Q-Qプロットの点がほぼ一直線に並んでおり、<span class="math inline">\((\hat{\beta}-\beta)/\mathrm{se}\)</span>が<span class="math inline">\(t\)</span>分布に従っていることがわかる。ただし、分布の裾では、理論値との乖離が大きいことに注意が必要である。</p>
+<p>今回のシミュレーションで得られた標準誤差の平均値は、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(sim<span class="fl">.1</span>$b2.se)</code></pre></div>
+<pre><code>## [1] 0.209381</code></pre>
+<p>である。標準誤差は推定値の標準偏差のはずだが、本当にそうなっているかどうか確認してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sd</span>(sim<span class="fl">.1</span>$b2)</code></pre></div>
+<pre><code>## [1] 0.2144247</code></pre>
+<p>これで、実際に標準誤差は推定値の標準偏差に（ほぼ）一致することがわかった。</p>
+<p><br></p>
+</div>
+<div class="section level3">
+<h3>信頼区間を理解する</h3>
+<p>係数の推定値b2の95パーセント信頼区間を例として考える。 シミュレーションで得られた1つ目の信頼区間は、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim<span class="fl">.1</span>[<span class="dv">1</span>, <span class="kw">c</span>(<span class="st">&quot;b2.lower&quot;</span>, <span class="st">&quot;b2.upper&quot;</span>)]</code></pre></div>
+<pre><code>##   b2.lower b2.upper
+## 1 2.388807 3.292464</code></pre>
+<p>すなわち、[2.39, 3.29] がb2[1] の95パーセント信頼区間である。 この区間は母数である<span class="math inline">\(\beta_2=3\)</span>を区間内に含んでいる。 したがって、<strong>この信頼区間が母数を含む確率は1（100%)である</strong>。</p>
+<p>同様に、2つ目の信頼区間は、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim<span class="fl">.1</span>[<span class="dv">2</span>, <span class="kw">c</span>(<span class="st">&quot;b2.lower&quot;</span>, <span class="st">&quot;b2.upper&quot;</span>)]</code></pre></div>
+<pre><code>##   b2.lower b2.upper
+## 2 2.676187 3.639503</code></pre>
+<p>であり、これも母数を区間内に含んでいる。</p>
+<p>しかし、39番目の信頼区間は、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim<span class="fl">.1</span>[<span class="dv">39</span>, <span class="kw">c</span>(<span class="st">&quot;b2.lower&quot;</span>, <span class="st">&quot;b2.upper&quot;</span>)]</code></pre></div>
+<pre><code>##    b2.lower b2.upper
+## 39 3.025416 3.749442</code></pre>
+<p>であり、これは母数を区間内に含んでいない。 つまり、<strong>この信頼区間が母数を含む確率は0である</strong>。</p>
+<p>シミュレーションで得た1,000個の信頼区間のうち、どの信頼区間が母数を含んでいるか調べてみよう。 母数を信頼区間内に含むのは、信頼区間の下限値が母数以下かつ上限値が母数以上のものである。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">check.ci &lt;-<span class="st"> </span>sim<span class="fl">.1</span>$b2.lower &lt;=<span class="st"> </span>beta2 &amp;<span class="st"> </span>sim<span class="fl">.1</span>$b2.upper &gt;=<span class="st"> </span>beta2</code></pre></div>
+<p>この結果、<strong>TRUE</strong>となっているものが母数を区間内に捉えているもの、<strong>FALSE</strong>がそうでないものである。これを表にすると、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(check.ci)</code></pre></div>
+<pre><code>## check.ci
+## FALSE  TRUE 
+##    49   951</code></pre>
+<p>と、なる。つまり、1000個の95パーセント信頼区間のうち、951個（95.1%）は母数を区間内に捉え、残りの49個が捉えないということである。このように、一定のデータ生成過程から得られた異なるデートセットに対し、信頼区間を求める作業を繰り返したとき、「得られた信頼区間のうち何パーセントが母数を区間内に含むか」というのが、信頼区間の信頼度である。</p>
+<p>これを図にしてみよう。 1000個は多すぎるので、無作為に100個だけ選んで図示する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## put IDs on each simulated result
+sim<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">mutate</span>(sim<span class="fl">.1</span>, <span class="dt">id =</span> <span class="dv">1</span>:<span class="kw">n</span>())
+## put check.ci into the data frame
+sim<span class="fl">.1</span>$check.ci &lt;-<span class="st"> </span>check.ci
+## randomly choose 100 sets of sim values for graph
+sim<span class="fl">.1</span>.sml &lt;-<span class="st"> </span><span class="kw">sample_n</span>(sim<span class="fl">.1</span>, <span class="dv">100</span>)
+## show simulated ci&#39;s graphically
+ctplr &lt;-<span class="st"> </span><span class="kw">ggplot</span>(sim<span class="fl">.1</span>.sml,
+                <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">reorder</span>(id, b2), <span class="dt">y =</span> b2,
+                    <span class="dt">ymin =</span> b2.lower, <span class="dt">ymax =</span> b2.upper,
+                    <span class="dt">color =</span> check.ci)) +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> beta2, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_pointrange</span>() +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;シミュレーションID&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;b2&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;95％信頼区間&quot;</span>) +
+<span class="st">    </span><span class="kw">scale_color_discrete</span>(<span class="dt">name =</span> <span class="st">&quot;母数を&quot;</span>, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;含まない&quot;</span>,<span class="st">&quot;含む&quot;</span>)) +
+<span class="st">    </span><span class="kw">coord_flip</span>()
+<span class="kw">print</span>(ctplr)</code></pre></div>
+<p><img src="linear-regression-1_files/figure-html/sim1-plot-ci-1.png" title="" alt="" width="672" /></p>
+<p>このように、100個中95個（95パーセント）の95パーセント信頼区間が、母数である3にかかっていることがわかる。</p>
+<br> <br>
+<div style="text-align: right;">
+<p><a href="../">授業の内容に戻る</a></p>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,124 @@
+---
+title: "hw03-Nishimura."
+working directory: Desktop/Study/pm1/3
+author: "Yui Nishimura"
+date: "2015/10/28"
+output: html_document
+---
+
+require(ggplot2) # calling "ggplot2" to create graphs
+
+
+
+
+## problem 1
+
+fctrl <- function(n)  
+  # making the function to calculate factorials
+  # n = a non-negative integer  
+  # NOT calculate other than non-negative integer 
+  # out = result of calculation
+  
+  if(n < 0 | n != round(n)){  # Not calculate negative or non-integer numbers 
+    print("n must be a non-negative intenger")
+    
+  }else if(n == 0){  # factorial 0 equals 1 
+    return(1)
+    
+  }else{ # otherwise, calculate according to each number 
+    result <- 1  # substitution to calculate the function
+    for(i in 1:n){result = result * i  # calculate i to previous result for loop 
+    }
+    return(result)  #return the result
+  }
+  
+fctrl(-5)  # ensure when n is negative
+fctrl(0)   # ensure when n is 0
+fctrl(10) == factorial(10)  #ensure the function
+
+
+
+
+## problem 2
+
+chs <- function(n, k) {# making the function to calculate combination
+  # argument1 n = non-negative integer  
+  # argument2 k = non-negative integer from 0 to n
+  # return value = result
+
+  if(n<k){ # in the case of k is greater than n, calculation is impossible
+    print("k must be greater than n") # alert k must be greater than n
+    
+  }else{ #otherwise, calculate combination
+    result <- fctrl(n) / (fctrl(k) * fctrl(n - k))
+    return(result)  
+  }
+}
+  
+chs(5, 3) == choose(5, 3)  # ensure the function
+chs(3, 5)  # ensure the alerting
+
+
+
+## problem 3
+
+pmfbnmnl <- function(x, n, p){
+  # making the function to calculate binominal probability
+  # argument1: n = non-negative integer  
+  # argument2: x = non-negative integer which means bernoulli trials
+  # argument3: p = number between 0 and 1 which means probability
+  
+  result <- chs(n, x) * p^x * ((1-p) ^(n-x)) # calculate binominal binominal probability
+  return(result) 
+}
+  
+pmfbnmnl(1, 10, 0.5) # ensure the function
+dbinom(1, 10, 0.5)
+
+
+
+
+## problem 4
+
+temp.data.frame <- data.frame(p=NA, n=NA, x=NA, result=NA)
+  # creat an empty data frame called "temp.data.frame" (temporary data)
+  # in order to input arguments and make them be rewrited by final data frame
+
+final.data.frame <- data.frame(p=NULL, n=NULL, x=NULL, result=NULL)
+  # creat an empty data frame called "final.data.frame" (final data)
+  # all arguments are NULL in order to combine final data frame to temprary data frame after 
+
+for(p in c(0.5, 0.7)){         # loop for probability (p = 0.5 and p = 0.7)
+  for(i in c(2, 5, 10, 50)){   # loop for n = 2, 5, 10, 50
+    for(x in 0:i){             # loop for x = 0 ~ n
+      # each for command are for three argments to imput temporary data frame
+      temp.data.frame[1, ] <- c(paste("p =", p), paste("n =", i), x, pmfbnmnl(x, i, p))
+      final.data.frame <- rbind(final.data.frame, temp.data.frame)
+      # input p, n, x, and result into the temporary data frame
+      # combine final.data.frame with temp.data.frame
+      # final data frame now includes all results
+    }
+  }  
+}
+
+head(final.data.frame)
+ # display first six data in final data frame 
+
+tail(final.data.frame)
+ # display last six data in final data frame
+ # check how many results are included in final data frame
+
+final.data.frame$n <- factor(final.data.frame$n, 
+                             levels = c("n = 2", "n = 5", "n = 10", "n = 50"))
+# factoring the column, n, to create the plots according to ascending order
+# if this command lacks, the plots appear according to word information
+
+prob4.opts <- list(geom_bar(aes(x = as.integer(x), y = as.numeric(result)), stat="identity"), 
+                   facet_wrap(~n), ylab("probability"), xlab("number of success"))
+ # save the format of the way to show the graphs (x and y bar, stat, and labels)
+
+ggplot(data=final.data.frame[1:71, ]) + prob4.opts + ggtitle("case: p = 0.5")
+ # output the plot of "p = 0.5" which is assigned number 1 to 71 according to n
+
+ggplot(data=final.data.frame[72:142, ]) + prob4.opts + ggtitle("In The Case of p = 0.7")
+ # output the plot of "p = 0.7" which is assigned number 72 to 142 according to n

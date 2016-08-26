@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="矢内　勇生" />
+
+<meta name="date" content="2014-11-11" />
+
+<title>政治学方法論 I：線形回帰分析（2）</title>
+
+<script src="linear-regression-2_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="linear-regression-2_files/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="linear-regression-2_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="linear-regression-2_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="linear-regression-2_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link rel="stylesheet" href="my-markdown.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">政治学方法論 I：線形回帰分析（2）</h1>
+<h4 class="author"><b>矢内　勇生</b></h4>
+<h4 class="date"><em>November 11, 2014 (rev. June 6, 2015)</em></h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a>準備</a></li>
+<li><a>回帰診断</a><ul>
+<li><a>残差プロット</a></li>
+</ul></li>
+<li><a>予測値でモデルを評価する</a></li>
+<li><a>回帰分析で使うテクニック</a><ul>
+<li><a>線形変換</a></li>
+<li><a>標準化</a></li>
+<li><a>中心化</a></li>
+<li><a>対数変換</a></li>
+</ul></li>
+<li><a>分析結果の提示</a><ul>
+<li><a>表を作る</a></li>
+<li><a>図を作る</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div class="section level3">
+<h3>準備</h3>
+<p>まず、必要なパッケージを読み込む（順番に注意：armをcoefplotより先に読む）。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;foreign&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;dplyr&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;arm&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;coefplot&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;ggplot2&quot;</span>)
+## Windows ユーザは次の行をコメントアウト
+<span class="kw">theme_set</span>(<span class="kw">theme_gray</span>(<span class="dt">base_size =</span> <span class="dv">12</span>, <span class="dt">base_family =</span> <span class="st">&quot;HiraKakuProN-W3&quot;</span>))</code></pre></div>
+<p>説明のために『Stataによる計量政治学』（浅野正彦, 矢内勇生. 2013）で使用されているデータ（<a href="http://www2.kobe-u.ac.jp/~yyanai/jp/quant-methods-stata/data/hr96-09.dta">hr96-09.dta</a>） を使う。 まず、このデータを読み込む（データへのパスは各自の状況に応じて変えること。ここでは、R Studioのプロジェクトを利用していて、プロジェクトが存在するフォルダ内にdata という名前のフォルダがあり、その中にデータセットが保存されていると仮定している）。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR &lt;-<span class="st"> </span><span class="kw">read.dta</span>(<span class="st">&quot;data/hr96-09.dta&quot;</span>)
+<span class="co">#head(HR)</span>
+<span class="co">#tail(HR)</span></code></pre></div>
+<p>衆議院議員経験があることを表すダミー変数と、自民党ダミー、民主党ダミー、 選挙費用を100万円単位で測定する変数を作る。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR &lt;-<span class="st"> </span><span class="kw">mutate</span>(HR,
+             <span class="dt">experience =</span> <span class="kw">as.numeric</span>(status ==<span class="st"> &quot;incumbent&quot;</span> |<span class="st"> </span>status ==<span class="st"> &quot;moto&quot;</span>),
+             <span class="dt">ldp =</span> <span class="kw">as.numeric</span>(party ==<span class="st"> &quot;LDP&quot;</span>),
+             <span class="dt">dpj =</span> <span class="kw">as.numeric</span>(party ==<span class="st"> &quot;DPJ&quot;</span>),
+             <span class="dt">expm =</span> exp /<span class="st"> </span><span class="dv">10</span>^<span class="dv">6</span>)</code></pre></div>
+<p>2005年と2009年の結果だけ抜き出したデータフレームを、それぞれHR05, HR09として保存する。 （本来は<code>mi()</code> などで欠測値を推定すべきだが、説明を単純化するために、今回は） また、完全データだけ残す。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR05 &lt;-<span class="st"> </span>HR %&gt;%
+<span class="st">    </span><span class="kw">filter</span>(year ==<span class="st"> </span><span class="dv">2005</span>) %&gt;%
+<span class="st">    </span><span class="kw">na.omit</span>()
+HR09 &lt;-<span class="st"> </span>HR %&gt;%
+<span class="st">    </span><span class="kw">filter</span>(year ==<span class="st"> </span><span class="dv">2009</span>) %&gt;%
+<span class="st">    </span><span class="kw">na.omit</span>()</code></pre></div>
+<p><br></p>
+</div>
+<div class="section level2">
+<h2>回帰診断</h2>
+<div class="section level3">
+<h3>残差プロット</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>expm, <span class="dt">data =</span> HR05)
+<span class="kw">display</span>(fit<span class="fl">.1</span>)</code></pre></div>
+<pre><code>## lm(formula = voteshare ~ expm, data = HR05)
+##             coef.est coef.se
+## (Intercept) 9.12     0.71   
+## expm        2.61     0.07   
+## ---
+## n = 985, k = 2
+## residual sd = 12.57, R-Squared = 0.57</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sigma.hat<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">summary</span>(fit<span class="fl">.1</span>)$sigma
+HR05$res.fit<span class="fl">.1</span> &lt;-<span class="st"> </span>fit<span class="fl">.1</span>$residuals
+res.plot &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR05, <span class="kw">aes</span>(<span class="dt">x =</span> expm, <span class="dt">y =</span> res.fit<span class="fl">.1</span>)) +<span class="st"> </span><span class="kw">geom_point</span>()
+res.plot &lt;-<span class="st"> </span>res.plot +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">color =</span> <span class="st">&quot;royalblue&quot;</span>) +
+<span class="st">    </span>## +- 1sd を点線で示す
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="kw">c</span>(sigma.hat<span class="fl">.1</span>, -sigma.hat<span class="fl">.1</span>), 
+               <span class="dt">color =</span> <span class="st">&quot;royalblue&quot;</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;選挙費用 (100万円）&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;残差&quot;</span>)
+<span class="kw">print</span>(res.plot +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;fit.1の残差プロット&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-2_files/figure-html/fit1-residuals-1.png" title="" alt="" width="672" /></p>
+</div>
+</div>
+<div class="section level2">
+<h2>予測値でモデルを評価する</h2>
+<p>予測値を使ってモデルを評価することもできる。 以下のような手続きでモデルを評価する</p>
+<ol style="list-style-type: decimal">
+<li>手持ちの標本の一部を使って回帰式を求める</li>
+<li>求めた回帰係数と標本のうち回帰式の推定に使わなかった部分の説明変数を使い、予測値を計算する</li>
+<li>計算で得た予測値と、実際の観測値を比較する</li>
+</ol>
+<p>回帰式が真実に近いほど、予測値は観測値に近づく（ただし、データ生成過程に内在的なばらつきは縮まらない）はず。</p>
+<p>例として、</p>
+<ol style="list-style-type: decimal">
+<li>2005年の衆院選データを使って回帰式を推定し、</li>
+<li>1で得られた回帰係数と2009年に観測された説明変数を使って予測値を求め、</li>
+<li>2で求めた予測値を2009年に実際に観測された応答変数の値と比べてみよう。</li>
+</ol>
+<p>比較のため、求めた予測値と実測値の関係を散布図にしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR09$pred<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">predict</span>(fit<span class="fl">.1</span>, <span class="dt">new =</span> HR09)
+HR09 &lt;-<span class="st"> </span><span class="kw">mutate</span>(HR09, <span class="dt">pred.err.1 =</span> voteshare -<span class="st"> </span>pred<span class="fl">.1</span>)
+p.pred<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> pred<span class="fl">.1</span>, <span class="dt">y =</span> voteshare)) +
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">color =</span> <span class="st">&quot;royalblue&quot;</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;2005年データの分析結果からの予測値&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;2009年の実測値&quot;</span>)
+<span class="kw">print</span>(p.pred<span class="fl">.1</span> +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-2_files/figure-html/prediction-1-1.png" title="" alt="" width="672" /></p>
+<p>縦軸を予測値と実測値のズレにした図を作ろう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p.pred.err<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> pred<span class="fl">.1</span>, <span class="dt">y =</span> pred.err<span class="fl">.1</span>)) +
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">color =</span> <span class="st">&quot;royalblue&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="kw">c</span>(sigma.hat<span class="fl">.1</span>, -sigma.hat<span class="fl">.1</span>), 
+               <span class="dt">color =</span> <span class="st">&quot;royalblue&quot;</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;2005年を分析したモデルに基づく予測値&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;予測値と実測値の乖離&quot;</span>)
+<span class="kw">print</span>(p.pred.err<span class="fl">.1</span> +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;2005年の分析結果からの予測と現実の乖離&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-2_files/figure-html/pred-error-1-1.png" title="" alt="" width="672" /></p>
+<p>これらの図からわかる通り、この上で求めた回帰式は真実の関係をうまく捉えているとは言えないようである。</p>
+<p>試しに、キッチンシンクモデルで予測値を求めてみよう。 まず、予測値と実測値の散布図を作る。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sink<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>experience *<span class="st"> </span>expm *<span class="st"> </span>age *<span class="st"> </span>previous *<span class="st"> </span>ldp *<span class="st"> </span>dpj, <span class="dt">data =</span> HR05)
+HR09$pred<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">predict</span>(sink<span class="fl">.1</span>, <span class="dt">new =</span> HR09)
+HR09 &lt;-<span class="st"> </span><span class="kw">mutate</span>(HR09, <span class="dt">pred.err.2 =</span> voteshare -<span class="st"> </span>pred<span class="fl">.2</span>)
+p.pred<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> pred<span class="fl">.2</span>, <span class="dt">y =</span> voteshare)) +
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">color =</span> <span class="st">&quot;royalblue&quot;</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;2005年データの分析結果からの予測値&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;2009年の実測値&quot;</span>)
+<span class="kw">print</span>(p.pred<span class="fl">.2</span> +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-2_files/figure-html/prediction-2-1.png" title="" alt="" width="672" /></p>
+<p>次に、予測値と観測値のズレを縦軸にしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p.pred.err<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">ggplot</span>(HR09, <span class="kw">aes</span>(<span class="dt">x =</span> pred<span class="fl">.2</span>, <span class="dt">y =</span> pred.err<span class="fl">.2</span>)) +
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">color =</span> <span class="st">&quot;royalblue&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="kw">c</span>(sigma.hat<span class="fl">.1</span>, -sigma.hat<span class="fl">.1</span>),
+               <span class="dt">color =</span> <span class="st">&quot;royalblue&quot;</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;2005年を分析したモデルに基づく予測値&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;予測値と実測値の乖離&quot;</span>)
+<span class="kw">print</span>(p.pred.err<span class="fl">.2</span> +<span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;2005年の分析結果からの予測と現実の乖離&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-2_files/figure-html/pred-error-2-1.png" title="" alt="" width="672" /></p>
+<p>このように、キッチンシンクモデルのほうが予測はうまくできそうである。 しかし、どのような理由で応答変数に影響を与えるかがわからない変数は、回帰式に含めないほうがよい。</p>
+<p><br></p>
+</div>
+<div class="section level2">
+<h2>回帰分析で使うテクニック</h2>
+<div class="section level3">
+<h3>線形変換</h3>
+<p>選挙費用を説明変数、得票率を応答変数とする回帰式を推定する。</p>
+<p>選挙費用を1円単位で測定した<strong>exp</strong> を使った回帰式は、次のように求めることができる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>exp, <span class="dt">data =</span> HR09)
+<span class="kw">display</span>(fit<span class="fl">.2</span>, <span class="dt">digits =</span> <span class="dv">8</span>)</code></pre></div>
+<pre><code>## lm(formula = voteshare ~ exp, data = HR09)
+##             coef.est   coef.se   
+## (Intercept) 7.73521323 0.75659814
+## exp         0.00000307 0.00000010
+## ---
+## n = 1124, k = 2
+## residual sd = 16.04179846, R-Squared = 0.48</code></pre>
+<p>よって、 <span class="math display">\[得票率 = 7.74 + 0.00000307 \cdot 選挙費用（1円）+ 誤差\]</span> である。</p>
+<p>これに対し、選挙費用を100万円単位で測定した<strong>expm</strong> を使うと、次のような結果になる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.3</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>expm, <span class="dt">data =</span> HR09)
+## expm という変数をあらかじめ作っていないときは、次のようにする
+<span class="co"># fit.2 &lt;- lm(voteshare ~ I(exp / 10^6), data=HR09)</span>
+<span class="kw">display</span>(fit<span class="fl">.3</span>)</code></pre></div>
+<pre><code>## lm(formula = voteshare ~ expm, data = HR09)
+##             coef.est coef.se
+## (Intercept) 7.74     0.76   
+## expm        3.07     0.10   
+## ---
+## n = 1124, k = 2
+## residual sd = 16.04, R-Squared = 0.48</code></pre>
+<p>よって、 <span class="math display">\[得票率 = 7.74 + 3.07 \cdot 選挙費用（100万円）+ 誤差\]</span> である。</p>
+<p>これらの2つの回帰式の内容は、実質的にはまったく同じである。 どちらがわかりやすい？</p>
+<p><br></p>
+</div>
+<div class="section level3">
+<h3>標準化</h3>
+<p><span class="math inline">\(z\)</span>値で標準化した変数を使って回帰分析を行ってみよう。 変数<span class="math inline">\(x\)</span>の<span class="math inline">\(z\)</span>値は、 <span class="math display">\[z_x=\frac{x - \bar{x}}{u_x}\]</span> で求められる。ただし、<span class="math inline">\(u_x\)</span>は<span class="math inline">\(x\)</span>の不偏標準偏差である。</p>
+<p>例として、選挙費用（測定単位：100万円）を標準化し、得票率を説明してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR09 &lt;-<span class="st"> </span><span class="kw">mutate</span>(HR09,
+               <span class="dt">z.expm =</span> (expm -<span class="st"> </span><span class="kw">mean</span>(expm, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)) /<span class="st"> </span><span class="kw">sd</span>(expm, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))
+<span class="kw">summary</span>(HR09$z.expm)</code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -1.2220 -0.8652 -0.2619  0.0000  0.5985  3.8490</code></pre>
+<p>これで、expm の<span class="math inline">\(z\)</span>値<strong>z.expm</strong>が得られた。この変数を利用して回帰式を求める。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.4</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>z.expm, <span class="dt">data =</span> HR09)
+<span class="kw">display</span>(fit<span class="fl">.4</span>)</code></pre></div>
+<pre><code>## lm(formula = voteshare ~ z.expm, data = HR09)
+##             coef.est coef.se
+## (Intercept) 26.53     0.48  
+## z.expm      15.35     0.48  
+## ---
+## n = 1124, k = 2
+## residual sd = 16.04, R-Squared = 0.48</code></pre>
+<p>この結果は、選挙費用（100万円）が1標準偏差増えるごとに、得票率が平均して15.35ポイント上昇することを示している。 切片の26.53は、選挙費用が平均値をとったときの得票率の予測値（平均値）である。</p>
+</div>
+<div class="section level3">
+<h3>中心化</h3>
+<p>議員経験と選挙費用で得票率を説明するモデルを考える。 回帰式を求めると、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.5</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>experience *<span class="st"> </span>expm, <span class="dt">data =</span> HR09)
+<span class="kw">display</span>(fit<span class="fl">.5</span>)</code></pre></div>
+<pre><code>## lm(formula = voteshare ~ experience * expm, data = HR09)
+##                 coef.est coef.se
+## (Intercept)     -2.07     0.72  
+## experience      45.91     1.58  
+## expm             4.87     0.16  
+## experience:expm -4.76     0.21  
+## ---
+## n = 1124, k = 4
+## residual sd = 12.11, R-Squared = 0.70</code></pre>
+<p>と、なる。このとき、係数の推定値は何を表しているだろうか。 特に、相互作用を表す係数には注意が必要である。</p>
+<p>説明変数を中心化してから、同様の回帰式を求めてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">HR09 &lt;-<span class="st"> </span><span class="kw">mutate</span>(HR09,
+               <span class="dt">c.experience =</span> experience -<span class="st"> </span><span class="kw">mean</span>(experience),
+               <span class="dt">c.expm =</span> expm -<span class="st"> </span><span class="kw">mean</span>(expm, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))
+fit<span class="fl">.5</span>.c &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>c.experience *<span class="st"> </span>c.expm, <span class="dt">data =</span> HR09)
+<span class="kw">display</span>(fit<span class="fl">.5</span>.c)</code></pre></div>
+<pre><code>## lm(formula = voteshare ~ c.experience * c.expm, data = HR09)
+##                     coef.est coef.se
+## (Intercept)         34.53     0.50  
+## c.experience        16.81     1.01  
+## c.expm               2.96     0.11  
+## c.experience:c.expm -4.76     0.21  
+## ---
+## n = 1124, k = 4
+## residual sd = 12.11, R-Squared = 0.70</code></pre>
+<p>まず、残差の標準偏差と<span class="math inline">\(R^2\)</span>が説明変数を中心化する前のモデルとまったく同じことを確認してほしい。 これは、変数の中心化を行っても、回帰式の実質的な内容に変化がないことを示している。</p>
+<p>次に、係数の意味を考えよう。切片である34.53 が表しているのは、すべての説明変数が平均値をとったときの得票率の予測値である。中心化する前のモデルでは、すべての説明変数が0のとき（非現実的でデータを代表しない値）の予測値が示されていたが、説明変数を中心化することによって、実質的に意味のある切片（データを代表するケースの予測値）を得ることができた。</p>
+<p>c.experience の係数は、選挙費用が平均値のとき、議員経験がある候補者のほうが、議員経験がない候補者より16.81ポイント高い得票率を得ると期待されることを示す。中心化する前のモデルでは選挙費用が0の候補者（そのような候補者は存在しない！）の傾きが示されていたのに対し、ここではデータ全体を代表する傾きが示されている。</p>
+<p>c.expmの係数は、議員経験が平均値のとき、選挙費用を1単位（100万円）増やすごとに得票率が平均2.97ポイント上昇することが期待されることを示す。中心化する前のモデルでは議員経験がない候補者の傾きが示されていたのに対し、ここではデータ全体を代表する傾きが示されている。</p>
+<p>そして、c.experienceとc.expmの交差項の係数は、議員経験がある候補者とない候補者の間には、選挙費用1単位が得票率に与える影響（傾き）の差が4.76であることを示す。この値は、中心化する前のモデルと同じである。</p>
+</div>
+<div class="section level3">
+<h3>対数変換</h3>
+<p>Rで自然対数に変換するには<code>log()</code> を、10を底とする対数に変換するには<code>log10()</code> を使う。 その他の値<span class="math inline">\(b\)</span>を底とするxの対数は<code>log(x, base=b)</code> で求めることができる。</p>
+<p>対数変換した変数を回帰分析で利用するときは、事前に変数を変換してもよいが、分析と同時に変換することもできる。たとえば、次のようにする。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.6</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(voteshare) ~<span class="st"> </span>expm, <span class="dt">data =</span> HR)
+<span class="kw">display</span>(fit<span class="fl">.6</span>)</code></pre></div>
+<pre><code>## lm(formula = log(voteshare) ~ expm, data = HR)
+##             coef.est coef.se
+## (Intercept) 1.76     0.02   
+## expm        0.14     0.00   
+## ---
+## n = 5480, k = 2
+## residual sd = 0.86, R-Squared = 0.45</code></pre>
+<p>係数の値を元の測定単位に戻したいときは、<code>exp()</code> で計算すればよい。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">exp</span>(<span class="kw">coef</span>(fit<span class="fl">.6</span>)[-<span class="dv">1</span>]) -<span class="st"> </span><span class="dv">1</span></code></pre></div>
+<pre><code>##      expm 
+## 0.1455751</code></pre>
+</div>
+</div>
+<div class="section level2">
+<h2>分析結果の提示</h2>
+<div class="section level3">
+<h3>表を作る</h3>
+<p>回帰分析の結果を表にするには、<strong>stargazer</strong>パッケージ を使うのが楽（star が鬱陶しいが・・・）。 詳細は、<a href="http://www.jakeruss.com/a-stargazer-cheatsheet.html">Jake Russのウェブサイト</a> を参照。</p>
+</div>
+<div class="section level3">
+<h3>図を作る</h3>
+<p>ggplotでキャタピラプロットを作る方法は既に説明したが、Jared Lander が作った<strong>coefplot</strong> パッケージも利用できる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>experience, <span class="dt">data =</span> HR09)
+model<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>expm, <span class="dt">data =</span> HR09)
+model<span class="fl">.3</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>experience +<span class="st"> </span>expm, <span class="dt">data =</span> HR09)
+model<span class="fl">.4</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare ~<span class="st"> </span>experience *<span class="st"> </span>expm, <span class="dt">data =</span> HR09)
+## coefplotを使ってキャタピラプロットを作る
+## 1つのモデルを図示するとき
+<span class="kw">coefplot</span>(model<span class="fl">.4</span>, <span class="dt">intercept =</span> <span class="ot">FALSE</span>,
+         <span class="dt">title =</span> <span class="st">&quot;係数の推定値：応答変数は得票率（％）&quot;</span>, 
+         <span class="dt">xlab =</span> <span class="st">&quot;係数の推定値&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;説明変数&quot;</span>,
+         <span class="dt">newNames =</span> <span class="kw">c</span>(<span class="dt">experience =</span> <span class="st">&quot;議員経験&quot;</span>,　<span class="dt">expm =</span> <span class="st">&quot;選挙費用（100万円）&quot;</span>,
+                      <span class="st">&quot;experience:expm&quot;</span> =<span class="st"> &quot;議員経験x選挙費用&quot;</span>))</code></pre></div>
+<p><img src="linear-regression-2_files/figure-html/table-1.png" title="" alt="" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 複数のモデル2
+<span class="kw">multiplot</span>(model<span class="fl">.1</span>, model<span class="fl">.2</span>, model<span class="fl">.3</span>, model<span class="fl">.4</span>,
+          <span class="dt">intercept =</span> <span class="ot">FALSE</span>, <span class="dt">numberAngle =</span> <span class="dv">0</span>,
+          <span class="dt">title =</span> <span class="st">&quot;係数の推定値：応答変数は得票率（％）&quot;</span>, 
+          <span class="dt">xlab =</span> <span class="st">&quot;係数の推定値&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;説明変数&quot;</span>,
+          <span class="dt">newNames =</span> <span class="kw">c</span>(<span class="dt">experience =</span> <span class="st">&quot;議員経験&quot;</span>,　<span class="dt">expm =</span> <span class="st">&quot;選挙費用（100万円）&quot;</span>,
+                      <span class="st">&quot;experience:expm&quot;</span> =<span class="st"> &quot;議員経験x選挙費用&quot;</span>)) +
+<span class="st">    </span><span class="kw">scale_color_discrete</span>(<span class="dt">name =</span> <span class="st">&quot;&quot;</span>, <span class="dt">labels =</span> <span class="kw">paste</span>(<span class="st">&quot;モデル&quot;</span>, <span class="dv">1</span>:<span class="dv">4</span>))</code></pre></div>
+<p><img src="linear-regression-2_files/figure-html/table-2.png" title="" alt="" width="672" /></p>
+<p>この程度の修正で満足いく図ができるなら、<code>coefplot()</code> や<code>multiplot()</code> を使うのが手っ取り早いが、さらなる微調整をしたいならggplot2の<code>geom_pointrage()</code> などを使って自分で作図する方が楽である。</p>
+<br> <br>
+<div style="text-align: right;">
+<p><a href="../">授業の内容に戻る</a></p>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

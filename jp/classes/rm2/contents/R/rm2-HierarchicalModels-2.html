@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="矢内　勇生" />
+
+
+<title>政治学方法論 II：階層モデルとStan によるベイズ推定</title>
+
+<script src="rm2-HierarchicalModels-2_files/jquery-1.11.0/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="rm2-HierarchicalModels-2_files/bootstrap-3.3.1/css/united.min.css" rel="stylesheet" />
+<script src="rm2-HierarchicalModels-2_files/bootstrap-3.3.1/js/bootstrap.min.js"></script>
+<script src="rm2-HierarchicalModels-2_files/bootstrap-3.3.1/shim/html5shiv.min.js"></script>
+<script src="rm2-HierarchicalModels-2_files/bootstrap-3.3.1/shim/respond.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link rel="stylesheet" href="my-markdown.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">政治学方法論 II：階層モデルとStan によるベイズ推定</h1>
+<h4 class="author"><b>矢内　勇生</b></h4>
+<h4 class="date">2015年6月10日</h4>
+</div>
+
+<div id="TOC">
+<ul>
+<li><a>準備</a></li>
+<li><a href="#-bda3-section-5.5">8つの高校の並列実験 (BDA3, Section 5.5)</a><ul>
+<li><a>データ</a></li>
+<li><a href="#-theta--separating">8校の <span class="math inline">\(\theta\)</span> を別々に推定する (separating)</a></li>
+<li><a href="#1-theta-">8校をまとめて1つの <span class="math inline">\(\theta\)</span> を推定する</a></li>
+<li><a>階層モデル</a></li>
+<li><a href="#rstan-">RStan による推定</a></li>
+</ul></li>
+<li><a href="#-bda3-section-5.6">メタ分析 (BDA3, Section 5.6)</a></li>
+<li><a href="#rstan-">RStan の練習</a><ul>
+<li><a>生物学的検定実験</a></li>
+<li><a>ネズミの腫瘍実験</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div class="section level2">
+<h2>準備</h2>
+<p>必要なパッケージを読み込む。必要があれば各自インストールする。 <strong>RStan</strong> のインストールについては<a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started">ココ</a> を参照。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;reshape2&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;dplyr&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;ggplot2&quot;</span>)
+<span class="kw">library</span>(<span class="st">&quot;rstan&quot;</span>)</code></pre></div>
+</div>
+<div id="-bda3-section-5.5" class="section level2">
+<h2>8つの高校の並列実験 (BDA3, Section 5.5)</h2>
+<div class="section level3">
+<h3>データ</h3>
+<p>BDA3, p.120 の表5.2 にあるデータ（平均処置効果 <span class="math inline">\(y_j\)</span> とその標準誤差 <span class="math inline">\(\sigma_j\)</span>）を入力する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Schools &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">y =</span> <span class="kw">c</span>(<span class="dv">28</span>, <span class="dv">8</span>, -<span class="dv">3</span>, <span class="dv">7</span>, -<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">18</span>, <span class="dv">12</span>),
+                      <span class="dt">sigma =</span> <span class="kw">c</span>(<span class="dv">15</span>, <span class="dv">10</span>, <span class="dv">16</span>, <span class="dv">11</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">10</span>, <span class="dv">18</span>))
+J &lt;-<span class="st"> </span><span class="kw">nrow</span>(Schools)</code></pre></div>
+<p>ここで想定するサンプリングモデルは、 <span class="math display">\[y_j | \theta_j \sim \mathrm{N}(\theta_j, \sigma_j^2)\]</span> であり、<span class="math inline">\(\theta_j\)</span> を推定するのが目的である。</p>
+</div>
+<div id="-theta--separating" class="section level3">
+<h3>8校の <span class="math inline">\(\theta\)</span> を別々に推定する (separating)</h3>
+<p>無情報事前分布を使い、8校を別々に推定すると、各校の事後分布の95%区間は以下の図のようになる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">theta.hat.sp &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(<span class="dv">1000</span> *<span class="st"> </span>J, <span class="dt">mean =</span> Schools$y, <span class="dt">sd =</span> Schools$sigma),
+                       <span class="dt">nrow =</span> <span class="dv">1000</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)
+df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">y =</span> Schools$y,
+                 <span class="dt">median =</span> <span class="kw">apply</span>(theta.hat.sp, <span class="dv">2</span>, median),
+                 <span class="dt">lower =</span> <span class="kw">apply</span>(theta.hat.sp, <span class="dv">2</span>, function(x) <span class="kw">quantile</span>(x, .<span class="dv">025</span>)),
+                 <span class="dt">upper =</span> <span class="kw">apply</span>(theta.hat.sp, <span class="dv">2</span>, function(x) <span class="kw">quantile</span>(x, .<span class="dv">975</span>)))
+separating &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df, <span class="kw">aes</span>(<span class="dt">x =</span> y, <span class="dt">y =</span> median)) +
+<span class="st">    </span><span class="kw">geom_linerange</span>(<span class="kw">aes</span>(<span class="dt">ymin =</span> lower, <span class="dt">ymax =</span> upper), <span class="dt">col =</span> <span class="st">&quot;royalblue&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">col =</span> <span class="st">&quot;gray&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="kw">expression</span>(y[j]), 
+         <span class="dt">y =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;95% posterior interval of &quot;</span>, theta[j])))
+<span class="kw">print</span>(separating)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/8sch-separating-1.png" title="" alt="" width="672" /></p>
+<p>推定を別々に行っているので、点推定値（事後分布の中央値）は、<span class="math inline">\(\theta_j = y_j\)</span> 付近にある。 推定のばらつきを見ると、すべての高校の分布が重なっており、「各校が別々の<span class="math inline">\(\theta_j\)</span> をもつ」という前提が成り立ちそうには見えない。</p>
+</div>
+<div id="1-theta-" class="section level3">
+<h3>8校をまとめて1つの <span class="math inline">\(\theta\)</span> を推定する</h3>
+<p>8つの高校が共通の <span class="math inline">\(\theta\)</span> をもつ、つまり、<span class="math inline">\(\theta_1 = \cdots = \theta_8 = \theta\)</span> として推定する。ここでも、無情報事前分布を使う。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">var.all &lt;-<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span><span class="kw">sum</span>(<span class="dv">1</span> /<span class="st"> </span>(Schools$sigma)^<span class="dv">2</span>)
+weight &lt;-<span class="st"> </span>(<span class="dv">1</span> /<span class="st"> </span>(Schools$sigma)^<span class="dv">2</span>) /<span class="st"> </span>var.all^(-<span class="dv">1</span>)
+y.all &lt;-<span class="st"> </span><span class="kw">sum</span>(weight *<span class="st"> </span>Schools$y)
+se.all &lt;-<span class="st"> </span><span class="kw">sqrt</span>(var.all)
+theta.hat.pl &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10000</span>, <span class="dt">mean =</span> y.all, <span class="dt">sd =</span> <span class="kw">sqrt</span>(var.all))
+<span class="kw">quantile</span>(theta.hat.pl, <span class="kw">c</span>(.<span class="dv">025</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, .<span class="dv">975</span>))</code></pre></div>
+<pre><code>##       2.5%        25%        50%        75%      97.5% 
+## -0.4828396  4.8988249  7.6668809 10.3425117 15.6030023</code></pre>
+<p>この分析では、平均処置効果の事後分布の中央値は約7.7である。 この推定値自体は妥当なように見える。 しかし、事後分布のばらつきを見ると、実際にA校で観察された効果である28がこの分布から出てくる可能性は著しく低いことがわかる。今回の分析でシミュレートされた10000個の値のうち、28以上の値をとった回数は、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(theta.hat.pl &gt;<span class="st"> </span><span class="dv">28</span>)</code></pre></div>
+<pre><code>## [1] 0</code></pre>
+<p>である。最大値は、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">max</span>(theta.hat.pl)</code></pre></div>
+<pre><code>## [1] 23.75359</code></pre>
+<p>である。 このように、pooling モデルでは、データのばらつきをうまく説明できない。</p>
+</div>
+<div class="section level3">
+<h3>階層モデル</h3>
+<p>階層モデルを使わない separating と pooling は極端な推定法であり、どちらもあまり 良い推定になっていないので、階層モデルを使う。</p>
+<p>ここでは、</p>
+<ul>
+<li><p>尤度 <span class="math display">\[y_j | \theta_j \sim \mathrm{N}(\theta_j, \sigma_j^2)\]</span></p></li>
+<li><p>事前分布 <span class="math display">\[\theta_j | \mu, \tau \sim \mathrm{N}(\mu, \tau^2)\]</span></p></li>
+</ul>
+<p>とし、</p>
+<ul>
+<li>超事前分布は、 <span class="math display">\[p(\mu | \tau) \propto 1\]</span> <span class="math display">\[p(\tau) \propto 1\]</span> と仮定する。</li>
+</ul>
+<p>同時事後分布は、 <span class="math display">\[p(\theta, \mu, \tau | y) = p(\tau | y)p(\mu | \tau, y) p(\theta | \mu, \tau, y)\]</span> と分解できるので、データを使い、<span class="math inline">\(\tau\)</span>、<span class="math inline">\(\mu\)</span>、<span class="math inline">\(\theta\)</span> の順にシミュレート（サンプル）すればよい。</p>
+<p>まず、<span class="math inline">\(\tau\)</span> の周辺事後分布<span class="math inline">\(p(\tau | y)\)</span>を求める。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mu_hat &lt;-<span class="st"> </span>function(tau, <span class="dt">y =</span> Schools$y, <span class="dt">sigma =</span> Schools$sigma) {
+    <span class="kw">sum</span>((<span class="dv">1</span> /<span class="st"> </span>(sigma^<span class="dv">2</span> +<span class="st"> </span>tau^<span class="dv">2</span>)) *<span class="st"> </span>y) /<span class="st"> </span><span class="kw">sum</span>(<span class="dv">1</span> /<span class="st"> </span>(sigma^<span class="dv">2</span> +<span class="st"> </span>tau^<span class="dv">2</span>))
+}
+V_mu &lt;-<span class="st"> </span>function(tau, <span class="dt">sigma =</span> Schools$sigma) {
+    <span class="dv">1</span> /<span class="st"> </span><span class="kw">sum</span>(<span class="dv">1</span> /<span class="st"> </span>(sigma^<span class="dv">2</span> +<span class="st"> </span>tau^<span class="dv">2</span>))
+}
+post_tau &lt;-<span class="st"> </span>function(tau, <span class="dt">y =</span> Schools$y, <span class="dt">sigma =</span> Schools$sigma) {
+    <span class="kw">V_mu</span>(tau)^{<span class="dv">1</span>/<span class="dv">2</span>} *<span class="st"> </span>
+<span class="st">        </span><span class="kw">prod</span>( (sigma^<span class="dv">2</span> +<span class="st"> </span>tau^<span class="dv">2</span>)^{-<span class="dv">1</span>/<span class="dv">2</span>} *<span class="st"> </span>
+<span class="st">             </span><span class="kw">exp</span>(-(y -<span class="st"> </span><span class="kw">mu_hat</span>(tau))^<span class="dv">2</span> /<span class="st"> </span>(<span class="dv">2</span> *<span class="st"> </span>(sigma^<span class="dv">2</span> +<span class="st"> </span>tau^<span class="dv">2</span>))))
+}
+tau &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">30</span>, <span class="dt">length =</span> <span class="dv">500</span>)
+post.tau.dens &lt;-<span class="st"> </span><span class="kw">sapply</span>(tau, post_tau)
+<span class="kw">plot</span>(tau, post.tau.dens, <span class="dt">type =</span> <span class="st">&quot;l&quot;</span>, <span class="dt">yaxt =</span> <span class="st">&quot;n&quot;</span>, 
+     <span class="dt">xlab =</span> <span class="kw">expression</span>(tau), <span class="dt">ylab =</span> <span class="st">&quot;&quot;</span>,
+     <span class="dt">main =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;p(&quot;</span>, tau, <span class="st">&quot;|&quot;</span>, y, <span class="st">&quot;)&quot;</span>)))
+<span class="kw">abline</span>(<span class="dt">v =</span> <span class="dv">0</span>, <span class="dt">col =</span> <span class="st">&quot;gray&quot;</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/8sch-post.tau-1.png" title="" alt="" width="672" /></p>
+<p>このように、<span class="math inline">\(\tau\)</span> は0付近を取る可能性が高い（つまり、8つの学校の処置効果は異ならない可能性が高い）ことがわかる。この分布から、<span class="math inline">\(\tau\)</span> の値をシミュレート（サンプル）する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n.sims &lt;-<span class="st"> </span><span class="dv">10000</span>
+<span class="kw">set.seed</span>(<span class="dv">2015-06-08</span>)
+post.tau &lt;-<span class="st"> </span><span class="kw">sample</span>(tau, <span class="dt">size =</span> n.sims, <span class="dt">rep =</span> <span class="ot">TRUE</span>,
+                   <span class="dt">prob =</span> post.tau.dens /<span class="st"> </span><span class="kw">sum</span>(post.tau.dens))</code></pre></div>
+<p>シミュレートされた10000個の <span class="math inline">\(\tau\)</span> の分布をヒストグラムにしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(post.tau, <span class="dt">freq =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="st">&quot;gray&quot;</span>,
+     <span class="dt">xlab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(tau, <span class="st">&quot;|&quot;</span>, y)),
+     <span class="dt">main =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;10000 draws of &quot;</span>, tau, <span class="st">&quot;|&quot;</span>, y)))</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/tau-hist-1.png" title="" alt="" width="672" /></p>
+<p>この <span class="math inline">\(\tau\)</span> を使い、<span class="math inline">\(\mu | \tau, y \sim \mathrm{N}(\hat{\mu}, V_{\mu})\)</span> から<span class="math inline">\(mu\)</span> の事後分布をシミュレート（サンプル）する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">post.mu &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n.sims, <span class="kw">mu_hat</span>(post.tau), <span class="kw">sqrt</span>(<span class="kw">V_mu</span>(post.tau)))
+<span class="kw">hist</span>(post.mu, <span class="dt">freq =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="st">&quot;gray&quot;</span>,
+     <span class="dt">xlab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(mu, <span class="st">&quot;|&quot;</span>, tau, <span class="st">&quot;, &quot;</span>, y)),
+     <span class="dt">main =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;10000 draws of &quot;</span>, mu, <span class="st">&quot;|&quot;</span>, tau, <span class="st">&quot;, &quot;</span>, y)))</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/8sch-post.mu-1.png" title="" alt="" width="672" /></p>
+<p>最後に、これらの値を使い、 <span class="math inline">\(\theta_j | \mu, \tau, y \sim \mathrm{N}(\hat{\theta_j}, V_j)\)</span> から、<span class="math inline">\(\theta_j\)</span> の事後分布をシミュレート（サンプル）する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">theta_hat &lt;-<span class="st"> </span>function(mu, tau, y, sigma) {
+    tau &lt;-<span class="st"> </span><span class="kw">ifelse</span>(tau ==<span class="st"> </span><span class="dv">0</span>, <span class="fl">1e-16</span>, tau)
+    ((<span class="dv">1</span> /<span class="st"> </span>sigma^<span class="dv">2</span>) *<span class="st"> </span>y +<span class="st"> </span>(<span class="dv">1</span> /<span class="st"> </span>tau^<span class="dv">2</span>) *<span class="st"> </span>mu) /<span class="st"> </span>(<span class="dv">1</span> /<span class="st"> </span>sigma^<span class="dv">2</span> +<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>tau^<span class="dv">2</span>)
+}
+V &lt;-<span class="st"> </span>function(tau, sigma) {
+    <span class="co">#tau &lt;- ifelse(tau == 0, 1e-16, tau)</span>
+    <span class="dv">1</span> /<span class="st"> </span>(<span class="dv">1</span> /<span class="st"> </span>sigma^<span class="dv">2</span> +<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>tau^<span class="dv">2</span>)
+}
+post.theta &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, <span class="dt">nrow =</span> n.sims, <span class="dt">ncol =</span> J)
+for (j in <span class="dv">1</span>:J) {
+    y &lt;-<span class="st"> </span>Schools$y[j]
+    sigma &lt;-<span class="st"> </span>Schools$sigma[j]
+    post.theta[, j] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n.sims, 
+                             <span class="dt">mean =</span> <span class="kw">theta_hat</span>(post.mu, post.tau, y, sigma), 
+                             <span class="dt">sd =</span> <span class="kw">sqrt</span>(<span class="kw">V</span>(post.tau, sigma)))
+}</code></pre></div>
+<p>各<span class="math inline">\(\theta_j\)</span> の事後分布は、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">post.theta.tbl &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">apply</span>(post.theta, <span class="dv">2</span>,
+                          function(x) <span class="kw">quantile</span>(x, <span class="kw">c</span>(.<span class="dv">025</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, .<span class="dv">975</span>))))
+<span class="kw">row.names</span>(post.theta.tbl) &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;theta&quot;</span>, <span class="dv">1</span>:<span class="dv">8</span>, <span class="dt">sep =</span> <span class="st">&quot;.&quot;</span>)
+post.theta.tbl</code></pre></div>
+<pre><code>##               2.5%      25%      50%       75%    97.5%
+## theta.1  0.6342291 7.395309 9.345745 14.139166 30.31475
+## theta.2 -3.3067441 5.505440 7.890215 10.301066 18.96575
+## theta.3 -9.8529234 3.698006 7.380316  9.254744 18.24775
+## theta.4 -4.3433315 5.290251 7.832081 10.184733 19.60583
+## theta.5 -8.2047321 2.567974 6.549038  8.333685 14.52873
+## theta.6 -7.7185725 3.814626 7.229390  9.053624 16.86314
+## theta.7  1.1727995 7.447684 9.268327 13.394370 25.11361
+## theta.8 -5.3559398 5.785042 8.047725 11.032944 23.95859</code></pre>
+<p>となる。 各校の事後分布の中央値は、separating の場合と異なり、極端を値をとらない（A校でも9.3）。 それと同時に、pooling の場合と異なり、データのばらつきもうまく説明できている。 A校では処置効果28が95%事後分布区間に含まれているし、C校では負の処置効果をとる確率が比較的高くなっている。 このように、階層モデルを使うと、収縮 (shrinkage) によって推定値が極端な値を取らないようにしつつ、グループ間のばらつきを捉えることが可能になる。</p>
+<p>BDA3 の図 5.8 と同様のヒストグラムを作ってみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## ggplot 用にデータフレームを作る
+Post &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(post.theta)
+<span class="kw">names</span>(Post) &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;theta&quot;</span>, <span class="dv">1</span>:<span class="dv">8</span>, <span class="dt">sep =</span> <span class="st">&quot;.&quot;</span>)
+Post &lt;-<span class="st"> </span><span class="kw">mutate</span>(Post, <span class="dt">largest =</span> <span class="kw">apply</span>(post.theta, <span class="dv">1</span>, max))
+## theta.1 (A校の平均処置効果) の事後分布
+hist<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">ggplot</span>(Post, <span class="kw">aes</span>(<span class="dt">x =</span> theta<span class="fl">.1</span>, <span class="dt">y =</span> ..density..)) +
+<span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">2</span>) +
+<span class="st">    </span><span class="kw">xlim</span>(-<span class="dv">20</span>, <span class="dv">60</span>) +
+<span class="st">    </span><span class="kw">xlab</span>(<span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;Posterior of &quot;</span>, theta[<span class="dv">1</span>])))
+<span class="kw">print</span>(hist<span class="fl">.1</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/8sch-hist-1.png" title="" alt="" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 各シミュレーションの最大値 max(theta_j) の分布
+hist.lg &lt;-<span class="st"> </span><span class="kw">ggplot</span>(Post, <span class="kw">aes</span>(<span class="dt">x =</span> largest, <span class="dt">y =</span> ..density..)) +
+<span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">2</span>) +
+<span class="st">    </span><span class="kw">xlim</span>(-<span class="dv">20</span>, <span class="dv">60</span>)
+<span class="kw">print</span>(hist.lg)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/8sch-hist-2.png" title="" alt="" width="672" /></p>
+<p>最後に、<span class="math inline">\(\theta_j\)</span> の事後分布を示す。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Post.melt &lt;-<span class="st"> </span><span class="kw">melt</span>(<span class="kw">select</span>(Post, -largest))</code></pre></div>
+<pre><code>## No id variables; using all as measure variables</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">hist8 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(Post.melt, <span class="kw">aes</span>(<span class="dt">x =</span> value, <span class="dt">y =</span> ..density..)) +
+<span class="st">    </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">2</span>) +
+<span class="st">    </span><span class="kw">facet_wrap</span>( ~<span class="st"> </span>variable) +
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="kw">expression</span>(
+        <span class="kw">paste</span>(<span class="st">&quot;10000 simulation draws of posterior &quot;</span>, theta[j])))
+hist8</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/8sch-hist8-1.png" title="" alt="" width="672" /></p>
+</div>
+<div id="rstan-" class="section level3">
+<h3>RStan による推定</h3>
+<p>ここまでの分析を Stan (RStan) で実行してみよう。</p>
+<p>Stan を使うには、推定するモデルをstan ファイル（拡張子 .stan）に記述する。</p>
+<p>今回は、<a href="stan-models/eight-schools.stan">eight-schools.stan</a> を使う。 （ただし、本当は、<a href="stan-models/eight-schools-2.stan">eight-schools-2.stan</a> [BDA3, p.590] のように、<strong>transformed parameters</strong> を利用したほうがよい。） このファイルの中身は、以下のとおりである。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data {
+    int&lt;lower=<span class="dv">1</span>&gt;<span class="st"> </span>J; 
+    real y[J];
+    real&lt;lower=<span class="dv">0</span>&gt;<span class="st"> </span>sigma[J];
+}
+parameters {
+    real theta[J];
+    real mu;
+    real&lt;lower=<span class="dv">0</span>&gt;<span class="st"> </span>tau;
+}
+model {
+    theta ~<span class="st"> </span><span class="kw">normal</span>(mu, tau);
+    y ~<span class="st"> </span><span class="kw">normal</span>(theta, sigma);
+}</code></pre></div>
+<p>このように、<strong>data</strong>、<strong>parameters</strong>、<strong>model</strong> を指定する必要がある（場合によっては、<strong>transformed parameters</strong> も記述する）。 文法はRによく似ているが、大きな違いを（とりあえず）2つ指摘する。</p>
+<p>第1に、各行の最後に セミコロン “;” を入力する必要がある。 これがないと、行が終了したと看做されない。 このルールは、Stan が C++ で書かれていることによる（たぶん）。</p>
+<p>第2に、変数を宣言するときは、変数型を宣言する必要がある。 たとえば、整数型なら <strong>int</strong> を、実数型なら <strong>real</strong> を変数名の前に置く必要がある。 また、その変数が取り得る値が型以外の制限をもつなら、それも変数型同時に指定する。 たとえば、0から1の間のあたしか取らない変数（母数）pi を宣言するときは、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">real&lt;lower=<span class="dv">0</span>, upper=<span class="dv">1</span>&gt;<span class="st"> </span>pi;</code></pre></div>
+<p>とする。</p>
+<p>この stan ファイルは、作業ディレクトリに保存する（もちろん、他の場所に保存し、呼び出す際に完全なパスを指定してもよい）。</p>
+<p>Stan のモデルコードは別ファイルとして用意することを推奨するが、どうしても R スクリプトの中に含めたいときは、以下のようにモデルコード全体を文字列として変数に保存する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">eight_code &lt;-<span class="st"> &quot;</span>
+<span class="st">data {</span>
+<span class="st">    int&lt;lower=1&gt; J; </span>
+<span class="st">    real y[J];</span>
+<span class="st">    real&lt;lower=0&gt; sigma[J];</span>
+<span class="st">}</span>
+<span class="st">parameters {</span>
+<span class="st">    real theta[J];</span>
+<span class="st">    real mu;</span>
+<span class="st">    real&lt;lower=0&gt; tau;</span>
+<span class="st">}</span>
+<span class="st">model {</span>
+<span class="st">    theta ~ normal(mu, tau);</span>
+<span class="st">    y ~ normal(theta, sigma);</span>
+<span class="st">}</span>
+<span class="st">&quot;</span></code></pre></div>
+<p>Stan で使うデータは、リストで用意する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Schools &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">J =</span> <span class="dv">8</span>, <span class="dt">y =</span> Schools$y, <span class="dt">sigma =</span> Schools$sigma)</code></pre></div>
+<p>これで、stan を使う準備ができた。<strong>rstan</strong> パッケージを読み込んでから、<code>stan()</code> で分析してみよう（chain の意味については後の授業で解説するので、今は無視してよい）。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 必要ならパッケージを読み込む
+<span class="co"># librar(&quot;rstan&quot;)</span>
+fit<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">file =</span> <span class="st">&quot;eight-schools.stan&quot;</span>, <span class="dt">data =</span> Schools,
+              <span class="dt">iter =</span> <span class="dv">1000</span>, <span class="dt">chains =</span> <span class="dv">4</span>)
+## 文字列で保存したモデルコードを使うときは、以下を実行
+<span class="co">#fit.1 &lt;- stan(model_code = eight_code, data = Schools, iter = 1000, chains = 4)</span></code></pre></div>
+<pre><code>## 
+## TRANSLATING MODEL &#39;eight-schools&#39; FROM Stan CODE TO C++ CODE NOW.
+## COMPILING THE C++ CODE FOR MODEL &#39;eight-schools&#39; NOW.
+## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 1).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.051225 seconds (Warm-up)
+## #                0.016708 seconds (Sampling)
+## #                0.067933 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 2).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.059376 seconds (Warm-up)
+## #                0.021108 seconds (Sampling)
+## #                0.080484 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 3).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.056001 seconds (Warm-up)
+## #                0.015078 seconds (Sampling)
+## #                0.071079 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 4).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.060135 seconds (Warm-up)
+## #                0.026305 seconds (Sampling)
+## #                0.08644 seconds (Total)</code></pre>
+<p>推定結果の要約は <code>print()</code> で表示できる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(fit<span class="fl">.1</span>)</code></pre></div>
+<pre><code>## Inference for Stan model: eight-schools.
+## 4 chains, each with iter=1000; warmup=500; thin=1; 
+## post-warmup draws per chain=500, total post-warmup draws=2000.
+## 
+##            mean se_mean   sd   2.5%    25%    50%    75%  97.5% n_eff Rhat
+## theta[1]  11.59    0.41 7.65  -1.84   7.16  10.06  15.22  29.83   347 1.01
+## theta[2]   7.91    0.68 6.26  -4.14   4.02   7.10  12.13  20.81    86 1.06
+## theta[3]   6.59    0.96 7.40 -10.30   2.80   6.92  11.35  19.78    59 1.06
+## theta[4]   7.71    0.55 6.37  -5.24   4.51   7.46  12.15  19.67   134 1.03
+## theta[5]   5.44    0.64 6.37  -9.01   1.69   6.68   9.42  17.20    99 1.06
+## theta[6]   6.20    0.61 6.78  -8.90   2.09   7.03  10.64  18.04   125 1.04
+## theta[7]  11.31    0.36 6.26  -0.84   7.31  10.85  14.67  24.35   308 1.01
+## theta[8]   8.89    0.43 7.53  -5.75   4.64   8.09  13.73  25.00   313 1.03
+## mu         8.23    0.58 4.90  -0.63   5.29   7.69  11.38  17.56    71 1.05
+## tau        6.50    1.67 5.23   1.45   2.70   4.82   8.91  19.46    10 1.13
+## lp__     -17.74    1.63 4.65 -27.11 -21.21 -17.38 -13.30 -10.82     8 1.20
+## 
+## Samples were drawn using NUTS(diag_e) at Wed Jun 10 18:53:09 2015.
+## For each parameter, n_eff is a crude measure of effective sample size,
+## and Rhat is the potential scale reduction factor on split chains (at 
+## convergence, Rhat=1).</code></pre>
+<p>この表のうち、右端の <strong>Rhat</strong> が推定が収束したかどうかを表す。 これについては後の授業で説明するが、<strong>Rhat</strong> が1に近づけば収束したとみなせる。 現時点では、これが1 になっていない行が複数あるので、まだ収束していないようである。</p>
+<p>収束を目指して、さらにシミュレーションを続けよう。 Stanで1度コンパイルしたモデルをさらにシミュレートするには、引数 <strong>file</strong> （または <strong>model_code</strong>）の代わりに、<strong>fit</strong> に推定したモデルを渡す。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">fit =</span> fit<span class="fl">.1</span>, <span class="dt">data =</span> Schools, <span class="dt">iter =</span> <span class="dv">10000</span>, <span class="dt">chains =</span> <span class="dv">4</span>)</code></pre></div>
+<pre><code>## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 1).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.274641 seconds (Warm-up)
+## #                0.210715 seconds (Sampling)
+## #                0.485356 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 2).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.237293 seconds (Warm-up)
+## #                0.188304 seconds (Sampling)
+## #                0.425597 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 3).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.234052 seconds (Warm-up)
+## #                0.242362 seconds (Sampling)
+## #                0.476414 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 4).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.307115 seconds (Warm-up)
+## #                0.426947 seconds (Sampling)
+## #                0.734062 seconds (Total)</code></pre>
+<p>この推定結果を見てみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(fit<span class="fl">.2</span>)</code></pre></div>
+<pre><code>## Inference for Stan model: eight-schools.
+## 4 chains, each with iter=10000; warmup=5000; thin=1; 
+## post-warmup draws per chain=5000, total post-warmup draws=20000.
+## 
+##            mean se_mean   sd   2.5%    25%    50%    75% 97.5% n_eff Rhat
+## theta[1]  11.59    0.19 8.56  -2.24   6.00  10.33  15.91 32.38  2105 1.00
+## theta[2]   7.88    0.11 6.52  -5.28   3.81   7.68  12.00 21.19  3442 1.00
+## theta[3]   5.85    0.13 7.91 -11.93   1.67   6.31  10.65 20.38  3825 1.00
+## theta[4]   7.57    0.12 6.70  -5.99   3.35   7.39  11.80 21.00  3246 1.00
+## theta[5]   4.87    0.13 6.43  -9.01   1.02   5.28   9.17 16.73  2496 1.00
+## theta[6]   6.01    0.13 6.82  -8.88   2.06   6.37  10.33 18.63  2821 1.00
+## theta[7]  10.83    0.15 6.86  -1.16   6.05  10.23  14.86 26.00  2056 1.00
+## theta[8]   8.41    0.13 8.12  -7.44   3.75   8.12  12.85 26.26  4219 1.00
+## mu         7.90    0.12 5.22  -2.06   4.55   7.73  11.13 18.26  2056 1.00
+## tau        7.01    0.18 5.51   1.23   2.93   5.54   9.39 21.10   953 1.00
+## lp__     -17.87    0.27 5.48 -27.84 -21.77 -18.30 -14.11 -6.79   402 1.01
+## 
+## Samples were drawn using NUTS(diag_e) at Wed Jun 10 18:53:11 2015.
+## For each parameter, n_eff is a crude measure of effective sample size,
+## and Rhat is the potential scale reduction factor on split chains (at 
+## convergence, Rhat=1).</code></pre>
+<p>今度は、ほとんどのRhat が1に近づいた。さらにシミュレーションの回数を増やしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit<span class="fl">.3</span> &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">fit =</span> fit<span class="fl">.2</span>, <span class="dt">data =</span> Schools, <span class="dt">iter =</span> <span class="dv">10000</span>, <span class="dt">chains =</span> <span class="dv">4</span>)</code></pre></div>
+<pre><code>## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 1).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.235248 seconds (Warm-up)
+## #                0.201005 seconds (Sampling)
+## #                0.436253 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 2).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.245158 seconds (Warm-up)
+## #                0.19636 seconds (Sampling)
+## #                0.441518 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 3).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.31597 seconds (Warm-up)
+## #                0.289654 seconds (Sampling)
+## #                0.605624 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;eight-schools&#39; NOW (CHAIN 4).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.257852 seconds (Warm-up)
+## #                0.334305 seconds (Sampling)
+## #                0.592157 seconds (Total)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(fit<span class="fl">.3</span>)</code></pre></div>
+<pre><code>## Inference for Stan model: eight-schools.
+## 4 chains, each with iter=10000; warmup=5000; thin=1; 
+## post-warmup draws per chain=5000, total post-warmup draws=20000.
+## 
+##            mean se_mean   sd   2.5%    25%    50%    75% 97.5% n_eff Rhat
+## theta[1]  11.66    0.20 8.70  -2.20   5.88  10.21  16.19 32.57  1852 1.00
+## theta[2]   7.79    0.10 6.31  -4.78   3.85   7.77  11.71 20.65  4281 1.00
+## theta[3]   5.74    0.12 8.05 -12.21   1.60   6.35  10.54 20.68  4424 1.00
+## theta[4]   7.49    0.10 6.61  -5.78   3.44   7.42  11.52 20.78  4052 1.00
+## theta[5]   4.73    0.12 6.45  -9.62   1.05   5.09   8.97 16.55  2995 1.00
+## theta[6]   5.83    0.11 6.86  -9.13   1.91   6.09  10.17 18.74  4082 1.00
+## theta[7]  10.87    0.16 7.03  -1.21   6.05  10.14  15.01 26.75  1942 1.00
+## theta[8]   8.39    0.13 8.25  -8.01   3.79   7.88  12.93 26.35  4296 1.00
+## mu         7.81    0.10 5.29  -2.12   4.46   7.64  10.95 18.61  2654 1.00
+## tau        7.23    0.23 5.66   1.15   3.12   5.82   9.67 21.35   627 1.01
+## lp__     -18.11    0.31 5.50 -28.09 -21.99 -18.54 -14.37 -6.46   318 1.01
+## 
+## Samples were drawn using NUTS(diag_e) at Wed Jun 10 18:53:13 2015.
+## For each parameter, n_eff is a crude measure of effective sample size,
+## and Rhat is the potential scale reduction factor on split chains (at 
+## convergence, Rhat=1).</code></pre>
+<p>推定結果の概要は、<code>plot()</code> で図示することができる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(fit<span class="fl">.3</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/8sch-plot-1.png" title="" alt="" width="672" /></p>
+<p>シミュレートされた値は、<code>extract()</code> で取り出せる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">eight.thetas &lt;-<span class="st"> </span><span class="kw">extract</span>(fit<span class="fl">.3</span>, <span class="st">&quot;theta&quot;</span>)$theta
+<span class="kw">hist</span>(eight.thetas[, <span class="dv">1</span>], <span class="dt">freq =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="st">&quot;gray&quot;</span>,
+     <span class="dt">xlab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;Posterior of &quot;</span>, theta[<span class="dv">1</span>])),
+     <span class="dt">main =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;Stan&#39;s simulation draws of &quot;</span>, theta[<span class="dv">1</span>])))</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/8sch-extract-1.png" title="" alt="" width="672" /></p>
+</div>
+</div>
+<div id="-bda3-section-5.6" class="section level2">
+<h2>メタ分析 (BDA3, Section 5.6)</h2>
+<p><a href="http://www.stat.columbia.edu/~gelman/book/data/meta.asc">データ</a> を読み込む。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Meta &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;meta.asc&quot;</span>, <span class="dt">skip =</span> <span class="dv">4</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p>対数オッズ比 <span class="math display">\[y_j = \mathrm{log}\left(\frac{y_{1j}}{n_{1j} - y_{1j}}\right) - \mathrm{log}\left(\frac{y_{0j}}{n_{0j} - y_{0j}}\right)\]</span> と、 対数オッズ比の標準誤差 <span class="math display">\[\sigma_j = \sqrt{\frac{1}{y_{1j}} + \frac{1}{n_{1j} - y_{1j}} + \frac{1}{y_{0j}} + \frac{1}{n_{0j} - y_{0j}}}\]</span> を計算する。 ただし、<span class="math inline">\(y_{0j}\)</span>、<span class="math inline">\(n_{0j}\)</span>、<span class="math inline">\(y_{1j}\)</span>、<span class="math inline">\(n_{1j}\)</span> はそれぞれ、研究 <span class="math inline">\(j\)</span> における control.deaths, control.total, treated.deaths, treated.total である。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Meta &lt;-<span class="st"> </span><span class="kw">mutate</span>(Meta,
+    <span class="dt">y =</span> <span class="kw">log</span>(treated.deaths /<span class="st"> </span>(treated.total -<span class="st"> </span>treated.deaths)) -
+<span class="st">    </span><span class="kw">log</span>(control.deaths /<span class="st"> </span>(control.total -<span class="st"> </span>control.deaths)),
+    <span class="dt">sigma =</span> <span class="kw">sqrt</span>( <span class="dv">1</span> /<span class="st"> </span>treated.deaths +<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>(treated.total -<span class="st"> </span>treated.deaths) +
+<span class="st">    </span><span class="dv">1</span> /<span class="st"> </span>control.deaths +<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>(control.total -<span class="st"> </span>control.deaths) )
+    )</code></pre></div>
+<p>ここでは、各研究 <span class="math inline">\(j\)</span> から得られた <span class="math inline">\(y_j\)</span> が正規分布に従うと仮定する。つまり、サンプリングモデルは、 <span class="math display">\[y_j|\theta_j \sim \mathrm{N}(\mu, \sigma_j^2)\]</span> である。また、<span class="math inline">\(\theta_j\)</span> の事前分布も正規分布で、 <span class="math display">\[\theta_j | \mu, \tau \sim \mathrm{N}(\mu, \tau^2)\]</span> であるとする。 さらに、超母数 <span class="math inline">\(\mu\)</span>、<span class="math inline">\(\tau\)</span> には無情報超事前分布を仮定する。 メタ分析の1つの目的は、ひとつひとつの研究だけでは推定できない、超母数 <span class="math inline">\(\mu\)</span> を推定することである。</p>
+<p>Stan のモデルファイルは、<a href="stan-models/beta-blocker-meta.stan">beta-blocker-meta.stan</a> を使う。 中身を確認して、<a href="stan-models/eight-schools.stan">eight-schools.stan</a> のモデルと比較せよ。 Rstan用にデータをリストにし、推定してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">meta &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">J =</span> <span class="kw">nrow</span>(Meta), <span class="dt">y =</span> Meta$y, <span class="dt">sigma =</span> Meta$sigma)
+meta.fit<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">file =</span> <span class="st">&quot;beta-blocker-meta.stan&quot;</span>, <span class="dt">data =</span> meta,
+                   <span class="dt">iter =</span> <span class="dv">1000</span>, <span class="dt">chains =</span> <span class="dv">4</span>)</code></pre></div>
+<pre><code>## 
+## TRANSLATING MODEL &#39;beta-blocker-meta&#39; FROM Stan CODE TO C++ CODE NOW.
+## COMPILING THE C++ CODE FOR MODEL &#39;beta-blocker-meta&#39; NOW.
+## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 1).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.038259 seconds (Warm-up)
+## #                0.029166 seconds (Sampling)
+## #                0.067425 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 2).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.03597 seconds (Warm-up)
+## #                0.048327 seconds (Sampling)
+## #                0.084297 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 3).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.043944 seconds (Warm-up)
+## #                0.042643 seconds (Sampling)
+## #                0.086587 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 4).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.032137 seconds (Warm-up)
+## #                0.063267 seconds (Sampling)
+## #                0.095404 seconds (Total)</code></pre>
+<p>エラーが出ていないことを確認し、シミュレーションの回数を増やそう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">meta.fit<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">fit =</span> meta.fit<span class="fl">.1</span>, <span class="dt">data =</span> meta, <span class="dt">iter =</span> <span class="dv">10000</span>, <span class="dt">chains =</span> <span class="dv">4</span>)</code></pre></div>
+<pre><code>## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 1).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.494882 seconds (Warm-up)
+## #                0.503679 seconds (Sampling)
+## #                0.998561 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 2).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.29703 seconds (Warm-up)
+## #                0.310046 seconds (Sampling)
+## #                0.607076 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 3).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.348975 seconds (Warm-up)
+## #                0.436368 seconds (Sampling)
+## #                0.785343 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 4).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.308402 seconds (Warm-up)
+## #                0.50913 seconds (Sampling)
+## #                0.817532 seconds (Total)</code></pre>
+<p>推定結果を確認してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(meta.fit<span class="fl">.2</span>)</code></pre></div>
+<pre><code>## Inference for Stan model: beta-blocker-meta.
+## 4 chains, each with iter=10000; warmup=5000; thin=1; 
+## post-warmup draws per chain=5000, total post-warmup draws=20000.
+## 
+##            mean se_mean    sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+## theta[1]  -0.24    0.00  0.17 -0.57 -0.33 -0.24 -0.15  0.13 11382 1.00
+## theta[2]  -0.29    0.00  0.16 -0.65 -0.37 -0.28 -0.20  0.01 10167 1.00
+## theta[3]  -0.27    0.00  0.16 -0.62 -0.35 -0.27 -0.18  0.05 20000 1.00
+## theta[4]  -0.25    0.00  0.10 -0.44 -0.31 -0.25 -0.19 -0.05  8856 1.00
+## theta[5]  -0.18    0.00  0.15 -0.44 -0.28 -0.20 -0.10  0.15  4249 1.00
+## theta[6]  -0.27    0.00  0.17 -0.62 -0.35 -0.26 -0.18  0.07 12769 1.00
+## theta[7]  -0.37    0.00  0.12 -0.62 -0.44 -0.36 -0.29 -0.17  1514 1.00
+## theta[8]  -0.20    0.00  0.13 -0.43 -0.28 -0.21 -0.12  0.08  4641 1.00
+## theta[9]  -0.29    0.00  0.14 -0.58 -0.36 -0.28 -0.20 -0.03  9040 1.00
+## theta[10] -0.29    0.00  0.09 -0.49 -0.35 -0.29 -0.23 -0.12  5758 1.00
+## theta[11] -0.24    0.00  0.12 -0.47 -0.31 -0.24 -0.17  0.01  7757 1.00
+## theta[12] -0.19    0.00  0.13 -0.43 -0.28 -0.21 -0.12  0.11  3834 1.00
+## theta[13] -0.29    0.00  0.16 -0.63 -0.37 -0.28 -0.19  0.02 11675 1.00
+## theta[14] -0.09    0.01  0.16 -0.34 -0.21 -0.11  0.01  0.28  1045 1.01
+## theta[15] -0.26    0.00  0.14 -0.55 -0.34 -0.26 -0.18  0.03 20000 1.00
+## theta[16] -0.22    0.00  0.14 -0.48 -0.31 -0.23 -0.14  0.08 20000 1.00
+## theta[17] -0.19    0.00  0.15 -0.47 -0.29 -0.21 -0.11  0.16  4947 1.00
+## theta[18] -0.21    0.00  0.17 -0.51 -0.30 -0.22 -0.12  0.17  6661 1.00
+## theta[19] -0.22    0.00  0.17 -0.53 -0.32 -0.23 -0.13  0.17  7772 1.00
+## theta[20] -0.24    0.00  0.13 -0.51 -0.32 -0.25 -0.17  0.03 20000 1.00
+## theta[21] -0.33    0.00  0.14 -0.65 -0.41 -0.31 -0.23 -0.08  3442 1.00
+## theta[22] -0.33    0.00  0.14 -0.66 -0.40 -0.31 -0.23 -0.07  4124 1.00
+## mu        -0.25    0.00  0.07 -0.37 -0.29 -0.25 -0.21 -0.11  3285 1.00
+## tau        0.14    0.00  0.08  0.03  0.08  0.13  0.19  0.31   566 1.01
+## lp__      24.56    0.60 11.43  6.23 16.37 22.80 31.23 50.33   358 1.01
+## 
+## Samples were drawn using NUTS(diag_e) at Wed Jun 10 18:53:50 2015.
+## For each parameter, n_eff is a crude measure of effective sample size,
+## and Rhat is the potential scale reduction factor on split chains (at 
+## convergence, Rhat=1).</code></pre>
+<p>さらにシミュレーションの回数を増やしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">meta.fit<span class="fl">.3</span> &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">fit =</span> meta.fit<span class="fl">.2</span>, <span class="dt">data =</span> meta, <span class="dt">iter =</span> <span class="dv">20000</span>, <span class="dt">chains =</span> <span class="dv">4</span>)</code></pre></div>
+<pre><code>## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 1).
+## 
+## Iteration:     1 / 20000 [  0%]  (Warmup)
+## Iteration:  2000 / 20000 [ 10%]  (Warmup)
+## Iteration:  4000 / 20000 [ 20%]  (Warmup)
+## Iteration:  6000 / 20000 [ 30%]  (Warmup)
+## Iteration:  8000 / 20000 [ 40%]  (Warmup)
+## Iteration: 10000 / 20000 [ 50%]  (Warmup)
+## Iteration: 10001 / 20000 [ 50%]  (Sampling)
+## Iteration: 12000 / 20000 [ 60%]  (Sampling)
+## Iteration: 14000 / 20000 [ 70%]  (Sampling)
+## Iteration: 16000 / 20000 [ 80%]  (Sampling)
+## Iteration: 18000 / 20000 [ 90%]  (Sampling)
+## Iteration: 20000 / 20000 [100%]  (Sampling)
+## #  Elapsed Time: 0.623204 seconds (Warm-up)
+## #                0.79816 seconds (Sampling)
+## #                1.42136 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 2).
+## 
+## Iteration:     1 / 20000 [  0%]  (Warmup)
+## Iteration:  2000 / 20000 [ 10%]  (Warmup)
+## Iteration:  4000 / 20000 [ 20%]  (Warmup)
+## Iteration:  6000 / 20000 [ 30%]  (Warmup)
+## Iteration:  8000 / 20000 [ 40%]  (Warmup)
+## Iteration: 10000 / 20000 [ 50%]  (Warmup)
+## Iteration: 10001 / 20000 [ 50%]  (Sampling)
+## Iteration: 12000 / 20000 [ 60%]  (Sampling)
+## Iteration: 14000 / 20000 [ 70%]  (Sampling)
+## Iteration: 16000 / 20000 [ 80%]  (Sampling)
+## Iteration: 18000 / 20000 [ 90%]  (Sampling)
+## Iteration: 20000 / 20000 [100%]  (Sampling)
+## #  Elapsed Time: 0.555102 seconds (Warm-up)
+## #                0.677569 seconds (Sampling)
+## #                1.23267 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 3).
+## 
+## Iteration:     1 / 20000 [  0%]  (Warmup)
+## Iteration:  2000 / 20000 [ 10%]  (Warmup)
+## Iteration:  4000 / 20000 [ 20%]  (Warmup)
+## Iteration:  6000 / 20000 [ 30%]  (Warmup)
+## Iteration:  8000 / 20000 [ 40%]  (Warmup)
+## Iteration: 10000 / 20000 [ 50%]  (Warmup)
+## Iteration: 10001 / 20000 [ 50%]  (Sampling)
+## Iteration: 12000 / 20000 [ 60%]  (Sampling)
+## Iteration: 14000 / 20000 [ 70%]  (Sampling)
+## Iteration: 16000 / 20000 [ 80%]  (Sampling)
+## Iteration: 18000 / 20000 [ 90%]  (Sampling)
+## Iteration: 20000 / 20000 [100%]  (Sampling)
+## #  Elapsed Time: 0.661806 seconds (Warm-up)
+## #                0.693748 seconds (Sampling)
+## #                1.35555 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;beta-blocker-meta&#39; NOW (CHAIN 4).
+## 
+## Iteration:     1 / 20000 [  0%]  (Warmup)
+## Iteration:  2000 / 20000 [ 10%]  (Warmup)
+## Iteration:  4000 / 20000 [ 20%]  (Warmup)
+## Iteration:  6000 / 20000 [ 30%]  (Warmup)
+## Iteration:  8000 / 20000 [ 40%]  (Warmup)
+## Iteration: 10000 / 20000 [ 50%]  (Warmup)
+## Iteration: 10001 / 20000 [ 50%]  (Sampling)
+## Iteration: 12000 / 20000 [ 60%]  (Sampling)
+## Iteration: 14000 / 20000 [ 70%]  (Sampling)
+## Iteration: 16000 / 20000 [ 80%]  (Sampling)
+## Iteration: 18000 / 20000 [ 90%]  (Sampling)
+## Iteration: 20000 / 20000 [100%]  (Sampling)
+## #  Elapsed Time: 0.606764 seconds (Warm-up)
+## #                0.589975 seconds (Sampling)
+## #                1.19674 seconds (Total)</code></pre>
+<p>推定結果を確認してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(meta.fit<span class="fl">.3</span>)</code></pre></div>
+<pre><code>## Inference for Stan model: beta-blocker-meta.
+## 4 chains, each with iter=20000; warmup=10000; thin=1; 
+## post-warmup draws per chain=10000, total post-warmup draws=40000.
+## 
+##            mean se_mean    sd  2.5%   25%   50%   75% 97.5% n_eff Rhat
+## theta[1]  -0.24    0.00  0.17 -0.57 -0.33 -0.24 -0.15  0.13 19575 1.00
+## theta[2]  -0.29    0.00  0.16 -0.67 -0.37 -0.28 -0.20  0.01 18097 1.00
+## theta[3]  -0.27    0.00  0.16 -0.62 -0.35 -0.26 -0.18  0.06 22957 1.00
+## theta[4]  -0.25    0.00  0.10 -0.44 -0.31 -0.25 -0.19 -0.05 17044 1.00
+## theta[5]  -0.18    0.00  0.15 -0.44 -0.28 -0.20 -0.10  0.16  6204 1.00
+## theta[6]  -0.27    0.00  0.17 -0.62 -0.35 -0.26 -0.18  0.07 23548 1.00
+## theta[7]  -0.37    0.00  0.12 -0.62 -0.45 -0.36 -0.28 -0.18  2880 1.00
+## theta[8]  -0.20    0.00  0.13 -0.43 -0.28 -0.21 -0.12  0.09  5900 1.00
+## theta[9]  -0.29    0.00  0.14 -0.59 -0.36 -0.28 -0.20 -0.02 14223 1.00
+## theta[10] -0.29    0.00  0.09 -0.48 -0.35 -0.29 -0.23 -0.12  6179 1.00
+## theta[11] -0.24    0.00  0.12 -0.47 -0.31 -0.24 -0.17  0.01 15309 1.00
+## theta[12] -0.19    0.00  0.13 -0.43 -0.28 -0.21 -0.11  0.11  7141 1.00
+## theta[13] -0.29    0.00  0.16 -0.64 -0.37 -0.28 -0.20  0.02 20496 1.00
+## theta[14] -0.08    0.00  0.16 -0.34 -0.21 -0.11  0.02  0.29  1779 1.00
+## theta[15] -0.26    0.00  0.14 -0.56 -0.34 -0.26 -0.18  0.02 22722 1.00
+## theta[16] -0.22    0.00  0.14 -0.48 -0.31 -0.23 -0.14  0.08 12756 1.00
+## theta[17] -0.19    0.00  0.16 -0.47 -0.29 -0.21 -0.11  0.18  7497 1.00
+## theta[18] -0.21    0.00  0.17 -0.51 -0.31 -0.22 -0.12  0.18 11318 1.00
+## theta[19] -0.21    0.00  0.17 -0.53 -0.31 -0.23 -0.13  0.17 13962 1.00
+## theta[20] -0.24    0.00  0.13 -0.51 -0.32 -0.25 -0.16  0.04 19172 1.00
+## theta[21] -0.33    0.00  0.14 -0.66 -0.41 -0.31 -0.24 -0.08  6556 1.00
+## theta[22] -0.33    0.00  0.15 -0.67 -0.41 -0.31 -0.23 -0.07  6988 1.00
+## mu        -0.25    0.00  0.07 -0.38 -0.29 -0.25 -0.21 -0.11  4881 1.00
+## tau        0.14    0.00  0.08  0.03  0.08  0.13  0.19  0.32  1037 1.01
+## lp__      24.34    0.49 11.57  6.15 15.95 22.39 31.08 50.79   558 1.02
+## 
+## Samples were drawn using NUTS(diag_e) at Wed Jun 10 18:53:56 2015.
+## For each parameter, n_eff is a crude measure of effective sample size,
+## and Rhat is the potential scale reduction factor on split chains (at 
+## convergence, Rhat=1).</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(meta.fit<span class="fl">.3</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/meta-res3-1.png" title="" alt="" width="672" /></p>
+<p>この推定における shrinkage を図示してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">meta.post.theta &lt;-<span class="st"> </span><span class="kw">extract</span>(meta.fit<span class="fl">.3</span>, <span class="st">&quot;theta&quot;</span>)$theta
+Meta$median &lt;-<span class="st"> </span><span class="kw">apply</span>(meta.post.theta, <span class="dv">2</span>, median)
+Meta$lower &lt;-<span class="st"> </span><span class="kw">apply</span>(meta.post.theta, <span class="dv">2</span>, function(x) <span class="kw">quantile</span>(x, .<span class="dv">025</span>))
+Meta$upper &lt;-<span class="st"> </span><span class="kw">apply</span>(meta.post.theta, <span class="dv">2</span>, function(x) <span class="kw">quantile</span>(x, .<span class="dv">975</span>))
+Meta &lt;-<span class="st"> </span><span class="kw">mutate</span>(Meta, <span class="dt">total =</span> control.total +<span class="st"> </span>treated.total)
+## weighted mean of observed y
+meta.mean &lt;-<span class="st"> </span><span class="kw">with</span>(Meta, <span class="kw">sum</span>(total *<span class="st"> </span>y) /<span class="st"> </span><span class="kw">sum</span>(total))
+meta.shrinkage &lt;-<span class="st"> </span><span class="kw">ggplot</span>(Meta, <span class="kw">aes</span>(<span class="dt">x =</span> y, <span class="dt">y =</span> median)) +
+<span class="st">    </span><span class="kw">geom_linerange</span>(<span class="kw">aes</span>(<span class="dt">ymin =</span> lower, <span class="dt">ymax =</span> upper), <span class="dt">color =</span> <span class="st">&quot;skyblue&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">color =</span> <span class="st">&quot;gray&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> meta.mean, <span class="dt">color =</span> <span class="st">&quot;gray&quot;</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">ylim</span>(<span class="kw">min</span>(Meta$y), <span class="kw">max</span>(Meta$y)) +<span class="st"> </span><span class="kw">coord_fixed</span>() +
+<span class="st">    </span><span class="kw">ylab</span>(<span class="st">&quot;95% posterior interval&quot;</span>)
+<span class="kw">print</span>(meta.shrinkage)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/meta-shrinkage-1.png" title="" alt="" width="672" /></p>
+<p>観測値の数によって、shrinkage の程度がどう変わるか確認してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Meta &lt;-<span class="st"> </span><span class="kw">mutate</span>(Meta, <span class="dt">shrinkage =</span> y -<span class="st"> </span>median)
+meta.shrinkage<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">ggplot</span>(Meta, <span class="kw">aes</span>(total, shrinkage)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) +
+<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;total number of observations in the study&quot;</span>)
+meta.shrinkage<span class="fl">.2</span></code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/meta-shrinkage-degree-1.png" title="" alt="" width="672" /></p>
+<p>ここで、メタ分析の推定対象である、<span class="math inline">\(\mu\)</span> の事後分布を確認してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">meta.post.mu &lt;-<span class="st"> </span><span class="kw">extract</span>(meta.fit<span class="fl">.3</span>, <span class="st">&quot;mu&quot;</span>)$mu
+<span class="kw">hist</span>(meta.post.mu, <span class="dt">freq =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="st">&quot;gray&quot;</span>, <span class="dt">main =</span> <span class="st">&quot;&quot;</span>,
+     <span class="dt">xlab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;posterior of &quot;</span>, mu)))</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/meta-mu-1.png" title="" alt="" width="672" /></p>
+<p>ひとつひとつの研究では <span class="math inline">\(y_j\)</span> (separting による<span class="math inline">\(\theta_j\)</span> の点推定値)が <span class="math inline">\(-0.74\)</span> から<span class="math inline">\(0.44\)</span> の範囲にばらついていたが、メタ分析すると、その超母数である <span class="math inline">\(\mu\)</span> は非常に狭い範囲の値しかとらないことがわかる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">quantile</span>(meta.post.mu, <span class="kw">c</span>(.<span class="dv">025</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, .<span class="dv">975</span>))</code></pre></div>
+<pre><code>##       2.5%        25%        50%        75%      97.5% 
+## -0.3752526 -0.2888957 -0.2485028 -0.2053270 -0.1108237</code></pre>
+<p>このように、<span class="math inline">\(\mu|y\)</span> の95%区間は <span class="math inline">\([-0.37, -0.11]\)</span> である。</p>
+<p>最後に、<span class="math inline">\(\tau\)</span> の事後分布を確認してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">meta.post.tau &lt;-<span class="st"> </span><span class="kw">extract</span>(meta.fit<span class="fl">.3</span>, <span class="st">&quot;tau&quot;</span>)$tau
+<span class="kw">hist</span>(meta.post.tau, <span class="dt">freq =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="st">&quot;gray&quot;</span>, <span class="dt">main =</span> <span class="st">&quot;&quot;</span>,
+     <span class="dt">xlab =</span> <span class="kw">expression</span>(<span class="kw">paste</span>(<span class="st">&quot;posterior of &quot;</span>, tau)))</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/meta-tau-1.png" title="" alt="" width="672" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">quantile</span>(meta.post.tau, <span class="kw">c</span>(.<span class="dv">025</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, .<span class="dv">975</span>))</code></pre></div>
+<pre><code>##       2.5%        25%        50%        75%      97.5% 
+## 0.03139695 0.08265337 0.13411058 0.18995084 0.31847777</code></pre>
+<p>このように、<span class="math inline">\(\tau |y\)</span> の95%区間は <span class="math inline">\(\tau=0\)</span> を含まない。 これは、<span class="math inline">\(\tau = 0\)</span> を仮定する complete pooling には問題があることを示唆する。</p>
+<p>試しに、complete pooling で分析してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">y0.pool &lt;-<span class="st"> </span><span class="kw">sum</span>(Meta$control.deaths)
+n0.pool &lt;-<span class="st"> </span><span class="kw">sum</span>(Meta$control.total)
+y1.pool &lt;-<span class="st"> </span><span class="kw">sum</span>(Meta$treated.deaths)
+n1.pool &lt;-<span class="st"> </span><span class="kw">sum</span>(Meta$treated.total)
+y.pool &lt;-<span class="st"> </span><span class="kw">log</span>(y1.pool /<span class="st"> </span>(n1.pool -<span class="st"> </span>y1.pool)) -<span class="st"> </span>
+<span class="st">          </span><span class="kw">log</span>(y0.pool /<span class="st"> </span>(n0.pool -<span class="st"> </span>y0.pool))
+sigma.pool &lt;-<span class="st"> </span><span class="kw">sqrt</span>( <span class="dv">1</span> /<span class="st"> </span>y1.pool +<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>(n1.pool -<span class="st"> </span>y1.pool) +<span class="st"> </span>
+<span class="st">                    </span><span class="dv">1</span> /<span class="st"> </span>y0.pool +<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>(n0.pool -<span class="st"> </span>y0.pool) )
+meta.post.mu.pool &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10000</span>, <span class="dt">mean =</span> y.pool, <span class="dt">sd =</span> sigma.pool)
+<span class="kw">quantile</span>(meta.post.mu.pool, <span class="kw">c</span>(.<span class="dv">025</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, .<span class="dv">975</span>))</code></pre></div>
+<pre><code>##       2.5%        25%        50%        75%      97.5% 
+## -0.3544419 -0.2903427 -0.2564926 -0.2232557 -0.1601768</code></pre>
+<p>このように、pooling した場合あの95%事後区間は非常に狭く、データに顕われるばらつきをうまく捉えていない。</p>
+</div>
+<div id="rstan-" class="section level2">
+<h2>RStan の練習</h2>
+<p>先週までに推定したモデルを、RStan を使って推定し直してみよう。</p>
+<div class="section level3">
+<h3>生物学的検定実験</h3>
+<p><a href="http://www2.kobe-u.ac.jp/~yyanai/jp/classes/rm2/contents/R/rm2-MultiParameters2.html">参考</a></p>
+<p>Stan で推定するために、推定モデルを <strong>.stan</strong> ファイルに記述する。 ここでは、<a href="stan-models/bioassay.stan">bioassay.stan</a> にモデルが記述されている。 このファイルの中身は、以下のとおりである。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data {
+    int&lt;lower=<span class="dv">0</span>&gt;<span class="st"> </span>J;
+    int&lt;lower=<span class="dv">0</span>&gt;<span class="st"> </span>y[J];
+    int&lt;lower=<span class="dv">1</span>&gt;<span class="st"> </span>n[J];
+    real x[J];
+}
+parameters {
+    real alpha;
+    real beta;
+}
+transformed parameters {
+    real&lt;lower=<span class="dv">0</span>, upper=<span class="dv">1</span>&gt;<span class="st"> </span>theta[J];
+    for (j in <span class="dv">1</span>:J) {
+        theta[j] &lt;-<span class="st"> </span><span class="dv">1</span> /<span class="st"> </span>(<span class="dv">1</span> +<span class="st"> </span><span class="kw">exp</span>(-alpha -<span class="st"> </span>beta *<span class="st"> </span>x[j]));
+    }
+}
+model {
+    y ~<span class="st"> </span><span class="kw">binomial</span>(n, theta);
+}</code></pre></div>
+<p>データをリストとして用意する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Bio &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">x =</span> <span class="kw">c</span>(-<span class="fl">0.86</span>, -<span class="fl">0.3</span>, -<span class="fl">0.05</span>, <span class="fl">0.73</span>),
+            <span class="dt">n =</span> <span class="kw">rep</span>(<span class="dv">5</span>, <span class="dv">4</span>),
+            <span class="dt">y =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>),
+            <span class="dt">J =</span> <span class="dv">4</span>)</code></pre></div>
+<p>Stan で推定する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bio.fit<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">file =</span> <span class="st">&quot;bioassay.stan&quot;</span>, <span class="dt">data =</span> Bio, <span class="dt">iter =</span> <span class="dv">1000</span>, <span class="dt">chains =</span> <span class="dv">4</span>)</code></pre></div>
+<pre><code>## 
+## TRANSLATING MODEL &#39;bioassay&#39; FROM Stan CODE TO C++ CODE NOW.
+## COMPILING THE C++ CODE FOR MODEL &#39;bioassay&#39; NOW.
+## 
+## SAMPLING FOR MODEL &#39;bioassay&#39; NOW (CHAIN 1).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.015181 seconds (Warm-up)
+## #                0.013404 seconds (Sampling)
+## #                0.028585 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;bioassay&#39; NOW (CHAIN 2).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.014978 seconds (Warm-up)
+## #                0.010343 seconds (Sampling)
+## #                0.025321 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;bioassay&#39; NOW (CHAIN 3).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.012403 seconds (Warm-up)
+## #                0.007994 seconds (Sampling)
+## #                0.020397 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;bioassay&#39; NOW (CHAIN 4).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.017851 seconds (Warm-up)
+## #                0.011178 seconds (Sampling)
+## #                0.029029 seconds (Total)</code></pre>
+<p>シミュレーションの回数を増やす。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bio.fit<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">fit =</span> bio.fit<span class="fl">.1</span>, <span class="dt">data =</span> Bio, <span class="dt">iter =</span> <span class="dv">10000</span>, <span class="dt">chains =</span> <span class="dv">4</span>)</code></pre></div>
+<pre><code>## 
+## SAMPLING FOR MODEL &#39;bioassay&#39; NOW (CHAIN 1).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.115217 seconds (Warm-up)
+## #                0.123391 seconds (Sampling)
+## #                0.238608 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;bioassay&#39; NOW (CHAIN 2).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.118718 seconds (Warm-up)
+## #                0.113659 seconds (Sampling)
+## #                0.232377 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;bioassay&#39; NOW (CHAIN 3).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.124278 seconds (Warm-up)
+## #                0.124644 seconds (Sampling)
+## #                0.248922 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;bioassay&#39; NOW (CHAIN 4).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 0.097433 seconds (Warm-up)
+## #                0.141082 seconds (Sampling)
+## #                0.238515 seconds (Total)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(bio.fit<span class="fl">.2</span>)</code></pre></div>
+<pre><code>## Inference for Stan model: bioassay.
+## 4 chains, each with iter=10000; warmup=5000; thin=1; 
+## post-warmup draws per chain=5000, total post-warmup draws=20000.
+## 
+##           mean se_mean   sd   2.5%   25%   50%   75% 97.5% n_eff Rhat
+## alpha     1.30    0.02 1.10  -0.55  0.53  1.19  1.96  3.76  3977    1
+## beta     11.55    0.10 5.77   3.39  7.27 10.58 14.74 25.19  3619    1
+## theta[1]  0.01    0.00 0.03   0.00  0.00  0.00  0.00  0.07  9517    1
+## theta[2]  0.15    0.00 0.12   0.00  0.05  0.12  0.22  0.46  9645    1
+## theta[3]  0.64    0.00 0.18   0.28  0.52  0.66  0.78  0.94  5007    1
+## theta[4]  0.99    0.00 0.03   0.92  1.00  1.00  1.00  1.00  6720    1
+## lp__     -7.00    0.02 1.12 -10.00 -7.42 -6.65 -6.21 -5.92  4143    1
+## 
+## Samples were drawn using NUTS(diag_e) at Wed Jun 10 18:54:29 2015.
+## For each parameter, n_eff is a crude measure of effective sample size,
+## and Rhat is the potential scale reduction factor on split chains (at 
+## convergence, Rhat=1).</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(bio.fit<span class="fl">.2</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/unnamed-chunk-2-1.png" title="" alt="" width="672" /></p>
+<p>シミュレートされた <span class="math inline">\(\alpha\)</span> と <span class="math inline">\(\beta\)</span> を散布図にしてみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Bio.post &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">alpha =</span> <span class="kw">extract</span>(bio.fit<span class="fl">.2</span>, <span class="st">&quot;alpha&quot;</span>)$alpha,
+                       <span class="dt">beta =</span> <span class="kw">extract</span>(bio.fit<span class="fl">.2</span>, <span class="st">&quot;beta&quot;</span>)$beta)
+bio.scat &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">sample_n</span>(Bio.post, <span class="dv">1000</span>), <span class="kw">aes</span>(<span class="dt">x =</span> alpha, <span class="dt">y =</span> beta)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">xlim</span>(-<span class="dv">5</span>, <span class="dv">10</span>) +<span class="st"> </span><span class="kw">ylim</span>(-<span class="dv">10</span>, <span class="dv">40</span>) +
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;1000 draws from the posterior simulated by Stan&quot;</span>)
+<span class="kw">print</span>(bio.scat)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/unnamed-chunk-3-1.png" title="" alt="" width="672" /></p>
+<p>これを BDA3の図3.3 (b) (p.76) と比較せよ。</p>
+<p>また、LD50 の分布は、次のようになる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bio.ld50 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">subset</span>(Bio.post, beta &gt;<span class="st"> </span><span class="dv">0</span>), <span class="kw">aes</span>(<span class="dt">x =</span> -alpha /<span class="st"> </span>beta)) +<span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..), <span class="dt">binwidth =</span> .<span class="dv">025</span>)
+bio.ld50 +<span class="st"> </span><span class="kw">xlab</span>(<span class="st">&quot;LD50&quot;</span>) +
+<span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Posterior distribution of the LD50 simulated by Stan&quot;</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/unnamed-chunk-4-1.png" title="" alt="" width="672" /></p>
+<p>LD50の事後分布を要約する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Bio.post %&gt;%
+<span class="st">    </span><span class="kw">subset</span>(beta &gt;<span class="st"> </span><span class="dv">0</span>) %&gt;%
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">ld50 =</span> -alpha /<span class="st"> </span>beta) %&gt;%
+<span class="st">    </span><span class="kw">with</span>(<span class="kw">quantile</span>(ld50, <span class="kw">c</span>(.<span class="dv">025</span>, .<span class="dv">25</span>, .<span class="dv">5</span>, .<span class="dv">75</span>, .<span class="dv">975</span>)))</code></pre></div>
+<pre><code>##        2.5%         25%         50%         75%       97.5% 
+## -0.27494370 -0.16076704 -0.11057696 -0.05861233  0.09609832</code></pre>
+</div>
+<div class="section level3">
+<h3>ネズミの腫瘍実験</h3>
+<p><a href="http://www2.kobe-u.ac.jp/~yyanai/jp/classes/rm2/contents/R/rm2-HierarchicalModels.html">参考</a></p>
+<p>Stan で推定するために、推定モデルを <strong>.stan</strong> ファイルに記述する。 ここでは、<a href="stan-models/rat-tumor-2.stan">rat-tumor-2.stan</a> にモデルが記述されている。 このファイルの中身は、以下のとおりである。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data {
+    int&lt;lower=<span class="dv">1</span>&gt;<span class="st"> </span>J;
+    int&lt;lower=<span class="dv">0</span>&gt;<span class="st"> </span>y[J];
+    int&lt;lower=<span class="dv">1</span>&gt;<span class="st"> </span>n[J];
+}
+parameters {
+    real&lt;lower=<span class="dv">0</span>, upper=<span class="dv">1</span>&gt;<span class="st"> </span>theta[J];
+    real phi1;
+    real phi2;    
+}
+transformed parameters {
+    real&lt;lower=<span class="dv">0</span>&gt;<span class="st"> </span>alpha;
+    real&lt;lower=<span class="dv">0</span>&gt;<span class="st"> </span>beta;
+    alpha &lt;-<span class="st"> </span><span class="kw">exp</span>(phi1 +<span class="st"> </span>phi2) /<span class="st"> </span>(<span class="dv">1</span> +<span class="st"> </span><span class="kw">exp</span>(phi1));
+    beta &lt;-<span class="st"> </span><span class="kw">exp</span>(phi2) /<span class="st"> </span>(<span class="dv">1</span> +<span class="st"> </span><span class="kw">exp</span>(phi1));
+}
+model {
+    theta ~<span class="st"> </span><span class="kw">beta</span>(alpha, beta);
+    y ~<span class="st"> </span><span class="kw">binomial</span>(n, theta);
+}</code></pre></div>
+<p>使用する<a href="http://www.stat.columbia.edu/~gelman/book/data/rats.asc">データ</a> を読み込み、リストにする。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Rats &lt;-<span class="st"> </span><span class="kw">read.table</span>(<span class="st">&quot;rats.asc&quot;</span>, <span class="dt">skip =</span> <span class="dv">3</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>)
+Rats &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">y =</span> Rats$y, <span class="dt">n =</span> Rats$N, <span class="dt">J =</span> <span class="kw">nrow</span>(Rats))</code></pre></div>
+<p>Stan で推定する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rat.fit<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">file =</span> <span class="st">&quot;rat-tumor-2.stan&quot;</span>, <span class="dt">data =</span> Rats,
+                  <span class="dt">iter =</span> <span class="dv">1000</span>, <span class="dt">chains =</span> <span class="dv">4</span>)</code></pre></div>
+<pre><code>## 
+## TRANSLATING MODEL &#39;rat-tumor-2&#39; FROM Stan CODE TO C++ CODE NOW.
+## COMPILING THE C++ CODE FOR MODEL &#39;rat-tumor-2&#39; NOW.
+## 
+## SAMPLING FOR MODEL &#39;rat-tumor-2&#39; NOW (CHAIN 1).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.213909 seconds (Warm-up)
+## #                0.168071 seconds (Sampling)
+## #                0.38198 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;rat-tumor-2&#39; NOW (CHAIN 2).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.215689 seconds (Warm-up)
+## #                0.195653 seconds (Sampling)
+## #                0.411342 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;rat-tumor-2&#39; NOW (CHAIN 3).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.250272 seconds (Warm-up)
+## #                0.158517 seconds (Sampling)
+## #                0.408789 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;rat-tumor-2&#39; NOW (CHAIN 4).
+## 
+## Iteration:   1 / 1000 [  0%]  (Warmup)
+## Iteration: 100 / 1000 [ 10%]  (Warmup)
+## Iteration: 200 / 1000 [ 20%]  (Warmup)
+## Iteration: 300 / 1000 [ 30%]  (Warmup)
+## Iteration: 400 / 1000 [ 40%]  (Warmup)
+## Iteration: 500 / 1000 [ 50%]  (Warmup)
+## Iteration: 501 / 1000 [ 50%]  (Sampling)
+## Iteration: 600 / 1000 [ 60%]  (Sampling)
+## Iteration: 700 / 1000 [ 70%]  (Sampling)
+## Iteration: 800 / 1000 [ 80%]  (Sampling)
+## Iteration: 900 / 1000 [ 90%]  (Sampling)
+## Iteration: 1000 / 1000 [100%]  (Sampling)
+## #  Elapsed Time: 0.238442 seconds (Warm-up)
+## #                0.179021 seconds (Sampling)
+## #                0.417463 seconds (Total)</code></pre>
+<p>シミュレーションの回数を増やす。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rat.fit<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">stan</span>(<span class="dt">fit =</span> rat.fit<span class="fl">.1</span>, <span class="dt">data =</span> Rats, <span class="dt">iter =</span> <span class="dv">10000</span>, <span class="dt">chains =</span> <span class="dv">4</span>)</code></pre></div>
+<pre><code>## 
+## SAMPLING FOR MODEL &#39;rat-tumor-2&#39; NOW (CHAIN 1).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 1.42754 seconds (Warm-up)
+## #                1.56963 seconds (Sampling)
+## #                2.99718 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;rat-tumor-2&#39; NOW (CHAIN 2).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 1.41494 seconds (Warm-up)
+## #                2.09326 seconds (Sampling)
+## #                3.5082 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;rat-tumor-2&#39; NOW (CHAIN 3).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 1.4422 seconds (Warm-up)
+## #                2.1347 seconds (Sampling)
+## #                3.5769 seconds (Total)
+## 
+## 
+## SAMPLING FOR MODEL &#39;rat-tumor-2&#39; NOW (CHAIN 4).
+## 
+## Iteration:    1 / 10000 [  0%]  (Warmup)
+## Iteration: 1000 / 10000 [ 10%]  (Warmup)
+## Iteration: 2000 / 10000 [ 20%]  (Warmup)
+## Iteration: 3000 / 10000 [ 30%]  (Warmup)
+## Iteration: 4000 / 10000 [ 40%]  (Warmup)
+## Iteration: 5000 / 10000 [ 50%]  (Warmup)
+## Iteration: 5001 / 10000 [ 50%]  (Sampling)
+## Iteration: 6000 / 10000 [ 60%]  (Sampling)
+## Iteration: 7000 / 10000 [ 70%]  (Sampling)
+## Iteration: 8000 / 10000 [ 80%]  (Sampling)
+## Iteration: 9000 / 10000 [ 90%]  (Sampling)
+## Iteration: 10000 / 10000 [100%]  (Sampling)
+## #  Elapsed Time: 1.60327 seconds (Warm-up)
+## #                1.26533 seconds (Sampling)
+## #                2.8686 seconds (Total)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(rat.fit<span class="fl">.2</span>)</code></pre></div>
+<pre><code>## Inference for Stan model: rat-tumor-2.
+## 4 chains, each with iter=10000; warmup=5000; thin=1; 
+## post-warmup draws per chain=5000, total post-warmup draws=20000.
+## 
+##              mean se_mean   sd    2.5%     25%     50%     75%   97.5%
+## theta[1]     0.06    0.00 0.04    0.01    0.03    0.06    0.09    0.16
+## theta[2]     0.06    0.00 0.04    0.01    0.03    0.06    0.09    0.16
+## theta[3]     0.06    0.00 0.04    0.01    0.03    0.06    0.09    0.16
+## theta[4]     0.06    0.00 0.04    0.01    0.03    0.06    0.09    0.16
+## theta[5]     0.06    0.00 0.04    0.01    0.03    0.06    0.09    0.16
+## theta[6]     0.06    0.00 0.04    0.01    0.03    0.06    0.09    0.17
+## theta[7]     0.06    0.00 0.04    0.01    0.03    0.06    0.09    0.17
+## theta[8]     0.07    0.00 0.04    0.01    0.03    0.06    0.09    0.17
+## theta[9]     0.07    0.00 0.04    0.01    0.03    0.06    0.09    0.17
+## theta[10]    0.07    0.00 0.04    0.01    0.03    0.06    0.09    0.17
+## theta[11]    0.07    0.00 0.04    0.01    0.03    0.06    0.09    0.17
+## theta[12]    0.07    0.00 0.04    0.01    0.04    0.06    0.09    0.17
+## theta[13]    0.07    0.00 0.04    0.01    0.04    0.06    0.09    0.17
+## theta[14]    0.07    0.00 0.04    0.01    0.04    0.06    0.10    0.18
+## theta[15]    0.09    0.00 0.05    0.02    0.06    0.08    0.12    0.20
+## theta[16]    0.09    0.00 0.05    0.02    0.06    0.08    0.12    0.20
+## theta[17]    0.09    0.00 0.05    0.02    0.06    0.08    0.12    0.21
+## theta[18]    0.09    0.00 0.05    0.02    0.06    0.09    0.12    0.20
+## theta[19]    0.09    0.00 0.05    0.02    0.06    0.09    0.12    0.21
+## theta[20]    0.09    0.00 0.05    0.02    0.06    0.09    0.12    0.21
+## theta[21]    0.10    0.00 0.05    0.02    0.06    0.09    0.13    0.21
+## theta[22]    0.10    0.00 0.05    0.02    0.06    0.09    0.13    0.21
+## theta[23]    0.12    0.00 0.05    0.04    0.09    0.12    0.15    0.23
+## theta[24]    0.10    0.00 0.05    0.03    0.07    0.10    0.13    0.21
+## theta[25]    0.11    0.00 0.05    0.03    0.07    0.10    0.14    0.22
+## theta[26]    0.11    0.00 0.05    0.03    0.07    0.10    0.14    0.22
+## theta[27]    0.12    0.00 0.05    0.04    0.08    0.11    0.15    0.24
+## theta[28]    0.12    0.00 0.05    0.04    0.08    0.11    0.15    0.24
+## theta[29]    0.12    0.00 0.05    0.04    0.08    0.11    0.15    0.24
+## theta[30]    0.12    0.00 0.05    0.04    0.08    0.11    0.15    0.24
+## theta[31]    0.12    0.00 0.05    0.04    0.08    0.11    0.15    0.24
+## theta[32]    0.12    0.00 0.05    0.04    0.08    0.11    0.15    0.24
+## theta[33]    0.13    0.00 0.06    0.03    0.08    0.12    0.16    0.28
+## theta[34]    0.11    0.00 0.04    0.05    0.08    0.11    0.14    0.20
+## theta[35]    0.12    0.00 0.06    0.04    0.08    0.12    0.16    0.25
+## theta[36]    0.12    0.00 0.04    0.05    0.09    0.11    0.14    0.21
+## theta[37]    0.13    0.00 0.06    0.04    0.09    0.12    0.16    0.26
+## theta[38]    0.14    0.00 0.04    0.07    0.11    0.14    0.17    0.24
+## theta[39]    0.15    0.00 0.04    0.07    0.12    0.14    0.17    0.24
+## theta[40]    0.15    0.00 0.06    0.05    0.10    0.14    0.18    0.28
+## theta[41]    0.15    0.00 0.06    0.05    0.10    0.14    0.18    0.28
+## theta[42]    0.15    0.00 0.07    0.05    0.10    0.14    0.19    0.30
+## theta[43]    0.18    0.00 0.05    0.09    0.14    0.17    0.21    0.28
+## theta[44]    0.19    0.00 0.05    0.10    0.15    0.18    0.22    0.29
+## theta[45]    0.17    0.00 0.06    0.07    0.13    0.17    0.21    0.31
+## theta[46]    0.17    0.00 0.06    0.07    0.13    0.17    0.21    0.31
+## theta[47]    0.17    0.00 0.06    0.07    0.13    0.17    0.21    0.31
+## theta[48]    0.17    0.00 0.06    0.07    0.13    0.17    0.21    0.31
+## theta[49]    0.17    0.00 0.06    0.07    0.13    0.17    0.21    0.31
+## theta[50]    0.17    0.00 0.06    0.07    0.13    0.17    0.21    0.31
+## theta[51]    0.17    0.00 0.06    0.07    0.13    0.17    0.21    0.32
+## theta[52]    0.19    0.00 0.05    0.10    0.16    0.19    0.22    0.30
+## theta[53]    0.18    0.00 0.06    0.07    0.13    0.17    0.22    0.32
+## theta[54]    0.18    0.00 0.07    0.07    0.13    0.17    0.22    0.32
+## theta[55]    0.18    0.00 0.06    0.07    0.13    0.17    0.22    0.32
+## theta[56]    0.19    0.00 0.06    0.09    0.15    0.19    0.23    0.33
+## theta[57]    0.21    0.00 0.05    0.12    0.18    0.21    0.25    0.33
+## theta[58]    0.22    0.00 0.05    0.13    0.18    0.22    0.25    0.33
+## theta[59]    0.20    0.00 0.07    0.09    0.15    0.20    0.24    0.35
+## theta[60]    0.20    0.00 0.07    0.09    0.15    0.19    0.24    0.35
+## theta[61]    0.21    0.00 0.07    0.10    0.16    0.21    0.25    0.35
+## theta[62]    0.21    0.00 0.07    0.09    0.16    0.20    0.25    0.36
+## theta[63]    0.22    0.00 0.07    0.10    0.17    0.21    0.26    0.36
+## theta[64]    0.23    0.00 0.07    0.11    0.18    0.22    0.27    0.38
+## theta[65]    0.23    0.00 0.07    0.11    0.18    0.22    0.27    0.38
+## theta[66]    0.23    0.00 0.07    0.11    0.18    0.22    0.27    0.38
+## theta[67]    0.27    0.00 0.05    0.17    0.23    0.27    0.30    0.38
+## theta[68]    0.28    0.00 0.06    0.17    0.24    0.27    0.31    0.39
+## theta[69]    0.27    0.00 0.06    0.17    0.23    0.27    0.31    0.39
+## theta[70]    0.28    0.00 0.07    0.15    0.23    0.28    0.33    0.44
+## theta[71]    0.21    0.00 0.07    0.08    0.15    0.20    0.25    0.37
+## phi1        -1.80    0.00 0.11   -2.01   -1.87   -1.79   -1.72   -1.59
+## phi2         2.80    0.01 0.35    2.15    2.56    2.79    3.03    3.53
+## alpha        2.50    0.02 0.97    1.23    1.84    2.31    2.93    4.88
+## beta        15.06    0.12 5.81    7.35   11.12   13.95   17.71   29.21
+## lp__      -781.93    0.22 9.66 -801.29 -788.33 -781.74 -775.44 -763.58
+##           n_eff Rhat
+## theta[1]  20000    1
+## theta[2]  20000    1
+## theta[3]  20000    1
+## theta[4]  20000    1
+## theta[5]  20000    1
+## theta[6]  20000    1
+## theta[7]  20000    1
+## theta[8]  20000    1
+## theta[9]  20000    1
+## theta[10] 20000    1
+## theta[11] 20000    1
+## theta[12] 20000    1
+## theta[13] 20000    1
+## theta[14] 20000    1
+## theta[15] 20000    1
+## theta[16] 20000    1
+## theta[17] 20000    1
+## theta[18] 20000    1
+## theta[19] 20000    1
+## theta[20] 20000    1
+## theta[21] 20000    1
+## theta[22] 20000    1
+## theta[23] 20000    1
+## theta[24] 20000    1
+## theta[25] 20000    1
+## theta[26] 20000    1
+## theta[27] 20000    1
+## theta[28] 20000    1
+## theta[29] 20000    1
+## theta[30] 20000    1
+## theta[31] 20000    1
+## theta[32] 20000    1
+## theta[33] 20000    1
+## theta[34] 20000    1
+## theta[35] 20000    1
+## theta[36] 20000    1
+## theta[37] 20000    1
+## theta[38] 20000    1
+## theta[39] 20000    1
+## theta[40] 20000    1
+## theta[41] 20000    1
+## theta[42] 20000    1
+## theta[43] 20000    1
+## theta[44] 20000    1
+## theta[45] 20000    1
+## theta[46] 20000    1
+## theta[47] 20000    1
+## theta[48] 20000    1
+## theta[49] 20000    1
+## theta[50] 20000    1
+## theta[51] 20000    1
+## theta[52] 20000    1
+## theta[53] 20000    1
+## theta[54] 20000    1
+## theta[55] 20000    1
+## theta[56] 20000    1
+## theta[57] 20000    1
+## theta[58] 20000    1
+## theta[59] 20000    1
+## theta[60] 20000    1
+## theta[61] 20000    1
+## theta[62] 20000    1
+## theta[63] 20000    1
+## theta[64] 20000    1
+## theta[65] 20000    1
+## theta[66] 20000    1
+## theta[67] 20000    1
+## theta[68] 20000    1
+## theta[69] 20000    1
+## theta[70] 20000    1
+## theta[71] 20000    1
+## phi1      13945    1
+## phi2       2340    1
+## alpha      2048    1
+## beta       2192    1
+## lp__       1922    1
+## 
+## Samples were drawn using NUTS(diag_e) at Wed Jun 10 18:55:14 2015.
+## For each parameter, n_eff is a crude measure of effective sample size,
+## and Rhat is the potential scale reduction factor on split chains (at 
+## convergence, Rhat=1).</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(rat.fit<span class="fl">.2</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/rat-fit2-1.png" title="" alt="" width="672" /></p>
+<p><span class="math inline">\(\mathrm{log}(\alpha / \beta)\)</span> と<span class="math inline">\(\mathrm{log}(\alpha + \beta)\)</span> の散布図を描いてみよう。 ここでは、phi1 <span class="math inline">\(= \mathrm{log}(\alpha / \beta)\)</span>, phi2 <span class="math inline">\(=\mathrm{log}(\alpha + \beta)\)</span> である。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Phi &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">phi1 =</span> <span class="kw">extract</span>(rat.fit<span class="fl">.2</span>, <span class="st">&quot;phi1&quot;</span>)$phi1,
+                  <span class="dt">phi2 =</span> <span class="kw">extract</span>(rat.fit<span class="fl">.2</span>, <span class="st">&quot;phi2&quot;</span>)$phi2)
+rat.scat &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">sample_n</span>(Phi, <span class="dv">1000</span>), <span class="kw">aes</span>(<span class="dt">x =</span> phi1, <span class="dt">y =</span> phi2)) +
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">xlim</span>(-<span class="fl">2.2</span>, -<span class="fl">1.4</span>) +<span class="st"> </span><span class="kw">ylim</span>(<span class="dv">1</span>, <span class="dv">5</span>) +<span class="st"> </span><span class="kw">coord_fixed</span>(<span class="dt">ratio =</span> .<span class="dv">2</span>) +
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;log(alpha / beta)&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;log(alpha/beta)&quot;</span>,
+         <span class="dt">title =</span> <span class="st">&quot;1000 draws from Stan simulation&quot;</span>)
+<span class="kw">print</span>(rat.scat)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/unnamed-chunk-6-1.png" title="" alt="" width="672" /></p>
+<p>最後に、ベイズ収縮（shrinkage）を示す図5.4 (BDA3, p.113) を再現してみよう。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">theta.samples &lt;-<span class="st"> </span><span class="kw">extract</span>(rat.fit<span class="fl">.2</span>, <span class="st">&quot;theta&quot;</span>)$theta
+Post &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+    <span class="dt">rate =</span> Rats$y /<span class="st"> </span>Rats$n, 
+    <span class="dt">med =</span> <span class="kw">apply</span>(theta.samples, <span class="dv">2</span>, median),
+    <span class="dt">lower =</span> <span class="kw">apply</span>(theta.samples, <span class="dv">2</span>, function(x) <span class="kw">quantile</span>(x, .<span class="dv">025</span>)),
+    <span class="dt">upper =</span> <span class="kw">apply</span>(theta.samples, <span class="dv">2</span>, function(x) <span class="kw">quantile</span>(x, .<span class="dv">975</span>))
+    )
+shrinkage &lt;-<span class="st"> </span><span class="kw">ggplot</span>(Post, <span class="kw">aes</span>(<span class="dt">x =</span> rate, <span class="dt">y =</span> med)) +
+<span class="st">    </span><span class="kw">geom_linerange</span>(<span class="kw">aes</span>(<span class="dt">ymin =</span> lower, <span class="dt">ymax =</span> upper), <span class="dt">color =</span> <span class="st">&quot;skyblue&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_point</span>() +
+<span class="st">    </span><span class="kw">xlim</span>(<span class="dv">0</span>, <span class="kw">max</span>(Post$upper)) +<span class="st"> </span><span class="kw">ylim</span>(<span class="dv">0</span>, <span class="kw">max</span>(Post$upper)) +<span class="st"> </span><span class="kw">coord_fixed</span>() +
+<span class="st">    </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="dv">0</span>, <span class="dt">slope =</span> <span class="dv">1</span>, <span class="dt">color =</span> <span class="st">&quot;gray&quot;</span>) +
+<span class="st">    </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="kw">mean</span>(Post$rate), <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">linetype =</span> <span class="st">&quot;dashed&quot;</span>) 
+shrinkage +<span class="st"> </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;observed rate, y[j] / n[j]&quot;</span>,
+                 <span class="dt">y =</span> <span class="st">&quot;95% posterior interval for theta[j]&quot;</span>)</code></pre></div>
+<p><img src="rm2-HierarchicalModels-2_files/figure-html/rat-shrinkage-5.4-1.png" title="" alt="" width="672" /></p>
+<br> <br>
+<div style="text-align: right;">
+<p><a href="../">授業の内容に戻る</a></p>
+</div>
+</div>
+</div>
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
