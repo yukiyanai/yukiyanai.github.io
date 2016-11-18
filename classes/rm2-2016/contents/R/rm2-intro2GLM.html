@@ -146,9 +146,9 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Research Methods in Political Science II</h1>
-<h3 class="subtitle"><em>Day 2-3: Introduction to GLM (Logit Model)</em></h3>
+<h3 class="subtitle"><em>Day 3: Introduction to GLM (Logit Model)</em></h3>
 <h4 class="author"><em>Yuki Yanai</em></h4>
-<h4 class="date"><em>November 5, 2016</em></h4>
+<h4 class="date"><em>November 5, 2016 (revised on November 18, 2016)</em></h4>
 
 </div>
 
@@ -170,9 +170,10 @@ $(document).ready(function () {
 <h1>Preparation</h1>
 <p>Load packages to use.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">'ggplot2'</span>)
-<span class="kw">library</span>(<span class="st">'readr'</span>)
 <span class="kw">library</span>(<span class="st">'dplyr'</span>)
 <span class="kw">library</span>(<span class="st">'rstan'</span>)
+<span class="kw">rstan_options</span>(<span class="dt">auto_write =</span> <span class="ot">TRUE</span>)
+<span class="kw">options</span>(<span class="dt">mc.cores =</span> parallel::<span class="kw">detectCores</span>())
 <span class="kw">library</span>(<span class="st">'rethinking'</span>)</code></pre></div>
 <p>Define the inverse of the logit function (i.e., the logistic function).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">invlogit &lt;-<span class="st"> </span>function(x) {
@@ -185,7 +186,7 @@ $(document).ready(function () {
 <h1>Logistic (Logit) Regression</h1>
 <div id="reading-data" class="section level2">
 <h2>Reading Data</h2>
-<p>For illustration, we use the dataset appered in <a href="http://www2.kobe-u.ac.jp/~yyanai/jp/quant-methods-stata/">Asano and Yanai (2013)</a>: <a href="http://www2.kobe-u.ac.jp/~yyanai/jp/quant-methods-stata/data/hr96-09.csv">hr96-09.csv</a>.</p>
+<p>For illustration, we use the dataset appeared in <a href="http://www2.kobe-u.ac.jp/~yyanai/jp/quant-methods-stata/">Asano and Yanai (2013)</a>: <a href="http://yukiyanai.github.io/classes/rm2-2016/contents/data/HR-labelled.Rda">HR-labelled.Rda</a>.</p>
 <p>Using this dataset, we will try to explain the victory in single member districts (SMDs) of the Japanese House of Representatives elections by logistic regression.</p>
 <p>First, load the dataset into R. Here, let’s use the dataset we modified (labelled) and saved before.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="kw">url</span>(<span class="st">'http://yukiyanai.github.io/classes/rm2-2016/contents/data/HR-labelled.Rda'</span>))</code></pre></div>
@@ -270,60 +271,11 @@ generated quantities {
 }</code></pre></div>
 <p>We generate the predicte values in the last block. In addition, we calculate the log liklihood here so that we can compute WAIC later.</p>
 <p>Fit the model.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">mc.cores =</span> parallel::<span class="kw">detectCores</span>())
-myd4stan_1 &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">N =</span> <span class="kw">nrow</span>(myd_2009), <span class="dt">V =</span> myd_2009$wlsmd, 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myd4stan_1 &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">N =</span> <span class="kw">nrow</span>(myd_2009), <span class="dt">V =</span> myd_2009$wlsmd, 
                  <span class="dt">P =</span> myd_2009$previous, <span class="dt">X =</span> myd_2009$expm)
 
-stan_m2 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="st">'stan-models/d2-model2.stan'</span>)</code></pre></div>
-<pre><code>## In file included from file27ee749190f8.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core.hpp:42:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints.hpp:14:17: warning: unused function 'set_zero_all_adjoints' [-Wunused-function]
-##     static void set_zero_all_adjoints() {
-##                 ^
-## In file included from file27ee749190f8.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core.hpp:43:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints_nested.hpp:17:17: warning: 'static' function 'set_zero_all_adjoints_nested' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
-##     static void set_zero_all_adjoints_nested() {
-##                 ^
-## In file included from file27ee749190f8.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:9:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:54:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/mat/fun/autocorrelation.hpp:17:14: warning: function 'fft_next_good_size' is not needed and will not be emitted [-Wunneeded-internal-declaration]
-##       size_t fft_next_good_size(size_t N) {
-##              ^
-## In file included from file27ee749190f8.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:9:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:235:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/arr.hpp:36:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/arr/functor/integrate_ode_rk45.hpp:13:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/numeric/odeint.hpp:61:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/numeric/odeint/util/multi_array_adaption.hpp:29:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array.hpp:21:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/base.hpp:28:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:42:43: warning: unused typedef 'index_range' [-Wunused-local-typedef]
-##       typedef typename Array::index_range index_range;
-##                                           ^
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:43:37: warning: unused typedef 'index' [-Wunused-local-typedef]
-##       typedef typename Array::index index;
-##                                     ^
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:53:43: warning: unused typedef 'index_range' [-Wunused-local-typedef]
-##       typedef typename Array::index_range index_range;
-##                                           ^
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:54:37: warning: unused typedef 'index' [-Wunused-local-typedef]
-##       typedef typename Array::index index;
-##                                     ^
-## 7 warnings generated.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">logit_1 &lt;-<span class="st"> </span><span class="kw">sampling</span>(stan_m2, <span class="dt">data =</span> myd4stan_1, <span class="dt">seed =</span> <span class="dv">222</span>,
+stan_m2 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="st">'stan-models/d2-model2.stan'</span>)
+logit_1 &lt;-<span class="st"> </span><span class="kw">sampling</span>(stan_m2, <span class="dt">data =</span> myd4stan_1, <span class="dt">seed =</span> <span class="dv">222</span>,
                     <span class="dt">chains  =</span> <span class="dv">4</span>, <span class="dt">iter =</span> <span class="dv">3000</span>, <span class="dt">warmup =</span> <span class="dv">1500</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(logit_1)</code></pre></div>
 <p>(Output is omitted here because it is very long).</p>
@@ -338,7 +290,7 @@ stan_m2 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span c
 ## beta[1]  0.36       0 0.04  0.29  0.34  0.36  0.39  0.44  2899    1
 ## beta[2]  0.04       0 0.02  0.00  0.03  0.04  0.05  0.07  2622    1
 ## 
-## Samples were drawn using NUTS(diag_e) at Fri Nov  4 17:25:04 2016.
+## Samples were drawn using NUTS(diag_e) at Fri Nov 18 22:30:01 2016.
 ## For each parameter, n_eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor on split chains (at 
 ## convergence, Rhat=1).</code></pre>
@@ -350,56 +302,8 @@ stan_m2 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span c
 <p>Next, let’s add the candidate’s age (<span class="math inline">\(a\)</span>) to the linear predictor. Our model can be written as follows. <span class="math display">\[v_n \sim \mbox{Bernoulli}(\theta_n),\]</span> <span class="math display">\[\mathrm{logit}(\theta_n) = \alpha + \beta_1 p_n + \beta_2 x_n + \beta_3 a_n,\]</span> <span class="math display">\[\alpha \sim \mbox{Normal}(0, 100),\]</span> <span class="math display">\[\beta_k \sim \mbox{Normal}(0, 10^2),\]</span> where <span class="math inline">\(n = 1, 2, \dots, N\)</span>, the <span class="math inline">\(N\)</span> is the number of observations, and <span class="math inline">\(k \in \{1, 2, 3\}\)</span>.</p>
 <p>The stan file for this model is <a href="stan-models/d2-model3.stan">d2-model3.stan</a>. Let’s fit the model.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myd4stan_2 &lt;-<span class="st"> </span><span class="kw">c</span>(myd4stan_1, <span class="kw">list</span>(<span class="dt">A =</span> myd_2009$age))
-stan_m3 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="st">'stan-models/d2-model3.stan'</span>)</code></pre></div>
-<pre><code>## In file included from file27ee1380f0fe.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core.hpp:42:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints.hpp:14:17: warning: unused function 'set_zero_all_adjoints' [-Wunused-function]
-##     static void set_zero_all_adjoints() {
-##                 ^
-## In file included from file27ee1380f0fe.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core.hpp:43:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints_nested.hpp:17:17: warning: 'static' function 'set_zero_all_adjoints_nested' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
-##     static void set_zero_all_adjoints_nested() {
-##                 ^
-## In file included from file27ee1380f0fe.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:9:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:54:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/mat/fun/autocorrelation.hpp:17:14: warning: function 'fft_next_good_size' is not needed and will not be emitted [-Wunneeded-internal-declaration]
-##       size_t fft_next_good_size(size_t N) {
-##              ^
-## In file included from file27ee1380f0fe.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:9:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:235:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/arr.hpp:36:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/arr/functor/integrate_ode_rk45.hpp:13:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/numeric/odeint.hpp:61:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/numeric/odeint/util/multi_array_adaption.hpp:29:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array.hpp:21:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/base.hpp:28:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:42:43: warning: unused typedef 'index_range' [-Wunused-local-typedef]
-##       typedef typename Array::index_range index_range;
-##                                           ^
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:43:37: warning: unused typedef 'index' [-Wunused-local-typedef]
-##       typedef typename Array::index index;
-##                                     ^
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:53:43: warning: unused typedef 'index_range' [-Wunused-local-typedef]
-##       typedef typename Array::index_range index_range;
-##                                           ^
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:54:37: warning: unused typedef 'index' [-Wunused-local-typedef]
-##       typedef typename Array::index index;
-##                                     ^
-## 7 warnings generated.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">logit_2 &lt;-<span class="st"> </span><span class="kw">sampling</span>(stan_m3, <span class="dt">data =</span> myd4stan_2, <span class="dt">seed =</span> <span class="dv">333</span>,
+stan_m3 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="st">'stan-models/d2-model3.stan'</span>)
+logit_2 &lt;-<span class="st"> </span><span class="kw">sampling</span>(stan_m3, <span class="dt">data =</span> myd4stan_2, <span class="dt">seed =</span> <span class="dv">333</span>,
                     <span class="dt">chains  =</span> <span class="dv">4</span>, <span class="dt">iter =</span> <span class="dv">3000</span>, <span class="dt">warmup =</span> <span class="dv">1500</span>)</code></pre></div>
 <p>Here is the result.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(logit_2)</code></pre></div>
@@ -415,7 +319,7 @@ stan_m3 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span c
 ## beta[2]  0.04    0.00 0.02  0.01  0.03  0.04  0.06  0.08  2411    1
 ## beta[3] -0.06    0.00 0.01 -0.08 -0.07 -0.06 -0.06 -0.05  1560    1
 ## 
-## Samples were drawn using NUTS(diag_e) at Fri Nov  4 17:26:52 2016.
+## Samples were drawn using NUTS(diag_e) at Fri Nov 18 22:30:57 2016.
 ## For each parameter, n_eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor on split chains (at 
 ## convergence, Rhat=1).</code></pre>
@@ -470,56 +374,8 @@ stan_m3 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span c
 <p>We assigned values 1 through 4 to LDP, CGP, DPJ, and other parties, respectively.</p>
 <p>Now let’s fit the model.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">myd4stan_3 &lt;-<span class="st"> </span><span class="kw">c</span>(myd4stan_2, <span class="kw">list</span>(<span class="dt">PARTY =</span> myd_2009$party4))
-stan_m4 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="st">'stan-models/d2-model4.stan'</span>)</code></pre></div>
-<pre><code>## In file included from file27ee69576461.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core.hpp:42:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints.hpp:14:17: warning: unused function 'set_zero_all_adjoints' [-Wunused-function]
-##     static void set_zero_all_adjoints() {
-##                 ^
-## In file included from file27ee69576461.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core.hpp:43:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints_nested.hpp:17:17: warning: 'static' function 'set_zero_all_adjoints_nested' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
-##     static void set_zero_all_adjoints_nested() {
-##                 ^
-## In file included from file27ee69576461.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:9:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:54:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/mat/fun/autocorrelation.hpp:17:14: warning: function 'fft_next_good_size' is not needed and will not be emitted [-Wunneeded-internal-declaration]
-##       size_t fft_next_good_size(size_t N) {
-##              ^
-## In file included from file27ee69576461.cpp:8:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math.hpp:4:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/rev/mat.hpp:9:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/mat.hpp:235:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/arr.hpp:36:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/StanHeaders/include/stan/math/prim/arr/functor/integrate_ode_rk45.hpp:13:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/numeric/odeint.hpp:61:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/numeric/odeint/util/multi_array_adaption.hpp:29:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array.hpp:21:
-## In file included from /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/base.hpp:28:
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:42:43: warning: unused typedef 'index_range' [-Wunused-local-typedef]
-##       typedef typename Array::index_range index_range;
-##                                           ^
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:43:37: warning: unused typedef 'index' [-Wunused-local-typedef]
-##       typedef typename Array::index index;
-##                                     ^
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:53:43: warning: unused typedef 'index_range' [-Wunused-local-typedef]
-##       typedef typename Array::index_range index_range;
-##                                           ^
-## /Library/Frameworks/R.framework/Versions/3.3/Resources/library/BH/include/boost/multi_array/concept_checks.hpp:54:37: warning: unused typedef 'index' [-Wunused-local-typedef]
-##       typedef typename Array::index index;
-##                                     ^
-## 7 warnings generated.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">logit_3 &lt;-<span class="st"> </span><span class="kw">sampling</span>(stan_m4, <span class="dt">data =</span> myd4stan_3, <span class="dt">seed =</span> <span class="dv">444</span>,
+stan_m4 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span class="st">'stan-models/d2-model4.stan'</span>)
+logit_3 &lt;-<span class="st"> </span><span class="kw">sampling</span>(stan_m4, <span class="dt">data =</span> myd4stan_3, <span class="dt">seed =</span> <span class="dv">444</span>,
                     <span class="dt">chains =</span> <span class="dv">4</span>, <span class="dt">iter =</span> <span class="dv">3000</span>, <span class="dt">warmup =</span> <span class="dv">1500</span>)</code></pre></div>
 <pre><code>## Warning: There were 284 divergent transitions after warmup. Increasing adapt_delta above 0.8 may help. See
 ## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</code></pre>
@@ -548,7 +404,7 @@ stan_m4 &lt;-<span class="st"> </span><span class="kw">stan_model</span>(<span c
 ## beta[2]     1
 ## beta[3]     1
 ## 
-## Samples were drawn using NUTS(diag_e) at Fri Nov  4 17:29:10 2016.
+## Samples were drawn using NUTS(diag_e) at Fri Nov 18 22:32:19 2016.
 ## For each parameter, n_eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor on split chains (at 
 ## convergence, Rhat=1).</code></pre>
@@ -608,7 +464,7 @@ true_pos &lt;-<span class="st"> </span>function(predicted, observed, <span class
 false_pos &lt;-<span class="st"> </span>function(predicted, observed, <span class="dt">cutoff =</span> .<span class="dv">5</span>) {
     n &lt;-<span class="st"> </span><span class="kw">length</span>(cutoff)
     res &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, n)
-    for (i in <span class="dv">1</span>:n){
+    for (i in <span class="dv">1</span>:n) {
         cond_met &lt;-<span class="st"> </span>predicted &gt;=<span class="st"> </span>cutoff[i] &amp;<span class="st"> </span>observed ==<span class="st"> </span><span class="dv">0</span>
         res[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(cond_met) /<span class="st"> </span>(<span class="dv">1</span> -<span class="st"> </span><span class="kw">mean</span>(observed))
     }
@@ -699,7 +555,7 @@ p_br &lt;-<span class="st"> </span><span class="kw">ggplot</span>(df_group, <spa
 ## beta[2]  0.04    0.00 0.02  0.01  0.03  0.04  0.06  0.08  2411    1
 ## beta[3] -0.06    0.00 0.01 -0.08 -0.07 -0.06 -0.06 -0.05  1560    1
 ## 
-## Samples were drawn using NUTS(diag_e) at Fri Nov  4 17:26:52 2016.
+## Samples were drawn using NUTS(diag_e) at Fri Nov 18 22:30:57 2016.
 ## For each parameter, n_eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor on split chains (at 
 ## convergence, Rhat=1).</code></pre>
