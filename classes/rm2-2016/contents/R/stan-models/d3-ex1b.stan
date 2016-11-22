@@ -9,22 +9,18 @@ data {
 }
 
 parameters {
-    real alpha;
-    real beta;
-    real gamma;
+    vector[3] b;
     real<lower=0> sigma;
 }
 
 transformed parameters {
     vector[N] mu;
-    mu = alpha + beta*A + gamma*Score;
+    mu = b[1] + b[2]*A + b[3]*Score;
 }
 
 model {
     Y ~ normal(mu, sigma);
-    alpha ~ normal(0, 10);
-    beta ~ normal(0, 10);
-    gamma ~ normal(0, 10);
+    b ~ normal(0, 10);
     sigma ~ cauchy(0, 20);
 }
 

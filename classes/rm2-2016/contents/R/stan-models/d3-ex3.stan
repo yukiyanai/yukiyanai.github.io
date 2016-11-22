@@ -3,29 +3,28 @@
 data {
     int<lower=0> I;
     int<lower=0, upper=1> Y[I];
-    int<lower=0, upper=1> A[I];
-    real<lower=0, upper=1> S[I];
-    real<lower=0, upper=1> W[I];
+    vector<lower=0, upper=1>[I] A;
+    vector<lower=0, upper=1>[I] S;
+    vector<lower=0, upper=1>[I] W;
 }
 
 parameters {
-    real b[4];
+    vector[4] b;
 }
 
 transformed parameters {
-    real<lower=0, upper=1> theta[I];
+    vector<lower=0, upper=1>[I] theta;
     for (i in 1:I)
         theta[i] = inv_logit(b[1] + b[2]*A[i] + b[3]*S[i] + b[4]*W[i]);
 }
 
 model {
-    for (i in 1:I) 
-        Y[i] ~ bernoulli(theta[i]);
+    Y ~ bernoulli(theta);
     b ~ normal(0, 10);
 }
 
 generated quantities {
-    real log_lik[I];
+    vector[I] log_lik;
     for (i in 1:I)
         log_lik[i] = bernoulli_lpmf(Y[i] | theta[i]);
 }

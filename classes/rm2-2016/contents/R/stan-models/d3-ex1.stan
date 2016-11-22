@@ -8,25 +8,25 @@ data {
 }
 
 parameters {
-    real alpha;
-    real beta;
-    real gamma;
+    real b1;
+    real b2;
+    real b3;
     real<lower=0> sigma;
 }
 
 transformed parameters {
     real mu[N];
     for (n in 1:N)
-        mu[n] = alpha + beta*A[n] + gamma*Score[n];
+        mu[n] = b1 + b2*A[n] + b3*Score[n];
 }
 
 model {
     for (n in 1:N) 
         Y[n] ~ normal(mu[n], sigma);
     
-    alpha ~ normal(0, 10);
-    beta ~ normal(0, 10);
-    gamma ~ normal(0, 10);
+    b1 ~ normal(0, 10);
+    b2 ~ normal(0, 10);
+    b3 ~ normal(0, 10);
     sigma ~ cauchy(0, 20);
 }
 

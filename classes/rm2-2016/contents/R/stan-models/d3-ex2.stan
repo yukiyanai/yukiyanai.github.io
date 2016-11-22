@@ -9,24 +9,23 @@ data {
 }
 
 parameters {
-    real b[3];
+    vector[3] b;
 }
 
 transformed parameters {
-    real<lower=0, upper=1> theta[N];
+    vector<lower=0, upper=1>[N] theta;
     for (n in 1:N)
         theta[n] = inv_logit(b[1] + b[2]*A[n] + b[3]*S[n]);
 }
 
 model {
-    for (n in 1:N)
-        Y[n] ~ binomial(M[n], theta[n]);
+    Y ~ binomial(M, theta);
     b ~ normal(0, 10);
 }
 
 generated quantities {
-    int y_pred[N];
-    real log_lik[N];
+    int<lower=0> y_pred[N];
+    vector[N] log_lik;
     for (n in 1:N) {
         y_pred[n] = binomial_rng(M[n], theta[n]);
         log_lik[n] = binomial_lpmf(Y[n] | M[n], theta[n]);
