@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="矢内　勇生" />
+
+
+<title>政治学方法論 I：R 入門</title>
+
+<script src="introduction-to-R_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="introduction-to-R_files/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="introduction-to-R_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="introduction-to-R_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="introduction-to-R_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="my-markdown.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="introduction-to-R_files/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">政治学方法論 I：R 入門</h1>
+<h4 class="author"><em>矢内　勇生</em></h4>
+<h4 class="date"><em>2014-09-27 (rev. 2015-06-06, 2016-12-08)</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#r">Rの基礎</a><ul>
+<li><a href="#r">Rを電卓代わりに使う</a></li>
+<li><a>変数の利用</a></li>
+<li><a>ベクトルと行列</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>このページでは、Rの基本的な使い方を解説する。 Rの使い方以前のインストール等の問題については、<a href="http://www.okadajp.org/RWiki/">Rjp Wiki</a> を参照。 <br><br></p>
+<div id="r" class="section level2">
+<h2>Rの基礎</h2>
+<p>RのコードはRのConsoleに直接入力してもいいし、スクリプトに保存してRから呼び出してもよい。 スクリプトを使うときは、スクリプトファイルを<strong>ファイル名.R</strong> のように <strong>.R</strong> ファイルとして保存する。そして、RのConsole で<code>source(ファイル名.R)</code> とすれば、スクリプトが実行される。</p>
+<p>Rコマンドの区切りは改行である。改行すれば、1つのコマンドが終了したと認識される。 ただし、括弧が閉じていなかったり、行末に二項演算子 (+ など) があるときは、コマンドが次の行まで続いていると認識される。1行に複数のコマンドを書きたいときは <code>;</code> で区切る。</p>
+<p>Rは大文字と小文字を区別する。したがって、Var1 と var1 は異なる変数として認識される。 変数名は英数字（. [ピリオド] と _ [アンダースコア]も可）にする。ただし、頭文字に数字は使えない。</p>
+<p>スペースは1つ以上ならいくつあっても1つのスペースがある場合と同じである。また、演算子の前後のスペースはあってもなくてもよい（コードの読み易さを考えてスペースの有無を決めること）。</p>
+<p><code>#</code> はコメントの開始として扱われる。行頭に<code>#</code> を書くと、その行すべてがコメントとして扱われる。 行の途中に<code>#</code> を書くと、<code>#</code> 以降がコメントとして扱われる。（コメントを書く作業は、コマンドを書く作業と同様に大切である。詳しくは第3回の授業で説明する。）</p>
+<p>Rに用意されている関数の使い方についてHelp を参照したいときは<code>?関数名</code> （または<code>help(関数名)</code>)　とする。ウェブブラウザでHelpを参照したいときは、<code>help.start()</code> とする。</p>
+<p>インストール済みのパッケージを利用するときは、<code>library(&quot;パッケージ名&quot;)</code> とする。たとえば、<strong>ggplot2</strong> パッケージを使いたいなら、<code>library('ggplot2')</code> とする。パッケージをインストールする際は、<code>install.packages('パッケージ名')</code> とする。その際、どのレポジトリからダウンロードするか尋ねられるので、自分に一番近いところ選ぶ。（パッケージをインストールする度にレポジトリを指定するのが面倒なら、.Rprofile であらかじめレポジトリを指定しておく。）</p>
+<p><br></p>
+<div id="r" class="section level3">
+<h3>Rを電卓代わりに使う</h3>
+<p>Rは電卓の代わりとして使うことができる。 たとえば、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span> +<span class="st"> </span><span class="dv">1</span>      <span class="co"># 足し算</span></code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">100</span> -<span class="st"> </span><span class="dv">20</span>   <span class="co"># 引き算</span></code></pre></div>
+<pre><code>## [1] 80</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">5</span> *<span class="st"> </span><span class="dv">8</span>      <span class="co"># 掛け算</span></code></pre></div>
+<pre><code>## [1] 40</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">2</span> /<span class="st"> </span><span class="dv">3</span>      <span class="co"># 割り算</span></code></pre></div>
+<pre><code>## [1] 0.6666667</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">2</span>^<span class="dv">3</span>        <span class="co"># 累乗</span></code></pre></div>
+<pre><code>## [1] 8</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sqrt</span>(<span class="dv">2</span>)    <span class="co"># 平方根</span></code></pre></div>
+<pre><code>## [1] 1.414214</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">2</span>^(<span class="dv">1</span>/<span class="dv">2</span>)    <span class="co"># sqrt() と同じ</span></code></pre></div>
+<pre><code>## [1] 1.414214</code></pre>
+<p>などの計算ができる。 計算の順番を指定するときは、() で囲めばよい。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(<span class="dv">5</span> *<span class="st"> </span>(<span class="dv">2</span> +<span class="st"> </span><span class="dv">1</span>)) ^<span class="dv">3</span>  <span class="co"># (2 + 1) を最初に計算し、それに5を掛けてから最後に三乗する</span></code></pre></div>
+<pre><code>## [1] 3375</code></pre>
+<p><br></p>
+</div>
+<div class="section level3">
+<h3>変数の利用</h3>
+<p>Rでは、変数を（ある程度）自由に作ることができる。 変数の名前は自由に決めてよい（ただし、数字から始まるものはだめ。また、“-” [ハイフン] はマイナスと区別できないので使えない）。 たとえば、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a &lt;-<span class="st"> </span><span class="dv">1</span>
+b &lt;-<span class="st"> </span><span class="dv">2</span></code></pre></div>
+<p>とすると、<span class="math inline">\(a\)</span>, <span class="math inline">\(b\)</span> という2つの変数ができる。ここで <code>&lt;-</code> は変数に値を割り当てることを意味する。 （<code>&lt;-</code> の代わりに<code>=</code> を使うこともできるが、混乱の元になるので、変数を定義するときは常に<code>&lt;-</code> を使うことにする。） ここで変数名を入力すると、変数の中身が表示される。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a</code></pre></div>
+<pre><code>## [1] 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">b</code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<p>この変数は、計算に使える。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a +<span class="st"> </span>b</code></pre></div>
+<pre><code>## [1] 3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a -<span class="st"> </span>b</code></pre></div>
+<pre><code>## [1] -1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a *<span class="st"> </span>b</code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a /<span class="st"> </span>b</code></pre></div>
+<pre><code>## [1] 0.5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">b^a</code></pre></div>
+<pre><code>## [1] 2</code></pre>
+<p>また、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">c &lt;-<span class="st"> </span>a
+a &lt;-<span class="st"> </span><span class="dv">3</span></code></pre></div>
+<p>とすると、<span class="math inline">\(c = 1\)</span>, <span class="math inline">\(a = 3\)</span> となる（各自確かめること）。</p>
+<p>また、変数名には日本語も使える。 たとえば、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">変数<span class="dv">1</span> &lt;-<span class="st"> </span><span class="dv">5</span>
+変数<span class="dv">2</span> &lt;-<span class="st"> </span><span class="dv">7</span>
+変数<span class="dv">1</span> *<span class="st"> </span>変数<span class="dv">2</span></code></pre></div>
+<pre><code>## [1] 35</code></pre>
+<p>とすることも可能である。しかし、変数名に日本語を使うと、（1）英語/日本語の切り替えが面倒であり、（2）文字化け等の予期せぬ問題が生じることがあるので、なるべく日本語の変数名は使わないほうが無難である。</p>
+<p>変数の割当と画面への出力を同時に行いたいときは、全体を <code>()</code> で囲む。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(d &lt;-<span class="st"> </span><span class="dv">3</span> *<span class="st"> </span><span class="dv">5</span>)</code></pre></div>
+<pre><code>## [1] 15</code></pre>
+<p>変数を消去したいときは<code>rm()</code> 関数を使う。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rm</span>(d)</code></pre></div>
+<p><br></p>
+</div>
+<div class="section level3">
+<h3>ベクトルと行列</h3>
+<div id="-vectors" class="section level4">
+<h4>ベクトル (vectors)</h4>
+<p>Rで特定のベクトル (vector) を作りたいときは、<code>c()</code> を使う。 たとえば、1, 2, 3, 4, 5 という5つの数字からなるベクトル <strong>a</strong> を作るには、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>)</code></pre></div>
+<p>とする。このベクトルを画面に表示すると、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a</code></pre></div>
+<pre><code>## [1] 1 2 3 4 5</code></pre>
+<p>となる。</p>
+<p>ベクトルの中身は文字列でもかまわない。 たとえば、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rails &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;Hankyu&#39;</span>, <span class="st">&#39;Hanshin&#39;</span>, <span class="st">&#39;JR&#39;</span>)</code></pre></div>
+<p>とすれば、文字列 (characters) のベクトルができる。 このように、文字列は引用符（<code>''</code> でも<code>&quot;&quot;</code> でもよい）で囲む。 <br></p>
+<p>ひとつひとつの要素を指定する代わりに、様々な方法でベクトルを作ることが可能である。 たとえば、<code>seq()</code> 関数を使うと、一連の数字からなるベクトルを作ることができる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="dt">by =</span> <span class="dv">1</span>)  <span class="co"># 1から20までの整数。1:20 でも同じ</span></code></pre></div>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="dt">by =</span> <span class="dv">2</span>)  <span class="co"># 1から19までの奇数</span></code></pre></div>
+<pre><code>##  [1]  1  3  5  7  9 11 13 15 17 19</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">seq</span>(<span class="dv">2</span>, <span class="dv">20</span>, <span class="dt">by =</span> <span class="dv">2</span>)  <span class="co"># 2から20までの偶数</span></code></pre></div>
+<pre><code>##  [1]  2  4  6  8 10 12 14 16 18 20</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">seq</span>(<span class="dv">20</span>, <span class="dv">1</span>, <span class="dt">by =</span> -<span class="dv">5</span>)  <span class="co"># 降順、間隔は5</span></code></pre></div>
+<pre><code>## [1] 20 15 10  5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">100</span>, <span class="dt">length.out =</span> <span class="dv">10</span>) <span class="co"># 最小値が1、最大値が100で、要素の数 (length) が10のベクトル</span></code></pre></div>
+<pre><code>##  [1]   1  12  23  34  45  56  67  78  89 100</code></pre>
+<p><code>seq(x, y, by = 1)</code> の場合はより単純に <code>x:y</code>とすればよい。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">1</span>:<span class="dv">20</span></code></pre></div>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</code></pre>
+<p><br></p>
+<p>また、<code>rep()</code>関数も便利である。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rep</span>(<span class="dv">3</span>, <span class="dv">10</span>)   <span class="co"># 3が10個のベクトル</span></code></pre></div>
+<pre><code>##  [1] 3 3 3 3 3 3 3 3 3 3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&#39;a&#39;</span>, <span class="st">&#39;b&#39;</span>, <span class="st">&#39;c&#39;</span>), <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>))  <span class="co"># aが3つ, bが1つ, cが2つのベクトル</span></code></pre></div>
+<pre><code>## [1] &quot;a&quot; &quot;a&quot; &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;c&quot;</code></pre>
+<p>ベクトルの<span class="math inline">\(i\)</span>番目の要素にアクセスするには<code>ベクトル名[i]</code>とする。 同時に複数の要素を取り出すこともできる。 たとえば、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">10</span>, <span class="dv">100</span>, <span class="dt">length =</span> <span class="dv">10</span>)
+b &lt;-<span class="st"> </span><span class="dv">10</span>:<span class="dv">1</span>
+a[<span class="dv">2</span>]</code></pre></div>
+<pre><code>## [1] 20</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">b[<span class="dv">2</span>]</code></pre></div>
+<pre><code>## [1] 9</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a[<span class="dv">3</span>:<span class="dv">5</span>]</code></pre></div>
+<pre><code>## [1] 30 40 50</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a[<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>)]</code></pre></div>
+<pre><code>## [1] 10 30 50</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a[<span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">2</span>, <span class="dv">4</span>)]</code></pre></div>
+<pre><code>## [1] 80 20 40</code></pre>
+<p><br></p>
+</div>
+<div class="section level4">
+<h4>ベクトルの演算</h4>
+<p>Rでは、ベクトルを使った演算が可能である。 たとえば、次のような計算ができる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span>
+x +<span class="st"> </span><span class="dv">10</span>    <span class="co"># ベクトルxの各要素に10を加える</span></code></pre></div>
+<pre><code>##  [1] 11 12 13 14 15 16 17 18 19 20</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x -<span class="st"> </span><span class="dv">5</span>     <span class="co"># ベクトルxの各要素から5を引く</span></code></pre></div>
+<pre><code>##  [1] -4 -3 -2 -1  0  1  2  3  4  5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x *<span class="st"> </span><span class="dv">2</span>     <span class="co"># ベクトルxの各要素に2をかける</span></code></pre></div>
+<pre><code>##  [1]  2  4  6  8 10 12 14 16 18 20</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x/<span class="dv">3</span>       <span class="co"># ベクトルxの各要素を3で割る</span></code></pre></div>
+<pre><code>##  [1] 0.3333333 0.6666667 1.0000000 1.3333333 1.6666667 2.0000000 2.3333333
+##  [8] 2.6666667 3.0000000 3.3333333</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x^<span class="dv">2</span>       <span class="co"># ベクトルxの各要素を2乗する</span></code></pre></div>
+<pre><code>##  [1]   1   4   9  16  25  36  49  64  81 100</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sqrt</span>(x)   <span class="co"># ベクトルxの各要素の平方根（square root）を計算する</span></code></pre></div>
+<pre><code>##  [1] 1.000000 1.414214 1.732051 2.000000 2.236068 2.449490 2.645751
+##  [8] 2.828427 3.000000 3.162278</code></pre>
+<p>また、複数のベクトルを使って、次のような計算ができる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span>
+y &lt;-<span class="st"> </span>-<span class="dv">10</span>:-<span class="dv">1</span>
+
+<span class="co"># xのi番目の要素とyのi番目の要素を足す（i = 1, 2, ..., 10）</span>
+x +<span class="st"> </span>y</code></pre></div>
+<pre><code>##  [1] -9 -7 -5 -3 -1  1  3  5  7  9</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># xのi番目の要素からyのi番目の要素を引く（i = 1, 2, ..., 10）</span>
+x -<span class="st"> </span>y</code></pre></div>
+<pre><code>##  [1] 11 11 11 11 11 11 11 11 11 11</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># xのi番目の要素とyのi番目の要素をかける（i = 1, 2, ..., 10）</span>
+x *<span class="st"> </span>y</code></pre></div>
+<pre><code>##  [1] -10 -18 -24 -28 -30 -30 -28 -24 -18 -10</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># xのi番目の要素をyのi番目の要素で割る（i = 1, 2, ..., 10）</span>
+x/y</code></pre></div>
+<pre><code>##  [1]  -0.1000000  -0.2222222  -0.3750000  -0.5714286  -0.8333333
+##  [6]  -1.2000000  -1.7500000  -2.6666667  -4.5000000 -10.0000000</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># xのi番目の要素を「yのi番目の要素」乗にする（i = 1, 2, ..., 10）</span>
+x^y</code></pre></div>
+<pre><code>##  [1] 1.000000e+00 1.953125e-03 1.524158e-04 6.103516e-05 6.400000e-05
+##  [6] 1.286008e-04 4.164931e-04 1.953125e-03 1.234568e-02 1.000000e-01</code></pre>
+<p>ベクトル同士の足し算（引き算）をしても、ベクトルの長さは変わらない。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(x); <span class="kw">length</span>(y)</code></pre></div>
+<pre><code>## [1] 10</code></pre>
+<pre><code>## [1] 10</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(x +<span class="st"> </span>y)</code></pre></div>
+<pre><code>## [1] 10</code></pre>
+<p>長さの異なるベクトルを使って演算を行うと、短いの方のベクトルは要素をリサイクルして対応する。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span>
+y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">100</span>, <span class="dv">200</span>)
+x +<span class="st"> </span>y</code></pre></div>
+<pre><code>##  [1] 101 202 103 204 105 206 107 208 109 210</code></pre>
+<p>ただし、長い方のベクトルの長さが短い方のベクトルの長さの整数倍になっていないときは、警告文が出る。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">10</span>
+y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">300</span>)
+x +<span class="st"> </span>y</code></pre></div>
+<pre><code>## Warning in x + y: longer object length is not a multiple of shorter object
+## length</code></pre>
+<pre><code>##  [1] 101 202 303 104 205 306 107 208 309 110</code></pre>
+<p>2つのベクトルの内積 (dot product) は<code>%*%</code> で、直積 (outer product) は<code>%o%</code> または<code>outer()</code> で求められる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)
+y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>)
+x %*%<span class="st"> </span>y      <span class="co"># xとyの内積</span></code></pre></div>
+<pre><code>##      [,1]
+## [1,]  220</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x %o%<span class="st"> </span>y      <span class="co"># xとyの直積</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]   10   20   30
+## [2,]   30   60   90
+## [3,]   50  100  150</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">outer</span>(x, y)  <span class="co"># xとyの直積</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]   10   20   30
+## [2,]   30   60   90
+## [3,]   50  100  150</code></pre>
+<p><br></p>
+</div>
+<div id="-matrices" class="section level4">
+<h4>行列 (matrices)</h4>
+<p>Rで行列を作るには、<code>matrix()</code>関数を使う。 たとえば、</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span>:<span class="dv">9</span>, <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>))</code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    5    6
+## [3,]    7    8    9</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(B &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span>:<span class="dv">9</span>, <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">byrow =</span> <span class="ot">FALSE</span>))</code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    4    7
+## [2,]    2    5    8
+## [3,]    3    6    9</code></pre>
+<p>のようにする。 ここで、行列Aと行列Bの違いに注目する。 要素全体をひとつの集合としてみると、AとBの行列は全く同じである。 これは、上のコードでは<strong>1:9</strong>という部分が同じだからである。 しかし、要素の並び方が異なる。 Aを作ったコードは<strong>byrow = TRUE</strong> となっている。 これは、行 (row) 単位でセルを埋めて行くということである。 それに対し、Bでは<strong>byrow = FALSE</strong> となっている。 これは行単位でセルを埋めない（したがって、列 [col] 単位で埋める）ということを意味する。 この違いが、AとBの違いを生み出している。 行列を作るときは行数 <em>nrow</em> と列数 <em>ncol</em> を指定するが、要素の合計数が決まっているときは、どちらか一方を指定すれば、もう一方は自動的に決められる。 上の例では、要素の数が9で、行の数に3を指定したので、列の数は自動的に 9/3 = 3 になっている。</p>
+<p>行列の各行と各列にはそれぞれ名前を付けることができる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">row.names</span>(A) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;row1&#39;</span>, <span class="st">&#39;row2&#39;</span>, <span class="st">&#39;row3&#39;</span>)  <span class="co"># 各行に名前をつける</span>
+<span class="kw">colnames</span>(A) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;col1&#39;</span>, <span class="st">&#39;col2&#39;</span>, <span class="st">&#39;col3&#39;</span>)   <span class="co"># 各列に名前をつける</span>
+A</code></pre></div>
+<pre><code>##      col1 col2 col3
+## row1    1    2    3
+## row2    4    5    6
+## row3    7    8    9</code></pre>
+<p><code>row.names()</code>には’.’ があり、<code>colnames()</code>にはそれがないことに注意。</p>
+<p>行列の<span class="math inline">\(i\)</span>行<span class="math inline">\(j\)</span>列を取り出すには、<code>行列名[i, j]</code>とする。 例えば</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A[<span class="dv">1</span>, <span class="dv">3</span>]          <span class="co"># 第1行、第3列の要素を取り出す</span></code></pre></div>
+<pre><code>## [1] 3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A[<span class="dv">2</span>, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]    <span class="co"># 第2行で、第1列と第3列の要素を取り出す</span></code></pre></div>
+<pre><code>## col1 col3 
+##    4    6</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A[<span class="dv">3</span>, ]           <span class="co"># 第3行の要素をすべて取り出す</span></code></pre></div>
+<pre><code>## col1 col2 col3 
+##    7    8    9</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A[, <span class="dv">2</span>]           <span class="co"># 第2列の要素をすべて取り出す</span></code></pre></div>
+<pre><code>## row1 row2 row3 
+##    2    5    8</code></pre>
+<p><br></p>
+</div>
+<div class="section level4">
+<h4>行列の演算</h4>
+<p>Rでは行列を使った計算ができる。</p>
+<p>基本的な演算の結果は次のとおりである。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span>:<span class="dv">9</span>, <span class="dt">ncol =</span> <span class="dv">3</span>)   　<span class="co"># 行列Aを定義する</span>
+B &lt;-<span class="st"> </span><span class="kw">matrix</span>(-<span class="dv">4</span>:<span class="dv">4</span>, <span class="dt">ncol =</span> <span class="dv">3</span>)    <span class="co"># 行列Bを定義する</span>
+A +<span class="st"> </span><span class="dv">3</span>   <span class="co"># 行列の各要素に3を加える</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    4    7   10
+## [2,]    5    8   11
+## [3,]    6    9   12</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="dv">2</span> *<span class="st"> </span>A   <span class="co"># 行列の各要素を2倍する</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    2    8   14
+## [2,]    4   10   16
+## [3,]    6   12   18</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A +<span class="st"> </span>B   <span class="co"># Aのi行j列要素とBのi行j列要素を足す (i, j = 1, 2, 3)</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]   -3    3    9
+## [2,]   -1    5   11
+## [3,]    1    7   13</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A *<span class="st"> </span>B   <span class="co"># 行列の要素同士の積</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]   -4   -4   14
+## [2,]   -6    0   24
+## [3,]   -6    6   36</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">A %*%<span class="st"> </span>B  <span class="co"># 行列の積</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]  -30    6   42
+## [2,]  -39    6   51
+## [3,]  -48    6   60</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">B %*%<span class="st"> </span>A  <span class="co"># 行列の積</span></code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    0   -9  -18
+## [2,]    6    6    6
+## [3,]   12   21   30</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## AB と BA は異なる
+A %*%<span class="st"> </span>B ==<span class="st"> </span>B %*%<span class="st"> </span>A  <span class="co"># 要素ごとに等しいかどうか比較する</span></code></pre></div>
+<pre><code>##       [,1]  [,2]  [,3]
+## [1,] FALSE FALSE FALSE
+## [2,] FALSE  TRUE FALSE
+## [3,] FALSE FALSE FALSE</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="dv">3</span>  <span class="co"># ベクトルを定義する</span>
+A %*%<span class="st"> </span>a   <span class="co"># (3行3列) x (3行1列) なので結果は3行1列</span></code></pre></div>
+<pre><code>##      [,1]
+## [1,]   30
+## [2,]   36
+## [3,]   42</code></pre>
+<p>行列の転置 (transpose) には<code>t()</code>を使う。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">t</span>(A)</code></pre></div>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    1    2    3
+## [2,]    4    5    6
+## [3,]    7    8    9</code></pre>
+<p>逆行列は<code>solve()</code>で求める。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">C &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, 
+              <span class="dv">7</span>, <span class="dv">11</span>, <span class="dv">13</span>,
+              <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">23</span>),
+            <span class="dt">nrow =</span> <span class="dv">3</span>)
+<span class="kw">solve</span>(C)</code></pre></div>
+<pre><code>##             [,1]       [,2]        [,3]
+## [1,] -0.07692308 -0.7692308  0.69230769
+## [2,] -0.33333333  0.5000000 -0.16666667
+## [3,]  0.20512821 -0.1153846 -0.01282051</code></pre>
+<p>特異行列 (a singular matrix) に<code>solve()</code> を使うとエラーになる。</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">S &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span>:<span class="dv">9</span>, <span class="dt">nrow =</span> <span class="dv">3</span>)
+<span class="kw">solve</span>(S)</code></pre></div>
+<pre><code>## Error in solve.default(S): Lapack routine dgesv: system is exactly singular: U[3,3] = 0</code></pre>
+<p>エラーメッセージを読めば何がまずいのかわかるので、エラーが出たら内容をよく読むこと。 この場合は、行列が特異行列 (singular) であることを教えてくれている。</p>
+<p>Enjoy!</p>
+<br> <br>
+<div style="text-align: right;">
+<p><a href="../">Back to Class Materials</a></p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
