@@ -607,7 +607,7 @@ $(document).ready(function () {
 <div id="spss" class="section level3">
 <h3>SPSS</h3>
 <p>SPSS 形式のデータには、<strong>.sav</strong>という拡張子が付いている。 Rでは、<code>haven::read_sav()</code> （または <code>haven::read_spss()</code>）で読み込める。</p>
-<p>例として、<a href="../data/fake-data-stata.sav">fake-data-spss.sav</a> をダウンロードし、<strong>data</strong> フォルダに保存しよう。 このファイルは、以下のコマンドで読み込める。</p>
+<p>例として、<a href="../data/fake-data-spss.sav">fake-data-spss.sav</a> をダウンロードし、<strong>data</strong> フォルダに保存しよう。 このファイルは、以下のコマンドで読み込める。</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">mysav &lt;-<span class="st"> </span><span class="kw">read_sav</span>(<span class="st">'data/fake-data-spss.sav'</span>)</a></code></pre></div>
 <p>RStudio の右上で、データが読み込めたことを確認しよう。</p>
 <p>念のために中身も少しだけ確認しておこう。</p>
