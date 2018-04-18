@@ -1,16 +1,16 @@
 ---
 title: "統計学2"
+subtitle: "Rマークダウン入門と2変数の記述統計"
 author: "矢内　勇生"
-date: '2018-04-18'
+date: '2018-04-19'
 output:
   html_document:
     css: my-markdown.css
     highlight: tango
     self_contained: yes
-    smart: no
+    smart: false
     theme: united
     toc: yes
-subtitle: Rマークダウン入門と2変数の記述統計
 ---
 
 このページの内容を初めて読むときは、$\ast$ が付いている項目は飛ばして良い（少し上級向けの内容）。
