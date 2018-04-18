@@ -25,10 +25,6 @@ library('rmarkdown')
 # knitrをインストール済みでない場合のみ 次の行の#を消して実行する
 # install.packages('knitr', dependencies = TRUE) 
 library('knitr')
-# devtools をインストール済みでない場合のみ 次の行の#を消して実行する
-# install.packages('devtools')
-devtools::install_github('yihui/knitr')
-library('knitr')
 ```
 
 ```{r global_option, include=FALSE}
