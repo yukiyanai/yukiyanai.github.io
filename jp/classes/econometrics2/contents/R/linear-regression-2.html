@@ -466,7 +466,7 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">計量経済学応用</h1>
 <h3 class="subtitle"><em>重回帰分析 (1)</em></h3>
 <h4 class="author"><em>矢内 勇生</em></h4>
-<h4 class="date"><em>2018-04-25 (rev: 2018-04-26)</em></h4>
+<h4 class="date"><em>2018-04-25 (rev: 2018-04-26)0- 2</em></h4>
 
 </div>
 
@@ -626,7 +626,7 @@ $(document).ready(function () {
 </ol>
 <p>単回帰モデルは、以下のとおりである。 <span class="math display">\[y_i = \beta_1 + \beta_2 x_i + u_i,\]</span> <span class="math display">\[u_i \sim \mathrm{N}(0, \sigma^2).\]</span> ここで、<span class="math inline">\(u_i\)</span> は誤差項である。</p>
 <p>あるいは、以下のように表しても同じ意味である。 <span class="math display">\[y \sim \mathrm{N}(X\beta, \sigma^2 I)\]</span> または、 <span class="math display">\[y_i \sim \mathrm{N}(\beta_1 + \beta_2 x_i, \sigma^2)\]</span> (<span class="math inline">\(i = 1, 2, \dots, n\)</span>)と表すことができる。</p>
-<p>したがって、設定する母数は3つ（<span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span>, <span class="math inline">\(\sgima\)</span>）ある。</p>
+<p>したがって、設定する母数は3つ（<span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span>, <span class="math inline">\(\sigma\)</span>）ある。</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">beta1 &lt;-<span class="st"> </span><span class="dv">10</span>   <span class="co"># 切片の値を決める</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2">beta2 &lt;-<span class="st"> </span><span class="dv">3</span>    <span class="co"># 傾き（予測変数の係数）を決める</span></a>
 <a class="sourceLine" id="cb16-3" data-line-number="3">sigma &lt;-<span class="st"> </span><span class="dv">6</span>    <span class="co"># 誤差の標準偏差を決める</span></a></code></pre></div>
