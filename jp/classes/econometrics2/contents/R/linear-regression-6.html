@@ -499,7 +499,7 @@ $(document).ready(function () {
 <a class="sourceLine" id="cb1-8" data-line-number="8">##theme_set(theme_gray(base_size = 12, base_family = &quot;HiraKakuProN-W3&quot;))</a>
 <a class="sourceLine" id="cb1-9" data-line-number="9"><span class="kw">library</span>(<span class="st">&quot;interplot&quot;</span>)</a>
 <a class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw">library</span>(<span class="st">&quot;jtools&quot;</span>)</a></code></pre></div>
-<p>説明のために『Stataによる計量政治学』（浅野正彦, 矢内勇生. 2013）で使用されているデータ（<a href="http://yukiyanai.github.io/jp/quant-methods-stata//data/hr96-09.dta">hr96-09.dta</a>） を使う。 まず、このデータを読み込む（データへのパスは各自の状況に応じて変えること。ここでは、R Studioのプロジェクトを利用していて、プロジェクトが存在するフォルダ内にdata という名前のフォルダがあり、その中にデータセットが保存されていると仮定している）。</p>
+<p>説明のために『Stataによる計量政治学』（浅野正彦, 矢内勇生. 2013）で使用されているデータ（<a href="http://yukiyanai.github.io/jp/quant-methods-stata/data/hr96-09.dta">hr96-09.dta</a>） を使う。 まず、このデータを読み込む（データへのパスは各自の状況に応じて変えること。ここでは、R Studioのプロジェクトを利用していて、プロジェクトが存在するフォルダ内にdata という名前のフォルダがあり、その中にデータセットが保存されていると仮定している）。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">HR &lt;-<span class="st"> </span><span class="kw">read.dta</span>(<span class="st">&quot;data/hr96-09.dta&quot;</span>)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">glimpse</span>(HR)</a></code></pre></div>
 <pre><code>## Observations: 5,614
