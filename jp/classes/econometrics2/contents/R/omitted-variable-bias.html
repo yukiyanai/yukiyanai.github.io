@@ -11,7 +11,6 @@
 
 <meta name="author" content="矢内　勇生" />
 
-<meta name="date" content="2018-05-19" />
 
 <title>計量経済学応用</title>
 
@@ -467,7 +466,7 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">計量経済学応用</h1>
 <h3 class="subtitle"><em>欠落変数バイアス</em></h3>
 <h4 class="author"><em>矢内　勇生</em></h4>
-<h4 class="date"><em>2018-05-19</em></h4>
+<h4 class="date"><em>2018-05-19（改訂：2018-05-21）</em></h4>
 
 </div>
 
@@ -500,7 +499,7 @@ $(document).ready(function () {
 <p>もう1つの可能性は、第3の変数 <span class="math inline">\(z\)</span> が存在し、この<span class="math inline">\(z\)</span>が<span class="math inline">\(x\)</span>の原因でもあり、<span class="math inline">\(y\)</span>の原因でもあるという場合である。 <span class="math inline">\(x\)</span>と<span class="math inline">\(y\)</span>の相関が<span class="math inline">\(z\)</span>によって説明されてしまうとき、<span class="math inline">\(x\)</span>と<span class="math inline">\(y\)</span>の相関は、<strong>見せかけの相関 (spurious correlation)</strong> と呼ばれる。また、実際に<span class="math inline">\(x\)</span>が<span class="math inline">\(y\)</span>の原因だとしても、 <span class="math inline">\(z\)</span>のように<span class="math inline">\(x\)</span>と<span class="math inline">\(y\)</span>の両者に影響する変数があるかもしれない。このような<span class="math inline">\(z\)</span> は、<strong>交絡変数 (confouding variable or confounder) </strong> と呼ばれる。</p>
 <p>交絡変数は、必ず統制する必要がある（厳密には、バックドアパスをブロックすればよいのだが、詳しい話は統計的因果推論の教科書を参照されたい）。交絡変数を統制しないと、推定にバイアスが生じる。このバイアスを<strong>欠落変数バイアス (omitted variable bias)</strong> と呼ぶ。</p>
 <p><span class="math inline">\(y\)</span>と<span class="math inline">\(x\)</span>の両者に影響を与える<span class="math inline">\(z\)</span>という変数があるとき、<span class="math inline">\(z\)</span>を無視して、 <span class="math display">\[y = \beta_0 + \beta_1 x + u\]</span> という式を考えると、<span class="math inline">\(z\)</span> は誤差項<span class="math inline">\(u\)</span>に含まれることになる。 そうすると、当然ながら、説明変数<span class="math inline">\(x\)</span>誤差項<span class="math inline">\(u\)</span>の間に相関があるので、最小二乗推定量が不偏性もつための仮定（教科書 p.122の (3)）が満たされず、<span class="math inline">\(\beta_1\)</span> の推定が偏ったもの（つまり、バイアスをもったもの）になってしまうのである。</p>
-<p>このことを、シミュレーションで確認してみよう。 まず、データを作る。ここでは、x, z1, z2 という3つの変数がyの原因となっている（muを計算する行を参照）。また、z1はxの原因でもあるので、z1は交絡変数である。したがって、z1を統制しないと、xの係数が正しく推定できないはずである。z4は結果変数とは無関係の変数である。</p>
+<p>このことを、シミュレーションで確認してみよう。 まず、データを作る。ここでは、x, z1, z2 という3つの変数がyの原因となっている（muを計算する行を参照）。また、z1はxの原因でもあるので、z1は交絡変数である。したがって、z1を統制しないと、xの係数が正しく推定できないはずである。z3は結果変数とは無関係の変数である。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># シミュレーションを再度実行したときに同じ結果が得られるように、乱数の種を指定する</span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co"># 異なる結果を得たいときは、set.seed() の中身を変える</span></a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">set.seed</span>(<span class="dv">777</span>)   </a>
