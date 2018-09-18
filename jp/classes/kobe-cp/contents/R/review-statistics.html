@@ -11,7 +11,7 @@
 
 <meta name="author" content="矢内　勇生" />
 
-<meta name="date" content="2018-09-15" />
+<meta name="date" content="2018-09-18" />
 
 <title>比較政治学B</title>
 
@@ -468,7 +468,7 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">比較政治学B</h1>
 <h3 class="subtitle"><em>Rによる統計分析の基礎</em></h3>
 <h4 class="author"><em>矢内　勇生</em></h4>
-<h4 class="date"><em>2018-09-15</em></h4>
+<h4 class="date"><em>2018-09-18</em></h4>
 
 </div>
 
@@ -680,18 +680,18 @@ $(document).ready(function () {
 <p>変数（ベクトル）<span class="math inline">\(x\)</span>の平均値（算術平均, mean）は <span class="math inline">\(\bar{x}\)</span> と表し（「エックスバー」と読む）、 <span class="math display">\[ \bar{x} = \frac{\sum_{i=1}^n x_i}{n}\]</span> である。 Rでは、</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">20</span>, <span class="dt">mean =</span> <span class="dv">10</span>, <span class="dt">sd =</span> <span class="dv">4</span>)  <span class="co">## 変数xを正規分布からの無作為抽出で作る（後述）</span></a>
 <a class="sourceLine" id="cb35-2" data-line-number="2"><span class="kw">sum</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">length</span>(x)</a></code></pre></div>
-<pre><code>## [1] 11.21775</code></pre>
+<pre><code>## [1] 11.48006</code></pre>
 <p>とすればよい。 しかし、平均値のような基本的な統計量を求める関数はあらかじめ用意されている。 平均値は、<code>mean()</code> で求められる。</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">mean</span>(x)</a></code></pre></div>
-<pre><code>## [1] 11.21775</code></pre>
+<pre><code>## [1] 11.48006</code></pre>
 <p>これで、先ほど求めたものと同じ平均値が得られる。</p>
 <p>中央値は<code>median()</code>、 最小値は<code>min()</code>、 最大値は<code>max()</code>で求める。</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">median</span>(x)</a></code></pre></div>
-<pre><code>## [1] 11.02461</code></pre>
+<pre><code>## [1] 11.96396</code></pre>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="kw">min</span>(x)</a></code></pre></div>
-<pre><code>## [1] 3.377605</code></pre>
+<pre><code>## [1] 3.933282</code></pre>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1"><span class="kw">max</span>(x)</a></code></pre></div>
-<pre><code>## [1] 18.36691</code></pre>
+<pre><code>## [1] 16.19784</code></pre>
 <p><br></p>
 </div>
 <div class="section level4">
@@ -700,57 +700,57 @@ $(document).ready(function () {
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" data-line-number="1"><span class="co">## 50% quantile = 50th percentile = median</span></a>
 <a class="sourceLine" id="cb45-2" data-line-number="2"><span class="kw">quantile</span>(x, <span class="fl">.5</span>)</a></code></pre></div>
 <pre><code>##      50% 
-## 11.02461</code></pre>
+## 11.96396</code></pre>
 <div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" data-line-number="1"><span class="co">## 25th percentile = 1st quartile と 75th pecentile = 3rd quartile を同時に求める</span></a>
 <a class="sourceLine" id="cb47-2" data-line-number="2"><span class="kw">quantile</span>(x, <span class="kw">c</span>(.<span class="dv">25</span>, <span class="fl">.75</span>))  <span class="co">## 25th percentile と 75th pecentile を同時に求める</span></a></code></pre></div>
-<pre><code>##       25%       75% 
-##  7.272754 15.195889</code></pre>
+<pre><code>##      25%      75% 
+## 10.02478 13.65789</code></pre>
 <p>したがって、四分位範囲 (IQR) は、</p>
 <div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" data-line-number="1"><span class="kw">quantile</span>(x, <span class="fl">.75</span>) <span class="op">-</span><span class="st"> </span><span class="kw">quantile</span>(x, <span class="fl">.25</span>)</a></code></pre></div>
 <pre><code>##      75% 
-## 7.923134</code></pre>
+## 3.633108</code></pre>
 <p>で求められる。用意されている関数を使い、</p>
 <div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb51-1" data-line-number="1"><span class="kw">IQR</span>(x)</a></code></pre></div>
-<pre><code>## [1] 7.923134</code></pre>
+<pre><code>## [1] 3.633108</code></pre>
 <p>でもよい。 五数要約は、</p>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb53-1" data-line-number="1"><span class="kw">quantile</span>(x, <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">.25</span>, <span class="fl">.5</span>, <span class="fl">.75</span>, <span class="dv">1</span>))   <span class="co">## 五数要約：四分位数を使うとき</span></a></code></pre></div>
 <pre><code>##        0%       25%       50%       75%      100% 
-##  3.377605  7.272754 11.024612 15.195889 18.366908</code></pre>
+##  3.933282 10.024781 11.963964 13.657889 16.197839</code></pre>
 <p>とすればよい。 第1四分位数と第3四分位数の代わりに下側ヒンジと上側ヒンジ (Tukey 1977. <i>Exploratory Data Analysis.</i>) を求めたいときは、<code>fivenum()</code> を使う。</p>
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb55-1" data-line-number="1"><span class="kw">fivenum</span>(x)   <span class="co"># 五数要約：ヒンジを使うとき</span></a></code></pre></div>
-<pre><code>## [1]  3.377605  7.036531 11.024612 15.234771 18.366908</code></pre>
+<pre><code>## [1]  3.933282  9.340644 11.963964 13.814015 16.197839</code></pre>
 <p><br></p>
 </div>
 <div class="section level4">
 <h4>分散、標準偏差</h4>
 <p>変数 <span class="math inline">\(x\)</span> の不偏分散 (unbiased variance) は<span class="math inline">\(u_x^2\)</span> と表し、 <span class="math display">\[u_x^2 = \frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}\]</span> である。 これをR で求めると、</p>
 <div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" data-line-number="1"><span class="kw">sum</span>((x <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(x))<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span>(<span class="kw">length</span>(x) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)   <span class="co">## 計算の順序（カッコの付け方）に注意</span></a></code></pre></div>
-<pre><code>## [1] 21.21543</code></pre>
+<pre><code>## [1] 11.84859</code></pre>
 <p>とすればよい。 <strong>分散は最も重要な統計量</strong>であり、当然関数が用意されているので、<code>var()</code> で求めることができる。</p>
 <div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" data-line-number="1"><span class="kw">var</span>(x)</a></code></pre></div>
-<pre><code>## [1] 21.21543</code></pre>
+<pre><code>## [1] 11.84859</code></pre>
 <p>標準偏差 (standard deviation) は分散の平方根なので、</p>
 <div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb61-1" data-line-number="1"><span class="kw">sqrt</span>(<span class="kw">var</span>(x))</a></code></pre></div>
-<pre><code>## [1] 4.606021</code></pre>
+<pre><code>## [1] 3.442179</code></pre>
 <p>で求められるが、<code>sd()</code> を利用することもできる。</p>
 <div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" data-line-number="1"><span class="kw">sd</span>(x)</a></code></pre></div>
-<pre><code>## [1] 4.606021</code></pre>
+<pre><code>## [1] 3.442179</code></pre>
 <p><br></p>
 </div>
 <div class="section level4">
 <h4>母集団を扱う場合</h4>
 <p>ベクトル<span class="math inline">\(x\)</span> が標本ではなく母集団のとき、平均は<span class="math inline">\(\mu\)</span>、分散は<span class="math inline">\(\sigma^2\)</span> で表される。 母集団の平均値は、標本の場合と同様、</p>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" data-line-number="1"><span class="kw">mean</span>(x)</a></code></pre></div>
-<pre><code>## [1] 11.21775</code></pre>
+<pre><code>## [1] 11.48006</code></pre>
 <p>で求められる。 しかし、母集団の分散は <span class="math display">\[\sigma^2 = \frac{\sum_{i=1}^N (x_i - \mu)^2}{N}\]</span> なので、<code>var()</code> をそのまま使うことはできない。代わりに、</p>
 <div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" data-line-number="1"><span class="kw">var</span>(x) <span class="op">*</span><span class="st"> </span>(<span class="kw">length</span>(x) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span>(<span class="kw">length</span>(x))</a></code></pre></div>
-<pre><code>## [1] 20.15466</code></pre>
+<pre><code>## [1] 11.25616</code></pre>
 <p>とすればよい。 自分で関数を定義することもできる。</p>
 <div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb69-1" data-line-number="1">pop_var &lt;-<span class="st"> </span><span class="cf">function</span>(population) {</a>
 <a class="sourceLine" id="cb69-2" data-line-number="2">    <span class="kw">return</span>(<span class="kw">sum</span>((population <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(population))<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span><span class="kw">length</span>(population))</a>
 <a class="sourceLine" id="cb69-3" data-line-number="3">}</a>
 <a class="sourceLine" id="cb69-4" data-line-number="4"><span class="kw">pop_var</span>(x)</a></code></pre></div>
-<pre><code>## [1] 20.15466</code></pre>
+<pre><code>## [1] 11.25616</code></pre>
 <p><br></p>
 </div>
 </div>
@@ -762,12 +762,12 @@ $(document).ready(function () {
 <p>R には無作為抽出を行うための関数が用意されている。</p>
 <p>たとえば、最小値 <span class="math inline">\(a\)</span>、最大値 <span class="math inline">\(b\)</span> の連続一様分布 (uniform distribution) から無作為に<span class="math inline">\(n\)</span> 個の値を取り出すには、 <code>runif(n, a, b)</code> とする。 試しに、<span class="math inline">\(n = 10, a = 0, b = 1\)</span> でやってみると、</p>
 <div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb71-1" data-line-number="1"><span class="kw">runif</span>(<span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">1</span>)</a></code></pre></div>
-<pre><code>##  [1] 0.76418522 0.03503142 0.56775540 0.73838475 0.88315677 0.26498137
-##  [7] 0.17863315 0.26103965 0.15391710 0.98361272</code></pre>
+<pre><code>##  [1] 0.98915274 0.01465155 0.48844010 0.78348320 0.56397424 0.74716996
+##  [7] 0.65689909 0.31081817 0.72014599 0.52662381</code></pre>
 <p>となる。 無作為抽出（正確には疑似乱数だが）なので、取り出される数字は毎回異なる。 したがって、もう一度同じコマンドを使うと、</p>
 <div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" data-line-number="1"><span class="kw">runif</span>(<span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">1</span>)</a></code></pre></div>
-<pre><code>##  [1] 0.3534366 0.3917053 0.9573313 0.6040056 0.6816080 0.1954346 0.1942498
-##  [8] 0.6727665 0.8008334 0.6703167</code></pre>
+<pre><code>##  [1] 0.6514845 0.4081328 0.2644889 0.6752236 0.4468969 0.9418136 0.6389834
+##  [8] 0.7637832 0.2623205 0.4273976</code></pre>
 <p>のように、先ほどとは異なる数字が得られる。 乱数を使って論文やレポートを書くとき、同じ乱数を再現したい場合がある。そんなときは、<code>set.seed()</code> で乱数の種 (seed) を指定してやればよい。</p>
 <div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">2018-04-12</span>) <span class="co"># 種を指定</span></a>
 <a class="sourceLine" id="cb75-2" data-line-number="2"><span class="kw">runif</span>(<span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">1</span>)</a></code></pre></div>
