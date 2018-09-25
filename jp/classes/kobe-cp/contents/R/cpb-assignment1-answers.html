@@ -11,7 +11,6 @@
 
 <meta name="author" content="矢内　勇生" />
 
-<meta name="date" content="2018-09-24" />
 
 <title>比較政治学B</title>
 
@@ -468,7 +467,7 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">比較政治学B</h1>
 <h3 class="subtitle"><em>課題1の解答例</em></h3>
 <h4 class="author"><em>矢内　勇生</em></h4>
-<h4 class="date"><em>2018-09-24</em></h4>
+<h4 class="date"><em>2018-09-24 (2018-09-25改訂）</em></h4>
 
 </div>
 
@@ -647,20 +646,19 @@ $(document).ready(function () {
 ## 60-69 70-79   80+ 
 ##     2     2     2</code></pre>
 <p>年齢別出生率 (ASFR) を、15以上50歳未満について求める。 ケニア：</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">Kenya_asfr &lt;-<span class="st"> </span>Kenya <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb27-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>(age <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;0-4&quot;</span>, <span class="st">&quot;5-9&quot;</span>, <span class="st">&quot;10-14&quot;</span>, <span class="st">&quot;50-54&quot;</span>, <span class="st">&quot;55-59&quot;</span>, </a>
-<a class="sourceLine" id="cb27-3" data-line-number="3">                      <span class="st">&quot;60-69&quot;</span>, <span class="st">&quot;70-79&quot;</span>, <span class="st">&quot;80+&quot;</span>))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb27-4" data-line-number="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">asfr =</span> births <span class="op">/</span><span class="st"> </span>py.women)</a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">prod_age &lt;-<span class="st"> </span><span class="kw">c</span>( <span class="st">&quot;15-19&quot;</span>, <span class="st">&quot;20-24&quot;</span>, <span class="st">&quot;25-29&quot;</span>, <span class="st">&quot;30-34&quot;</span>,</a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">               <span class="st">&quot;35-39&quot;</span>, <span class="st">&quot;40-44&quot;</span>, <span class="st">&quot;45-49&quot;</span>)</a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">Kenya_asfr &lt;-<span class="st"> </span>Kenya <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb27-4" data-line-number="4"><span class="st">  </span><span class="kw">filter</span>(age <span class="op">%in%</span><span class="st"> </span>prod_age) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb27-5" data-line-number="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">asfr =</span> births <span class="op">/</span><span class="st"> </span>py.women)</a></code></pre></div>
 <p>スウェーデン：</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">Sweden_asfr &lt;-<span class="st"> </span>Sweden <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>(age <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;0-4&quot;</span>, <span class="st">&quot;5-9&quot;</span>, <span class="st">&quot;10-14&quot;</span>, <span class="st">&quot;50-54&quot;</span>, <span class="st">&quot;55-59&quot;</span>, </a>
-<a class="sourceLine" id="cb28-3" data-line-number="3">                      <span class="st">&quot;60-69&quot;</span>, <span class="st">&quot;70-79&quot;</span>, <span class="st">&quot;80+&quot;</span>))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb28-4" data-line-number="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">asfr =</span> births <span class="op">/</span><span class="st"> </span>py.women)</a></code></pre></div>
+<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(age <span class="op">%in%</span><span class="st"> </span>prod_age) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb28-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">asfr =</span> births <span class="op">/</span><span class="st"> </span>py.women)</a></code></pre></div>
 <p>世界：</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">World_asfr &lt;-<span class="st"> </span>World <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb29-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>(age <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;0-4&quot;</span>, <span class="st">&quot;5-9&quot;</span>, <span class="st">&quot;10-14&quot;</span>, <span class="st">&quot;50-54&quot;</span>, <span class="st">&quot;55-59&quot;</span>, </a>
-<a class="sourceLine" id="cb29-3" data-line-number="3">                      <span class="st">&quot;60-69&quot;</span>, <span class="st">&quot;70-79&quot;</span>, <span class="st">&quot;80+&quot;</span>))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb29-4" data-line-number="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">asfr =</span> births <span class="op">/</span><span class="st"> </span>py.women)</a></code></pre></div>
+<a class="sourceLine" id="cb29-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(age <span class="op">%in%</span><span class="st"> </span>prod_age) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb29-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">asfr =</span> births <span class="op">/</span><span class="st"> </span>py.women)</a></code></pre></div>
 <p>スウェーデンとケニアの女性の出産パタンを確認する。</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw">bind_rows</span>(Kenya_asfr, Sweden_asfr) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb30-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(country, period, age, asfr) <span class="op">%&gt;%</span></a>
