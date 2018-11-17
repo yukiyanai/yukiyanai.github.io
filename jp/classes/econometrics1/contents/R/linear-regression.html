@@ -11,7 +11,6 @@
 
 <meta name="author" content="矢内　勇生" />
 
-<meta name="date" content="2018-11-15" />
 
 <title>計量経済学</title>
 
@@ -465,7 +464,7 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">計量経済学</h1>
 <h3 class="subtitle"><em>回帰分析の応用</em></h3>
 <h4 class="author"><em>矢内　勇生</em></h4>
-<h4 class="date"><em>2018-11-15</em></h4>
+<h4 class="date"><em>2018-11-15（改訂：2018-11-17）</em></h4>
 
 </div>
 
@@ -529,7 +528,7 @@ $(document).ready(function () {
 <a class="sourceLine" id="cb5-2" title="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">experience =</span> <span class="kw">as.numeric</span>(status <span class="op">==</span><span class="st"> &quot;現職&quot;</span> <span class="op">|</span><span class="st"> </span>status <span class="op">==</span><span class="st"> &quot;元職&quot;</span>),</a>
 <a class="sourceLine" id="cb5-3" title="3">         <span class="dt">ldp =</span> <span class="kw">as.numeric</span>(party <span class="op">==</span><span class="st"> &quot;LDP&quot;</span>),</a>
 <a class="sourceLine" id="cb5-4" title="4">         <span class="dt">dpj =</span> <span class="kw">as.numeric</span>(party <span class="op">==</span><span class="st"> &quot;DPJ&quot;</span>))</a></code></pre></div>
-<p>2009年の結果だけ抜き出したデータフレームを、それぞれHR05, HR09として保存する。 （本来は<code>mi()</code> などで欠測値を推定すべきだが、説明を単純化するために、今回は）完全データ (complete observations) だけ残す。</p>
+<p>2009年の結果だけ抜き出したデータフレームをHR09として保存する。 （本来は<code>mi()</code> などで欠測値を推定すべきだが、説明を単純化するために、今回は）完全データ (complete observations) だけ残す。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">HR09 &lt;-<span class="st"> </span>HR <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb6-2" title="2"><span class="st">    </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2009</span>) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb6-3" title="3"><span class="st">    </span><span class="kw">na.omit</span>()</a></code></pre></div>
@@ -550,7 +549,7 @@ $(document).ready(function () {
 ## ---
 ## n = 1119, k = 2
 ## residual sd = 16.04758253, R-Squared = 0.48</code></pre>
-<p>よって、 <span class="math display">\[得票率 = 7.74 + 0.00000307 \cdot 選挙費用（1円）+ 誤差\]</span> である。</p>
+<p>よって、 <span class="math display">\[得票率 = 7.70561283+ 0.00000307 \cdot 選挙費用（1円）+ 誤差\]</span> である。</p>
 <p>これに対し、選挙費用を100万円単位で測定した<strong>expm</strong> を使うと、次のような結果になる。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">fit_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">lm</span>(voteshare <span class="op">~</span><span class="st"> </span>expm, <span class="dt">data =</span> HR09)</a>
 <a class="sourceLine" id="cb9-2" title="2"><span class="co">## expm という変数をあらかじめ作っていないときは、次のようにする</span></a>
@@ -563,7 +562,7 @@ $(document).ready(function () {
 ## ---
 ## n = 1119, k = 2
 ## residual sd = 16.05, R-Squared = 0.48</code></pre>
-<p>よって、 <span class="math display">\[得票率 = 7.74 + 3.07 \cdot 選挙費用（100万円）+ 誤差\]</span> である。</p>
+<p>よって、 <span class="math display">\[得票率 = 7.71 + 3.08 \cdot 選挙費用（100万円）+ 誤差\]</span> である。</p>
 <p>これらの2つの回帰式の内容は、実質的にはまったく同じである。 どちらがわかりやすい？</p>
 <p><br></p>
 </div>
