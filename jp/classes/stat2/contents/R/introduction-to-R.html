@@ -11,7 +11,6 @@
 
 <meta name="author" content="矢内　勇生" />
 
-<meta name="date" content="2018-04-08" />
 
 <title>統計学 2：R 入門</title>
 
@@ -202,7 +201,7 @@ window.buildTabsets = function(tocID) {
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -215,13 +214,11 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
+  { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -262,6 +259,8 @@ code span.st { color: #4e9a06; } /* String */
 code span.va { color: #000000; } /* Variable */
 code span.vs { color: #4e9a06; } /* VerbatimString */
 code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+
 </style>
 <style type="text/css">
   pre:not([class]) {
@@ -437,6 +436,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -447,14 +449,74 @@ button.code-folding-btn:focus {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
 </script>
 
 <!-- code folding -->
-
 
 
 
@@ -466,22 +528,22 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">統計学 2：R 入門</h1>
 <h4 class="author"><em>矢内　勇生</em></h4>
-<h4 class="date"><em>2018-04-08</em></h4>
+<h4 class="date"><em>2018-04-08 (改訂：2019-04-12)</em></h4>
 
 </div>
 
 <div id="TOC">
 <ul>
 <li><a href="#r">Rの基礎</a><ul>
-<li><a href="#r">Rを電卓代わりに使う</a></li>
-<li><a>変数の利用</a></li>
-<li><a>ベクトルと行列</a></li>
+<li><a href="#r-1">Rを電卓代わりに使う</a></li>
+<li><a href="#section">変数の利用</a></li>
+<li><a href="#section-1">ベクトルと行列</a></li>
 </ul></li>
 </ul>
 </div>
 
-<p>このページでは、Rの基本的な使い方を解説する。 Rの使い方以前のインストール等の問題については、<a href="http://www.okadajp.org/RWiki/">Rjp Wiki</a> を参照。 <br><br></p>
-<section id="r" class="level2">
+<p>このページでは、Rの基本的な使い方を解説する。 Rの使い方以前のインストール等の問題については、<a href="installing-R.html">RとRStudioのインストール</a> を参照。 <br><br></p>
+<div id="r" class="section level2">
 <h2>Rの基礎</h2>
 <p>RのコードはRのConsoleに直接入力してもいいし、スクリプトに保存してRから呼び出してもよい。 スクリプトを使うときは、スクリプトファイルを<strong>ファイル名.R</strong> のように <strong>.R</strong> ファイルとして保存する。そして、RのConsole で<code>source(ファイル名.R)</code> とすれば、スクリプトが実行される。</p>
 <p>Rコマンドの区切りは改行である。改行すれば、1つのコマンドが終了したと認識される。 ただし、括弧が閉じていなかったり、行末に二項演算子 (+ など) があるときは、コマンドが次の行まで続いていると認識される。1行に複数のコマンドを書きたいときは <code>;</code> で区切る。</p>
@@ -489,295 +551,296 @@ $(document).ready(function () {
 <p>スペースは1つ以上ならいくつあっても1つのスペースがある場合と同じである。また、演算子の前後のスペースはあってもなくてもよい（コードの読み易さを考えてスペースの有無を決めること）。</p>
 <p><code>#</code> はコメントの開始として扱われる。行頭に<code>#</code> を書くと、その行すべてがコメントとして扱われる。 行の途中に<code>#</code> を書くと、<code>#</code> 以降がコメントとして扱われる。（コメントを書く作業は、コマンドを書く作業と同様に大切である。詳しくは第3回の授業で説明する。）</p>
 <p>Rに用意されている関数の使い方についてHelp を参照したいときは<code>?関数名</code> （または<code>help(関数名)</code>)　とする。ウェブブラウザでHelpを参照したいときは、<code>help.start()</code> とする。</p>
-<p>インストール済みのパッケージを利用するときは、<code>library(&quot;パッケージ名&quot;)</code> とする。たとえば、<strong>ggplot2</strong> パッケージを使いたいなら、<code>library('ggplot2')</code> とする。パッケージをインストールする際は、<code>install.packages('パッケージ名')</code> とする。その際、どのレポジトリからダウンロードするか尋ねられるので、自分に一番近いところ選ぶ。（パッケージをインストールする度にレポジトリを指定するのが面倒なら、.Rprofile であらかじめレポジトリを指定しておく。）</p>
+<p>インストール済みのパッケージを利用するときは、<code>library(&quot;パッケージ名&quot;)</code> とする。たとえば、<strong>ggplot2</strong> パッケージを使いたいなら、<code>library(&#39;ggplot2&#39;)</code> とする。パッケージをインストールする際は、<code>install.packages(&#39;パッケージ名&#39;)</code> とする。その際、どのレポジトリからダウンロードするか尋ねられるので、自分に一番近いところ選ぶ。（パッケージをインストールする度にレポジトリを指定するのが面倒なら、.Rprofile であらかじめレポジトリを指定しておく。）</p>
 <p><br></p>
-<section id="r" class="level3">
+<div id="r-1" class="section level3">
 <h3>Rを電卓代わりに使う</h3>
 <p>Rは電卓の代わりとして使うことができる。 たとえば、</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span>      <span class="co"># 足し算</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span>      <span class="co"># 足し算</span></a></code></pre></div>
 <pre><code>## [1] 2</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="dv">100</span> <span class="op">-</span><span class="st"> </span><span class="dv">20</span>   <span class="co"># 引き算</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="dv">100</span> <span class="op">-</span><span class="st"> </span><span class="dv">20</span>   <span class="co"># 引き算</span></a></code></pre></div>
 <pre><code>## [1] 80</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="dv">5</span> <span class="op">*</span><span class="st"> </span><span class="dv">8</span>      <span class="co"># 掛け算</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="dv">5</span> <span class="op">*</span><span class="st"> </span><span class="dv">8</span>      <span class="co"># 掛け算</span></a></code></pre></div>
 <pre><code>## [1] 40</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">3</span>      <span class="co"># 割り算</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">3</span>      <span class="co"># 割り算</span></a></code></pre></div>
 <pre><code>## [1] 0.6666667</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="dv">2</span><span class="op">^</span><span class="dv">3</span>        <span class="co"># 累乗</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="dv">2</span><span class="op">^</span><span class="dv">3</span>        <span class="co"># 累乗</span></a></code></pre></div>
 <pre><code>## [1] 8</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">sqrt</span>(<span class="dv">2</span>)    <span class="co"># 平方根</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">sqrt</span>(<span class="dv">2</span>)    <span class="co"># 平方根</span></a></code></pre></div>
 <pre><code>## [1] 1.414214</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="dv">2</span><span class="op">^</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">2</span>)    <span class="co"># sqrt() と同じ</span></a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="dv">2</span><span class="op">^</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">2</span>)    <span class="co"># sqrt() と同じ</span></a></code></pre></div>
 <pre><code>## [1] 1.414214</code></pre>
 <p>などの計算ができる。 計算の順番を指定するときは、() で囲めばよい。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">(<span class="dv">5</span> <span class="op">*</span><span class="st"> </span>(<span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)) <span class="op">^</span><span class="dv">3</span>  <span class="co"># (2 + 1) を最初に計算し、それに5を掛けてから最後に三乗する</span></a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">(<span class="dv">5</span> <span class="op">*</span><span class="st"> </span>(<span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)) <span class="op">^</span><span class="dv">3</span>  <span class="co"># (2 + 1) を最初に計算し、それに5を掛けてから最後に三乗する</span></a></code></pre></div>
 <pre><code>## [1] 3375</code></pre>
 <p><br></p>
-</section>
-<section class="level3">
+</div>
+<div id="section" class="section level3">
 <h3>変数の利用</h3>
-<p>Rでは、変数を（ある程度）自由に作ることができる。 変数の名前は自由に決めてよい（ただし、数字から始まるものはだめ。また、“-” [ハイフン] はマイナスと区別できないので使えない）。 たとえば、</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">a &lt;-<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">b &lt;-<span class="st"> </span><span class="dv">2</span></a></code></pre></div>
-<p>とすると、<span class="math inline">\(a\)</span>, <span class="math inline">\(b\)</span> という2つの変数ができる。ここで <code>&lt;-</code> は変数に値を割り当てることを意味する。 （<code>&lt;-</code> の代わりに<code>=</code> を使うこともできるが、混乱の元になるので、変数を定義するときは常に<code>&lt;-</code> を使うことにする。） ここで変数名を入力すると、変数の中身が表示される。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">a</a></code></pre></div>
+<p>Rでは、変数（正確にはオブジェクト）を（ある程度）自由に作ることができる。 変数の名前は自由に決めてよい（ただし、数字から始まるものはだめ。また、“-” [ハイフン] はマイナスと区別できないので使えない）。 たとえば、</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">a &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb17-2" title="2">b &lt;-<span class="st"> </span><span class="dv">2</span></a></code></pre></div>
+<p>とすると、<span class="math inline">\(a\)</span>, <span class="math inline">\(b\)</span> という2つの変数ができる。ここで <code>&lt;-</code> は変数に値を割り当てることを意味する。 （<code>&lt;-</code> の代わりに<code>=</code> を使うこともできるが、混乱の元になるので、変数を定義するときは常に<code>&lt;-</code> を使うことにする。）</p>
+<p>ここで変数名を入力すると、変数の中身が表示される。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">a</a></code></pre></div>
 <pre><code>## [1] 1</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">b</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">b</a></code></pre></div>
 <pre><code>## [1] 2</code></pre>
 <p>この変数は、計算に使える。</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">a <span class="op">+</span><span class="st"> </span>b</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">a <span class="op">+</span><span class="st"> </span>b</a></code></pre></div>
 <pre><code>## [1] 3</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">a <span class="op">-</span><span class="st"> </span>b</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">a <span class="op">-</span><span class="st"> </span>b</a></code></pre></div>
 <pre><code>## [1] -1</code></pre>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">a <span class="op">*</span><span class="st"> </span>b</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1">a <span class="op">*</span><span class="st"> </span>b</a></code></pre></div>
 <pre><code>## [1] 2</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">a <span class="op">/</span><span class="st"> </span>b</a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1">a <span class="op">/</span><span class="st"> </span>b</a></code></pre></div>
 <pre><code>## [1] 0.5</code></pre>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">b<span class="op">^</span>a</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1">b<span class="op">^</span>a</a></code></pre></div>
 <pre><code>## [1] 2</code></pre>
 <p>また、</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">c &lt;-<span class="st"> </span>a</a>
-<a class="sourceLine" id="cb32-2" data-line-number="2">a &lt;-<span class="st"> </span><span class="dv">3</span></a></code></pre></div>
-<p>とすると、<span class="math inline">\(c = 1\)</span>, <span class="math inline">\(a = 3\)</span> となる（各自確かめること）。</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1">d &lt;-<span class="st"> </span>a</a>
+<a class="sourceLine" id="cb32-2" title="2">a &lt;-<span class="st"> </span><span class="dv">3</span></a></code></pre></div>
+<p>とすると、<span class="math inline">\(d = 1\)</span>, <span class="math inline">\(a = 3\)</span> となる（各自確かめること）。</p>
 <p>また、変数名には日本語も使える。 たとえば、</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1">変数1 &lt;-<span class="st"> </span><span class="dv">5</span></a>
-<a class="sourceLine" id="cb33-2" data-line-number="2">変数2 &lt;-<span class="st"> </span><span class="dv">7</span></a>
-<a class="sourceLine" id="cb33-3" data-line-number="3">変数1 <span class="op">*</span><span class="st"> </span>変数2</a></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1">変数1 &lt;-<span class="st"> </span><span class="dv">5</span></a>
+<a class="sourceLine" id="cb33-2" title="2">変数2 &lt;-<span class="st"> </span><span class="dv">7</span></a>
+<a class="sourceLine" id="cb33-3" title="3">変数1 <span class="op">*</span><span class="st"> </span>変数2</a></code></pre></div>
 <pre><code>## [1] 35</code></pre>
 <p>とすることも可能である。しかし、変数名に日本語を使うと、（1）英語/日本語の切り替えが面倒であり、（2）文字化け等の予期せぬ問題が生じることがあるので、なるべく日本語の変数名は使わないほうが無難である。</p>
 <p>変数の割当と画面への出力を同時に行いたいときは、全体を <code>()</code> で囲む。</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">(d &lt;-<span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1">(d &lt;-<span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span>)</a></code></pre></div>
 <pre><code>## [1] 15</code></pre>
 <p>変数を消去したいときは<code>rm()</code> 関数を使う。</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">rm</span>(d)</a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1"><span class="kw">rm</span>(d)</a></code></pre></div>
 <p><br></p>
-</section>
-<section class="level3">
+</div>
+<div id="section-1" class="section level3">
 <h3>ベクトルと行列</h3>
-<section id="-vectors" class="level4">
+<div id="vectors" class="section level4">
 <h4>ベクトル (vectors)</h4>
 <p>Rで特定のベクトル (vector) を作りたいときは、<code>c()</code> を使う。 たとえば、1, 2, 3, 4, 5 という5つの数字からなるベクトル <strong>a</strong> を作るには、</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1">a &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1">a &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>)</a></code></pre></div>
 <p>とする。このベクトルを画面に表示すると、</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1">a</a></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1">a</a></code></pre></div>
 <pre><code>## [1] 1 2 3 4 5</code></pre>
 <p>となる。</p>
 <p>ベクトルの中身は文字列でもかまわない。 たとえば、</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1">rails &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">'Hankyu'</span>, <span class="st">'Hanshin'</span>, <span class="st">'JR'</span>)</a></code></pre></div>
-<p>とすれば、文字列 (characters) のベクトルができる。 このように、文字列は引用符（<code>''</code> でも<code>&quot;&quot;</code> でもよい）で囲む。 <br></p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" title="1">rails &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;KUT&#39;</span>, <span class="st">&#39;University of Kochi&#39;</span>, <span class="st">&#39;Kochi University&#39;</span>)</a></code></pre></div>
+<p>とすれば、文字列 (characters) のベクトルができる。 このように、文字列は引用符（<code>&#39;&#39;</code> でも<code>&quot;&quot;</code> でもよい）で囲む。 <br></p>
 <p>ひとつひとつの要素を指定する代わりに、様々な方法でベクトルを作ることが可能である。 たとえば、<code>seq()</code> 関数を使うと、一連の数字からなるベクトルを作ることができる。</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" data-line-number="1"><span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="dt">by =</span> <span class="dv">1</span>)  <span class="co"># 1から20までの整数。1:20 でも同じ</span></a></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1"><span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="dt">by =</span> <span class="dv">1</span>)  <span class="co"># 1から20までの整数。1:20 でも同じ</span></a></code></pre></div>
 <pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</code></pre>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" data-line-number="1"><span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="dt">by =</span> <span class="dv">2</span>)  <span class="co"># 1から19までの奇数</span></a></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1"><span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="dt">by =</span> <span class="dv">2</span>)  <span class="co"># 1から19までの奇数</span></a></code></pre></div>
 <pre><code>##  [1]  1  3  5  7  9 11 13 15 17 19</code></pre>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1"><span class="kw">seq</span>(<span class="dv">2</span>, <span class="dv">20</span>, <span class="dt">by =</span> <span class="dv">2</span>)  <span class="co"># 2から20までの偶数</span></a></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" title="1"><span class="kw">seq</span>(<span class="dv">2</span>, <span class="dv">20</span>, <span class="dt">by =</span> <span class="dv">2</span>)  <span class="co"># 2から20までの偶数</span></a></code></pre></div>
 <pre><code>##  [1]  2  4  6  8 10 12 14 16 18 20</code></pre>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" data-line-number="1"><span class="kw">seq</span>(<span class="dv">20</span>, <span class="dv">1</span>, <span class="dt">by =</span> <span class="dv">-5</span>)  <span class="co"># 降順、間隔は5</span></a></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1"><span class="kw">seq</span>(<span class="dv">20</span>, <span class="dv">1</span>, <span class="dt">by =</span> <span class="dv">-5</span>)  <span class="co"># 降順、間隔は5</span></a></code></pre></div>
 <pre><code>## [1] 20 15 10  5</code></pre>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" data-line-number="1"><span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">100</span>, <span class="dt">length.out =</span> <span class="dv">10</span>) <span class="co"># 最小値が1、最大値が100で、要素の数 (length) が10のベクトル</span></a></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" title="1"><span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">100</span>, <span class="dt">length.out =</span> <span class="dv">10</span>) <span class="co"># 最小値が1、最大値が100で、要素の数 (length) が10のベクトル</span></a></code></pre></div>
 <pre><code>##  [1]   1  12  23  34  45  56  67  78  89 100</code></pre>
 <p><code>seq(x, y, by = 1)</code> の場合はより単純に <code>x:y</code>とすればよい。</p>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" data-line-number="1"><span class="dv">1</span><span class="op">:</span><span class="dv">20</span></a></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" title="1"><span class="dv">1</span><span class="op">:</span><span class="dv">20</span></a></code></pre></div>
 <pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</code></pre>
 <p><br></p>
 <p>また、<code>rep()</code>関数も便利である。</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" data-line-number="1"><span class="kw">rep</span>(<span class="dv">3</span>, <span class="dv">10</span>)   <span class="co"># 3が10個のベクトル</span></a></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" title="1"><span class="kw">rep</span>(<span class="dv">3</span>, <span class="dv">10</span>)   <span class="co"># 3が10個のベクトル</span></a></code></pre></div>
 <pre><code>##  [1] 3 3 3 3 3 3 3 3 3 3</code></pre>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" data-line-number="1"><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>), <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>))  <span class="co"># aが3つ, bが1つ, cが2つのベクトル</span></a></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" title="1"><span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&#39;a&#39;</span>, <span class="st">&#39;b&#39;</span>, <span class="st">&#39;c&#39;</span>), <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>))  <span class="co"># aが3つ, bが1つ, cが2つのベクトル</span></a></code></pre></div>
 <pre><code>## [1] &quot;a&quot; &quot;a&quot; &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;c&quot;</code></pre>
 <p>ベクトルの<span class="math inline">\(i\)</span>番目の要素にアクセスするには<code>ベクトル名[i]</code>とする。 同時に複数の要素を取り出すこともできる。 たとえば、</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" data-line-number="1">a &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">10</span>, <span class="dv">100</span>, <span class="dt">length =</span> <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb58-2" data-line-number="2">b &lt;-<span class="st"> </span><span class="dv">10</span><span class="op">:</span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb58-3" data-line-number="3">a[<span class="dv">2</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" title="1">a &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">10</span>, <span class="dv">100</span>, <span class="dt">length =</span> <span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb58-2" title="2">b &lt;-<span class="st"> </span><span class="dv">10</span><span class="op">:</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb58-3" title="3">a[<span class="dv">2</span>]</a></code></pre></div>
 <pre><code>## [1] 20</code></pre>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1">b[<span class="dv">2</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" title="1">b[<span class="dv">2</span>]</a></code></pre></div>
 <pre><code>## [1] 9</code></pre>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1">a[<span class="dv">3</span><span class="op">:</span><span class="dv">5</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" title="1">a[<span class="dv">3</span><span class="op">:</span><span class="dv">5</span>]</a></code></pre></div>
 <pre><code>## [1] 30 40 50</code></pre>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" data-line-number="1">a[<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>)]</a></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" title="1">a[<span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">5</span>)]</a></code></pre></div>
 <pre><code>## [1] 10 30 50</code></pre>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb66-1" data-line-number="1">a[<span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">2</span>, <span class="dv">4</span>)]</a></code></pre></div>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb66-1" title="1">a[<span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">2</span>, <span class="dv">4</span>)]</a></code></pre></div>
 <pre><code>## [1] 80 20 40</code></pre>
 <p><br></p>
-</section>
-<section class="level4">
+</div>
+<div id="section-2" class="section level4">
 <h4>ベクトルの演算</h4>
 <p>Rでは、ベクトルを使った演算が可能である。 たとえば、次のような計算ができる。</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb68-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span></a>
-<a class="sourceLine" id="cb68-2" data-line-number="2">x <span class="op">+</span><span class="st"> </span><span class="dv">10</span>    <span class="co"># ベクトルxの各要素に10を加える</span></a></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb68-1" title="1">x &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span></a>
+<a class="sourceLine" id="cb68-2" title="2">x <span class="op">+</span><span class="st"> </span><span class="dv">10</span>    <span class="co"># ベクトルxの各要素に10を加える</span></a></code></pre></div>
 <pre><code>##  [1] 11 12 13 14 15 16 17 18 19 20</code></pre>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1">x <span class="op">-</span><span class="st"> </span><span class="dv">5</span>     <span class="co"># ベクトルxの各要素から5を引く</span></a></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" title="1">x <span class="op">-</span><span class="st"> </span><span class="dv">5</span>     <span class="co"># ベクトルxの各要素から5を引く</span></a></code></pre></div>
 <pre><code>##  [1] -4 -3 -2 -1  0  1  2  3  4  5</code></pre>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" data-line-number="1">x <span class="op">*</span><span class="st"> </span><span class="dv">2</span>     <span class="co"># ベクトルxの各要素に2をかける</span></a></code></pre></div>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" title="1">x <span class="op">*</span><span class="st"> </span><span class="dv">2</span>     <span class="co"># ベクトルxの各要素に2をかける</span></a></code></pre></div>
 <pre><code>##  [1]  2  4  6  8 10 12 14 16 18 20</code></pre>
-<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" data-line-number="1">x<span class="op">/</span><span class="dv">3</span>       <span class="co"># ベクトルxの各要素を3で割る</span></a></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" title="1">x<span class="op">/</span><span class="dv">3</span>       <span class="co"># ベクトルxの各要素を3で割る</span></a></code></pre></div>
 <pre><code>##  [1] 0.3333333 0.6666667 1.0000000 1.3333333 1.6666667 2.0000000 2.3333333
 ##  [8] 2.6666667 3.0000000 3.3333333</code></pre>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1">x<span class="op">^</span><span class="dv">2</span>       <span class="co"># ベクトルxの各要素を2乗する</span></a></code></pre></div>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" title="1">x<span class="op">^</span><span class="dv">2</span>       <span class="co"># ベクトルxの各要素を2乗する</span></a></code></pre></div>
 <pre><code>##  [1]   1   4   9  16  25  36  49  64  81 100</code></pre>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" data-line-number="1"><span class="kw">sqrt</span>(x)   <span class="co"># ベクトルxの各要素の平方根（square root）を計算する</span></a></code></pre></div>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" title="1"><span class="kw">sqrt</span>(x)   <span class="co"># ベクトルxの各要素の平方根（square root）を計算する</span></a></code></pre></div>
 <pre><code>##  [1] 1.000000 1.414214 1.732051 2.000000 2.236068 2.449490 2.645751
 ##  [8] 2.828427 3.000000 3.162278</code></pre>
 <p>また、複数のベクトルを使って、次のような計算ができる。</p>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span></a>
-<a class="sourceLine" id="cb80-2" data-line-number="2">y &lt;-<span class="st"> </span><span class="dv">-10</span><span class="op">:-</span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb80-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb80-4" data-line-number="4"><span class="co"># xのi番目の要素とyのi番目の要素を足す（i = 1, 2, ..., 10）</span></a>
-<a class="sourceLine" id="cb80-5" data-line-number="5">x <span class="op">+</span><span class="st"> </span>y</a></code></pre></div>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" title="1">x &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span></a>
+<a class="sourceLine" id="cb80-2" title="2">y &lt;-<span class="st"> </span><span class="dv">-10</span><span class="op">:-</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb80-3" title="3"></a>
+<a class="sourceLine" id="cb80-4" title="4"><span class="co"># xのi番目の要素とyのi番目の要素を足す（i = 1, 2, ..., 10）</span></a>
+<a class="sourceLine" id="cb80-5" title="5">x <span class="op">+</span><span class="st"> </span>y</a></code></pre></div>
 <pre><code>##  [1] -9 -7 -5 -3 -1  1  3  5  7  9</code></pre>
-<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb82-1" data-line-number="1"><span class="co"># xのi番目の要素からyのi番目の要素を引く（i = 1, 2, ..., 10）</span></a>
-<a class="sourceLine" id="cb82-2" data-line-number="2">x <span class="op">-</span><span class="st"> </span>y</a></code></pre></div>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb82-1" title="1"><span class="co"># xのi番目の要素からyのi番目の要素を引く（i = 1, 2, ..., 10）</span></a>
+<a class="sourceLine" id="cb82-2" title="2">x <span class="op">-</span><span class="st"> </span>y</a></code></pre></div>
 <pre><code>##  [1] 11 11 11 11 11 11 11 11 11 11</code></pre>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb84-1" data-line-number="1"><span class="co"># xのi番目の要素とyのi番目の要素をかける（i = 1, 2, ..., 10）</span></a>
-<a class="sourceLine" id="cb84-2" data-line-number="2">x <span class="op">*</span><span class="st"> </span>y</a></code></pre></div>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb84-1" title="1"><span class="co"># xのi番目の要素とyのi番目の要素をかける（i = 1, 2, ..., 10）</span></a>
+<a class="sourceLine" id="cb84-2" title="2">x <span class="op">*</span><span class="st"> </span>y</a></code></pre></div>
 <pre><code>##  [1] -10 -18 -24 -28 -30 -30 -28 -24 -18 -10</code></pre>
-<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb86-1" data-line-number="1"><span class="co"># xのi番目の要素をyのi番目の要素で割る（i = 1, 2, ..., 10）</span></a>
-<a class="sourceLine" id="cb86-2" data-line-number="2">x<span class="op">/</span>y</a></code></pre></div>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb86-1" title="1"><span class="co"># xのi番目の要素をyのi番目の要素で割る（i = 1, 2, ..., 10）</span></a>
+<a class="sourceLine" id="cb86-2" title="2">x<span class="op">/</span>y</a></code></pre></div>
 <pre><code>##  [1]  -0.1000000  -0.2222222  -0.3750000  -0.5714286  -0.8333333
 ##  [6]  -1.2000000  -1.7500000  -2.6666667  -4.5000000 -10.0000000</code></pre>
-<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb88-1" data-line-number="1"><span class="co"># xのi番目の要素を「yのi番目の要素」乗にする（i = 1, 2, ..., 10）</span></a>
-<a class="sourceLine" id="cb88-2" data-line-number="2">x<span class="op">^</span>y</a></code></pre></div>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb88-1" title="1"><span class="co"># xのi番目の要素を「yのi番目の要素」乗にする（i = 1, 2, ..., 10）</span></a>
+<a class="sourceLine" id="cb88-2" title="2">x<span class="op">^</span>y</a></code></pre></div>
 <pre><code>##  [1] 1.000000e+00 1.953125e-03 1.524158e-04 6.103516e-05 6.400000e-05
 ##  [6] 1.286008e-04 4.164931e-04 1.953125e-03 1.234568e-02 1.000000e-01</code></pre>
 <p>ベクトル同士の足し算（引き算）をしても、ベクトルの長さは変わらない。</p>
-<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb90-1" data-line-number="1"><span class="kw">length</span>(x); <span class="kw">length</span>(y)</a></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb90-1" title="1"><span class="kw">length</span>(x); <span class="kw">length</span>(y)</a></code></pre></div>
 <pre><code>## [1] 10</code></pre>
 <pre><code>## [1] 10</code></pre>
-<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb93-1" data-line-number="1"><span class="kw">length</span>(x <span class="op">+</span><span class="st"> </span>y)</a></code></pre></div>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb93-1" title="1"><span class="kw">length</span>(x <span class="op">+</span><span class="st"> </span>y)</a></code></pre></div>
 <pre><code>## [1] 10</code></pre>
 <p>長さの異なるベクトルを使って演算を行うと、短いの方のベクトルは要素をリサイクルして対応する。</p>
-<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb95-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span></a>
-<a class="sourceLine" id="cb95-2" data-line-number="2">y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">100</span>, <span class="dv">200</span>)</a>
-<a class="sourceLine" id="cb95-3" data-line-number="3">x <span class="op">+</span><span class="st"> </span>y</a></code></pre></div>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb95-1" title="1">x &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span></a>
+<a class="sourceLine" id="cb95-2" title="2">y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">100</span>, <span class="dv">200</span>)</a>
+<a class="sourceLine" id="cb95-3" title="3">x <span class="op">+</span><span class="st"> </span>y</a></code></pre></div>
 <pre><code>##  [1] 101 202 103 204 105 206 107 208 109 210</code></pre>
 <p>ただし、長い方のベクトルの長さが短い方のベクトルの長さの整数倍になっていないときは、警告文が出る。</p>
-<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb97-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span></a>
-<a class="sourceLine" id="cb97-2" data-line-number="2">y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">300</span>)</a>
-<a class="sourceLine" id="cb97-3" data-line-number="3">x <span class="op">+</span><span class="st"> </span>y</a></code></pre></div>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb97-1" title="1">x &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">10</span></a>
+<a class="sourceLine" id="cb97-2" title="2">y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">300</span>)</a>
+<a class="sourceLine" id="cb97-3" title="3">x <span class="op">+</span><span class="st"> </span>y</a></code></pre></div>
 <pre><code>## Warning in x + y: longer object length is not a multiple of shorter object
 ## length</code></pre>
 <pre><code>##  [1] 101 202 303 104 205 306 107 208 309 110</code></pre>
 <p>2つのベクトルの内積 (dot product) は<code>%*%</code> で、直積 (outer product) は<code>%o%</code> または<code>outer()</code> で求められる。</p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb100-2" data-line-number="2">y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>)</a>
-<a class="sourceLine" id="cb100-3" data-line-number="3">x <span class="op">%*%</span><span class="st"> </span>y      <span class="co"># xとyの内積</span></a></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" title="1">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb100-2" title="2">y &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>)</a>
+<a class="sourceLine" id="cb100-3" title="3">x <span class="op">%*%</span><span class="st"> </span>y      <span class="co"># xとyの内積</span></a></code></pre></div>
 <pre><code>##      [,1]
 ## [1,]  220</code></pre>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb102-1" data-line-number="1">x <span class="op">%o%</span><span class="st"> </span>y      <span class="co"># xとyの直積</span></a></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb102-1" title="1">x <span class="op">%o%</span><span class="st"> </span>y      <span class="co"># xとyの直積</span></a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]   10   20   30
 ## [2,]   30   60   90
 ## [3,]   50  100  150</code></pre>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb104-1" data-line-number="1"><span class="kw">outer</span>(x, y)  <span class="co"># xとyの直積</span></a></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb104-1" title="1"><span class="kw">outer</span>(x, y)  <span class="co"># xとyの直積</span></a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]   10   20   30
 ## [2,]   30   60   90
 ## [3,]   50  100  150</code></pre>
 <p><br></p>
-</section>
-<section id="-matrices" class="level4">
+</div>
+<div id="matrices" class="section level4">
 <h4>行列 (matrices)</h4>
 <p>Rで行列を作るには、<code>matrix()</code>関数を使う。 たとえば、</p>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb106-1" data-line-number="1">(A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb106-1" title="1">(A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    1    2    3
 ## [2,]    4    5    6
 ## [3,]    7    8    9</code></pre>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" data-line-number="1">(B &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">byrow =</span> <span class="ot">FALSE</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" title="1">(B &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">byrow =</span> <span class="ot">FALSE</span>))</a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    1    4    7
 ## [2,]    2    5    8
 ## [3,]    3    6    9</code></pre>
 <p>のようにする。 ここで、行列Aと行列Bの違いに注目する。 要素全体をひとつの集合としてみると、AとBの行列は全く同じである。 これは、上のコードでは<strong>1:9</strong>という部分が同じだからである。 しかし、要素の並び方が異なる。 Aを作ったコードは<strong>byrow = TRUE</strong> となっている。 これは、行 (row) 単位でセルを埋めて行くということである。 それに対し、Bでは<strong>byrow = FALSE</strong> となっている。 これは行単位でセルを埋めない（したがって、列 [col] 単位で埋める）ということを意味する。 この違いが、AとBの違いを生み出している。 行列を作るときは行数 <em>nrow</em> と列数 <em>ncol</em> を指定するが、要素の合計数が決まっているときは、どちらか一方を指定すれば、もう一方は自動的に決められる。 上の例では、要素の数が9で、行の数に3を指定したので、列の数は自動的に 9/3 = 3 になっている。</p>
 <p>行列の各行と各列にはそれぞれ名前を付けることができる。</p>
-<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb110-1" data-line-number="1"><span class="kw">row.names</span>(A) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">'row1'</span>, <span class="st">'row2'</span>, <span class="st">'row3'</span>)  <span class="co"># 各行に名前をつける</span></a>
-<a class="sourceLine" id="cb110-2" data-line-number="2"><span class="kw">colnames</span>(A) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">'col1'</span>, <span class="st">'col2'</span>, <span class="st">'col3'</span>)   <span class="co"># 各列に名前をつける</span></a>
-<a class="sourceLine" id="cb110-3" data-line-number="3">A</a></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb110-1" title="1"><span class="kw">row.names</span>(A) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;row1&#39;</span>, <span class="st">&#39;row2&#39;</span>, <span class="st">&#39;row3&#39;</span>)  <span class="co"># 各行に名前をつける</span></a>
+<a class="sourceLine" id="cb110-2" title="2"><span class="kw">colnames</span>(A) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;col1&#39;</span>, <span class="st">&#39;col2&#39;</span>, <span class="st">&#39;col3&#39;</span>)   <span class="co"># 各列に名前をつける</span></a>
+<a class="sourceLine" id="cb110-3" title="3">A</a></code></pre></div>
 <pre><code>##      col1 col2 col3
 ## row1    1    2    3
 ## row2    4    5    6
 ## row3    7    8    9</code></pre>
 <p><code>row.names()</code>には’.’ があり、<code>colnames()</code>にはそれがないことに注意。</p>
 <p>行列の<span class="math inline">\(i\)</span>行<span class="math inline">\(j\)</span>列を取り出すには、<code>行列名[i, j]</code>とする。 例えば</p>
-<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb112-1" data-line-number="1">A[<span class="dv">1</span>, <span class="dv">3</span>]          <span class="co"># 第1行、第3列の要素を取り出す</span></a></code></pre></div>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb112-1" title="1">A[<span class="dv">1</span>, <span class="dv">3</span>]          <span class="co"># 第1行、第3列の要素を取り出す</span></a></code></pre></div>
 <pre><code>## [1] 3</code></pre>
-<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb114-1" data-line-number="1">A[<span class="dv">2</span>, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]    <span class="co"># 第2行で、第1列と第3列の要素を取り出す</span></a></code></pre></div>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb114-1" title="1">A[<span class="dv">2</span>, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]    <span class="co"># 第2行で、第1列と第3列の要素を取り出す</span></a></code></pre></div>
 <pre><code>## col1 col3 
 ##    4    6</code></pre>
-<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb116-1" data-line-number="1">A[<span class="dv">3</span>, ]           <span class="co"># 第3行の要素をすべて取り出す</span></a></code></pre></div>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb116-1" title="1">A[<span class="dv">3</span>, ]           <span class="co"># 第3行の要素をすべて取り出す</span></a></code></pre></div>
 <pre><code>## col1 col2 col3 
 ##    7    8    9</code></pre>
-<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb118-1" data-line-number="1">A[, <span class="dv">2</span>]           <span class="co"># 第2列の要素をすべて取り出す</span></a></code></pre></div>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb118-1" title="1">A[, <span class="dv">2</span>]           <span class="co"># 第2列の要素をすべて取り出す</span></a></code></pre></div>
 <pre><code>## row1 row2 row3 
 ##    2    5    8</code></pre>
 <p><br></p>
-</section>
-<section class="level4">
+</div>
+<div id="section-3" class="section level4">
 <h4>行列の演算</h4>
 <p>Rでは行列を使った計算ができる。</p>
 <p>基本的な演算の結果は次のとおりである。</p>
-<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb120-1" data-line-number="1">A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="dt">ncol =</span> <span class="dv">3</span>)   　<span class="co"># 行列Aを定義する</span></a>
-<a class="sourceLine" id="cb120-2" data-line-number="2">B &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="op">-</span><span class="dv">4</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">ncol =</span> <span class="dv">3</span>)    <span class="co"># 行列Bを定義する</span></a>
-<a class="sourceLine" id="cb120-3" data-line-number="3">A <span class="op">+</span><span class="st"> </span><span class="dv">3</span>   <span class="co"># 行列の各要素に3を加える</span></a></code></pre></div>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb120-1" title="1">A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="dt">ncol =</span> <span class="dv">3</span>)   　<span class="co"># 行列Aを定義する</span></a>
+<a class="sourceLine" id="cb120-2" title="2">B &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="op">-</span><span class="dv">4</span><span class="op">:</span><span class="dv">4</span>, <span class="dt">ncol =</span> <span class="dv">3</span>)    <span class="co"># 行列Bを定義する</span></a>
+<a class="sourceLine" id="cb120-3" title="3">A <span class="op">+</span><span class="st"> </span><span class="dv">3</span>   <span class="co"># 行列の各要素に3を加える</span></a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    4    7   10
 ## [2,]    5    8   11
 ## [3,]    6    9   12</code></pre>
-<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb122-1" data-line-number="1"><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>A   <span class="co"># 行列の各要素を2倍する</span></a></code></pre></div>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb122-1" title="1"><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>A   <span class="co"># 行列の各要素を2倍する</span></a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    2    8   14
 ## [2,]    4   10   16
 ## [3,]    6   12   18</code></pre>
-<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb124-1" data-line-number="1">A <span class="op">+</span><span class="st"> </span>B   <span class="co"># Aのi行j列要素とBのi行j列要素を足す (i, j = 1, 2, 3)</span></a></code></pre></div>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb124-1" title="1">A <span class="op">+</span><span class="st"> </span>B   <span class="co"># Aのi行j列要素とBのi行j列要素を足す (i, j = 1, 2, 3)</span></a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]   -3    3    9
 ## [2,]   -1    5   11
 ## [3,]    1    7   13</code></pre>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb126-1" data-line-number="1">A <span class="op">*</span><span class="st"> </span>B   <span class="co"># 行列の要素同士の積</span></a></code></pre></div>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb126-1" title="1">A <span class="op">*</span><span class="st"> </span>B   <span class="co"># 行列の要素同士の積</span></a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]   -4   -4   14
 ## [2,]   -6    0   24
 ## [3,]   -6    6   36</code></pre>
-<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb128-1" data-line-number="1">A <span class="op">%*%</span><span class="st"> </span>B  <span class="co"># 行列の積</span></a></code></pre></div>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb128-1" title="1">A <span class="op">%*%</span><span class="st"> </span>B  <span class="co"># 行列の積</span></a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]  -30    6   42
 ## [2,]  -39    6   51
 ## [3,]  -48    6   60</code></pre>
-<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb130-1" data-line-number="1">B <span class="op">%*%</span><span class="st"> </span>A  <span class="co"># 行列の積</span></a></code></pre></div>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb130-1" title="1">B <span class="op">%*%</span><span class="st"> </span>A  <span class="co"># 行列の積</span></a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    0   -9  -18
 ## [2,]    6    6    6
 ## [3,]   12   21   30</code></pre>
-<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb132-1" data-line-number="1">## AB と BA は異なる</a>
-<a class="sourceLine" id="cb132-2" data-line-number="2">A <span class="op">%*%</span><span class="st"> </span>B <span class="op">==</span><span class="st"> </span>B <span class="op">%*%</span><span class="st"> </span>A  <span class="co"># 要素ごとに等しいかどうか比較する</span></a></code></pre></div>
+<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb132-1" title="1"><span class="co">## AB と BA は異なる</span></a>
+<a class="sourceLine" id="cb132-2" title="2">A <span class="op">%*%</span><span class="st"> </span>B <span class="op">==</span><span class="st"> </span>B <span class="op">%*%</span><span class="st"> </span>A  <span class="co"># 要素ごとに等しいかどうか比較する</span></a></code></pre></div>
 <pre><code>##       [,1]  [,2]  [,3]
 ## [1,] FALSE FALSE FALSE
 ## [2,] FALSE  TRUE FALSE
 ## [3,] FALSE FALSE FALSE</code></pre>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb134-1" data-line-number="1">a &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>  <span class="co"># ベクトルを定義する</span></a>
-<a class="sourceLine" id="cb134-2" data-line-number="2">A <span class="op">%*%</span><span class="st"> </span>a   <span class="co"># (3行3列) x (3行1列) なので結果は3行1列</span></a></code></pre></div>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb134-1" title="1">a &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>  <span class="co"># ベクトルを定義する</span></a>
+<a class="sourceLine" id="cb134-2" title="2">A <span class="op">%*%</span><span class="st"> </span>a   <span class="co"># (3行3列) x (3行1列) なので結果は3行1列</span></a></code></pre></div>
 <pre><code>##      [,1]
 ## [1,]   30
 ## [2,]   36
 ## [3,]   42</code></pre>
 <p>行列の転置 (transpose) には<code>t()</code>を使う。</p>
-<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb136-1" data-line-number="1"><span class="kw">t</span>(A)</a></code></pre></div>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb136-1" title="1"><span class="kw">t</span>(A)</a></code></pre></div>
 <pre><code>##      [,1] [,2] [,3]
 ## [1,]    1    2    3
 ## [2,]    4    5    6
 ## [3,]    7    8    9</code></pre>
 <p>逆行列は<code>solve()</code>で求める。</p>
-<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb138-1" data-line-number="1">C &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, </a>
-<a class="sourceLine" id="cb138-2" data-line-number="2">              <span class="dv">7</span>, <span class="dv">11</span>, <span class="dv">13</span>,</a>
-<a class="sourceLine" id="cb138-3" data-line-number="3">              <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">23</span>),</a>
-<a class="sourceLine" id="cb138-4" data-line-number="4">            <span class="dt">nrow =</span> <span class="dv">3</span>)</a>
-<a class="sourceLine" id="cb138-5" data-line-number="5"><span class="kw">solve</span>(C)</a></code></pre></div>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb138-1" title="1">C &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, </a>
+<a class="sourceLine" id="cb138-2" title="2">              <span class="dv">7</span>, <span class="dv">11</span>, <span class="dv">13</span>,</a>
+<a class="sourceLine" id="cb138-3" title="3">              <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">23</span>),</a>
+<a class="sourceLine" id="cb138-4" title="4">            <span class="dt">nrow =</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb138-5" title="5"><span class="kw">solve</span>(C)</a></code></pre></div>
 <pre><code>##             [,1]       [,2]        [,3]
 ## [1,] -0.07692308 -0.7692308  0.69230769
 ## [2,] -0.33333333  0.5000000 -0.16666667
 ## [3,]  0.20512821 -0.1153846 -0.01282051</code></pre>
 <p>特異行列 (a singular matrix) に<code>solve()</code> を使うとエラーになる。</p>
-<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb140-1" data-line-number="1">S &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="dt">nrow =</span> <span class="dv">3</span>)</a>
-<a class="sourceLine" id="cb140-2" data-line-number="2"><span class="kw">solve</span>(S)</a></code></pre></div>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb140-1" title="1">S &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">9</span>, <span class="dt">nrow =</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb140-2" title="2"><span class="kw">solve</span>(S)</a></code></pre></div>
 <pre><code>## Error in solve.default(S): Lapack routine dgesv: system is exactly singular: U[3,3] = 0</code></pre>
 <p>エラーメッセージを読めば何がまずいのかわかるので、エラーが出たら内容をよく読むこと。 この場合は、行列が特異行列 (singular) であることを教えてくれている。</p>
 <p>日本語版を利用している場合は、エラーメッセージも日本語で表示される（はず）。</p>
@@ -786,9 +849,9 @@ $(document).ready(function () {
 <div style="text-align: right;">
 <p><a href="../">授業の内容に戻る</a></p>
 </div>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
 
