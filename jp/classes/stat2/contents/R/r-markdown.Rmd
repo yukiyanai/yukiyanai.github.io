@@ -11,8 +11,8 @@ output:
     latex_engine: lualatex
     toc: yes
 documentclass: ltjsarticle
-title: "計量経済学"
-subtitle: "Rマークダウンの使い方"
+title: "統計学2"
+subtitle: "Rマークダウンの使い方と2変数の記述統計"
 author: "矢内　勇生"
 date: "2018-04-19（改訂：2019-04-19）"
 ---
