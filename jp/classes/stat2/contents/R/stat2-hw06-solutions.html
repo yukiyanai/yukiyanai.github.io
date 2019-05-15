@@ -11,7 +11,7 @@
 
 <meta name="author" content="矢内　勇生" />
 
-<meta name="date" content="2018-05-31" />
+<meta name="date" content="2019-05-15" />
 
 <title>統計学2</title>
 
@@ -199,10 +199,10 @@ window.buildTabsets = function(tocID) {
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -215,13 +215,11 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
+  { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -262,7 +260,29 @@ code span.st { color: #4e9a06; } /* String */
 code span.va { color: #000000; } /* Variable */
 code span.vs { color: #4e9a06; } /* VerbatimString */
 code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -416,9 +436,7 @@ page-break-after: avoid;
 }
 </style>
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -437,25 +455,98 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
 <!-- code folding -->
 
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -465,106 +556,104 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">統計学2</h1>
-<h3 class="subtitle"><em>課題5の解答例</em></h3>
-<h4 class="author"><em>矢内　勇生</em></h4>
-<h4 class="date"><em>2018-05-31</em></h4>
+<h3 class="subtitle">課題6の解答例</h3>
+<h4 class="author">矢内　勇生</h4>
+<h4 class="date">2019-05-15</h4>
 
 </div>
 
 <div id="TOC">
 <ul>
-<li><a>関数の準備</a></li>
-<li><a href="#1">問1</a></li>
-<li><a href="#2">問2</a><ul>
-<li><a href="#section">1.</a></li>
-<li><a href="#section-1">2.</a></li>
-<li><a href="#section-2">3.</a></li>
-<li><a href="#section-3">4.</a></li>
-<li><a href="#section-4">5.</a></li>
+<li><a href="#section">問1</a></li>
+<li><a href="#section-1">問2</a><ul>
+<li><a href="#section-2">1.</a></li>
+<li><a href="#section-3">2.</a></li>
+<li><a href="#section-4">3.</a></li>
+<li><a href="#section-5">4.</a></li>
+<li><a href="#section-6">5.</a></li>
 </ul></li>
-<li><a href="#3">問3</a><ul>
-<li><a href="#section-5">1.</a></li>
-<li><a href="#section-6">2.</a></li>
-<li><a href="#section-7">3.</a></li>
-<li><a href="#section-8">4.</a></li>
-<li><a href="#section-9">5.</a></li>
+<li><a href="#section-7">問3</a><ul>
+<li><a href="#section-8">1.</a></li>
+<li><a href="#section-9">2.</a></li>
+<li><a href="#section-10">3.</a></li>
+<li><a href="#section-11">4.</a></li>
+<li><a href="#section-12">5.</a></li>
 </ul></li>
 </ul>
 </div>
 
-<div class="section level1">
-<h1>関数の準備</h1>
-</div>
-<div id="1" class="section level1">
+<p>必要なパッケージを読み込む。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(<span class="st">&quot;tidyverse&quot;</span>)</a></code></pre></div>
+<div id="section" class="section level1">
 <h1>問1</h1>
 <p>データを入力する。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">height &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">167</span>, <span class="dv">189</span>, <span class="dv">172</span>, <span class="dv">163</span>, <span class="dv">170</span>, </a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">            <span class="dv">168</span>, <span class="dv">174</span>, <span class="dv">175</span>, <span class="dv">178</span>, <span class="dv">169</span>,</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">            <span class="dv">176</span>, <span class="dv">170</span>, <span class="dv">164</span>, <span class="dv">172</span>, <span class="dv">170</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">height &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">167</span>, <span class="dv">189</span>, <span class="dv">172</span>, <span class="dv">163</span>, <span class="dv">170</span>, </a>
+<a class="sourceLine" id="cb2-2" title="2">            <span class="dv">168</span>, <span class="dv">174</span>, <span class="dv">175</span>, <span class="dv">178</span>, <span class="dv">169</span>,</a>
+<a class="sourceLine" id="cb2-3" title="3">            <span class="dv">176</span>, <span class="dv">170</span>, <span class="dv">164</span>, <span class="dv">172</span>, <span class="dv">170</span>)</a></code></pre></div>
 <p>標本平均を求める。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">mean</span>(height)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">mean</span>(height)</a></code></pre></div>
 <pre><code>## [1] 171.8</code></pre>
 <p>標本平均は、母平均の不偏推定量なので、この値を点推定値として使う。すなわち、日本成人男性の平均身長の点推定値は171.8cm である。</p>
 <p>次に、信頼区間を求める。授業で使った関数を使う。ただし、標準正規分布ではなく、<span class="math inline">\(t\)</span> 分布を利用して推定する。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">get_confint &lt;-<span class="st"> </span><span class="cf">function</span>(x, <span class="dt">level =</span> <span class="fl">0.95</span>) {</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">  ## $t$分布を利用して母平均の95%信頼区間を求める関数</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">  ## 引数：x = 標本（観測値のベクトル）</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">  ##       level = 信頼度（既定値は0.95）</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">  n &lt;-<span class="st"> </span><span class="kw">length</span>(x)  <span class="co"># 標本サイズを調べる</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">  x_bar &lt;-<span class="st"> </span><span class="kw">mean</span>(x)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">  se &lt;-<span class="st"> </span><span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(n)</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">  t &lt;-<span class="st"> </span><span class="kw">qt</span>(<span class="dt">df =</span> n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">p =</span> (<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>level) <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">lower.tail =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">  lb &lt;-<span class="st"> </span>x_bar <span class="op">-</span><span class="st"> </span>t<span class="op">*</span>se</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">  ub &lt;-<span class="st"> </span>x_bar <span class="op">+</span><span class="st"> </span>t<span class="op">*</span>se</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">  confint &lt;-<span class="st"> </span><span class="kw">c</span>(下限値 =<span class="st"> </span>lb, 上限値 =<span class="st"> </span>ub)</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">  <span class="kw">cat</span>(level<span class="op">*</span><span class="dv">100</span>, <span class="st">&quot;%信頼区間</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)</a>
-<a class="sourceLine" id="cb4-13" data-line-number="13">  <span class="kw">return</span>(confint)</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14">}</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">get_ci &lt;-<span class="st"> </span><span class="cf">function</span>(x, <span class="dt">level =</span> <span class="fl">0.95</span>) {</a>
+<a class="sourceLine" id="cb5-2" title="2">  <span class="co">## $t$分布を利用して母平均の95%信頼区間を求める関数</span></a>
+<a class="sourceLine" id="cb5-3" title="3">  <span class="co">## 引数：x = 標本（観測値のベクトル）</span></a>
+<a class="sourceLine" id="cb5-4" title="4">  <span class="co">##       level = 信頼度（既定値は0.95）</span></a>
+<a class="sourceLine" id="cb5-5" title="5">  n &lt;-<span class="st"> </span><span class="kw">length</span>(x)  <span class="co"># 標本サイズを調べる</span></a>
+<a class="sourceLine" id="cb5-6" title="6">  x_bar &lt;-<span class="st"> </span><span class="kw">mean</span>(x)</a>
+<a class="sourceLine" id="cb5-7" title="7">  se &lt;-<span class="st"> </span><span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(n)</a>
+<a class="sourceLine" id="cb5-8" title="8">  t &lt;-<span class="st"> </span><span class="kw">qt</span>(<span class="dt">df =</span> n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">p =</span> (<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>level) <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">lower.tail =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb5-9" title="9">  lb &lt;-<span class="st"> </span>x_bar <span class="op">-</span><span class="st"> </span>t<span class="op">*</span>se</a>
+<a class="sourceLine" id="cb5-10" title="10">  ub &lt;-<span class="st"> </span>x_bar <span class="op">+</span><span class="st"> </span>t<span class="op">*</span>se</a>
+<a class="sourceLine" id="cb5-11" title="11">  confint &lt;-<span class="st"> </span><span class="kw">c</span>(下限値 =<span class="st"> </span>lb, 上限値 =<span class="st"> </span>ub)</a>
+<a class="sourceLine" id="cb5-12" title="12">  <span class="kw">cat</span>(level<span class="op">*</span><span class="dv">100</span>, <span class="st">&quot;%信頼区間</span><span class="ch">\n</span><span class="st">&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb5-13" title="13">  <span class="kw">return</span>(confint)</a>
+<a class="sourceLine" id="cb5-14" title="14">}</a></code></pre></div>
 <p>この関数を使って95%信頼区間を求める。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">get_confint</span>(height)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">get_ci</span>(height)</a></code></pre></div>
 <pre><code>## 95%信頼区間</code></pre>
 <pre><code>##   下限値   上限値 
 ## 168.2963 175.3037</code></pre>
 <p>日本の成人男性の平均身長の95%信頼区間は、[168.3cm, 175.3cm] である。</p>
 <p>また、</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">get_confint</span>(height, <span class="dt">level =</span> <span class="fl">0.99</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">get_ci</span>(height, <span class="dt">level =</span> <span class="fl">0.99</span>)</a></code></pre></div>
 <pre><code>## 99%信頼区間</code></pre>
 <pre><code>##   下限値   上限値 
 ## 166.9371 176.6629</code></pre>
 <p>だから、日本の成人男性の平均身長の99%信頼区間は、[166.9cm, 176.7cm] である。</p>
 </div>
-<div id="2" class="section level1">
+<div id="section-1" class="section level1">
 <h1>問2</h1>
 <p>データを入力する。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">K &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">80</span>, <span class="dv">90</span>, <span class="dv">78</span>, <span class="dv">82</span>, <span class="dv">23</span>,</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">       <span class="dv">67</span>, <span class="dv">78</span>, <span class="dv">84</span>, <span class="dv">99</span>, <span class="dv">72</span>,</a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">       <span class="dv">84</span>, <span class="dv">87</span>, <span class="dv">75</span>, <span class="dv">66</span>, <span class="dv">91</span>)</a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">M &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">89</span>, <span class="dv">78</span>, <span class="dv">67</span>, <span class="dv">56</span>, <span class="dv">43</span>, <span class="dv">53</span>,</a>
-<a class="sourceLine" id="cb11-5" data-line-number="5">       <span class="dv">23</span>, <span class="dv">97</span>, <span class="dv">67</span>, <span class="dv">65</span>, <span class="dv">42</span>, <span class="dv">43</span>)</a></code></pre></div>
-<div id="section" class="section level2">
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">K &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">80</span>, <span class="dv">90</span>, <span class="dv">78</span>, <span class="dv">82</span>, <span class="dv">23</span>,</a>
+<a class="sourceLine" id="cb12-2" title="2">       <span class="dv">67</span>, <span class="dv">78</span>, <span class="dv">84</span>, <span class="dv">99</span>, <span class="dv">72</span>,</a>
+<a class="sourceLine" id="cb12-3" title="3">       <span class="dv">84</span>, <span class="dv">87</span>, <span class="dv">75</span>, <span class="dv">66</span>, <span class="dv">91</span>)</a>
+<a class="sourceLine" id="cb12-4" title="4">M &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">89</span>, <span class="dv">78</span>, <span class="dv">67</span>, <span class="dv">56</span>, <span class="dv">43</span>, <span class="dv">53</span>,</a>
+<a class="sourceLine" id="cb12-5" title="5">       <span class="dv">23</span>, <span class="dv">97</span>, <span class="dv">67</span>, <span class="dv">65</span>, <span class="dv">42</span>, <span class="dv">43</span>)</a></code></pre></div>
+<div id="section-2" class="section level2">
 <h2>1.</h2>
 <ul>
 <li>帰無仮説 (<span class="math inline">\(\mbox{H}_0\)</span>)：K工科大学とM工科大学の間で、統計学に対する興味の差はない。</li>
 <li>対立仮説 (<span class="math inline">\(\mbox{H}_1\)</span>)：K工科大学とM工科大学の間で、統計学に対する興味に差がある。</li>
 </ul>
 </div>
-<div id="section-1" class="section level2">
+<div id="section-3" class="section level2">
 <h2>2.</h2>
 <p>K工科大学の評価の標本平均は、</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">mean</span>(K)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">mean</span>(K)</a></code></pre></div>
 <pre><code>## [1] 77.06667</code></pre>
 <p>であり、 M工科大学では、</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">mean</span>(M)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">mean</span>(M)</a></code></pre></div>
 <pre><code>## [1] 60.25</code></pre>
 <p>これらの値平均評価の点推定値だから、その差の点推定値は、これらの点推定値の差である。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">mean</span>(K) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(M)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">mean</span>(K) <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(M)</a></code></pre></div>
 <pre><code>## [1] 16.81667</code></pre>
 <p>したがって、評価の差の点推定値は、16.82 である。</p>
 </div>
-<div id="section-2" class="section level2">
+<div id="section-4" class="section level2">
 <h2>3.</h2>
 <p>対応のないデータの平均値に差があるどうか確かめたいので、ウェルチ (Welch) の <span class="math inline">\(t\)</span> 検定の検定統計量を <code>t.test()</code> で求める。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">t.test</span>(K, M, <span class="dt">var.equal =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">t.test</span>(K, M, <span class="dt">var.equal =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -578,46 +667,46 @@ $(document).ready(function () {
 ##  77.06667  60.25000</code></pre>
 <p>検定統計量は、<span class="math inline">\(2.2071\)</span> である。</p>
 </div>
-<div id="section-3" class="section level2">
+<div id="section-5" class="section level2">
 <h2>4.</h2>
 <p>臨界値は、<code>qt()</code> で求める。必要な自由度は、上で実行した<code>t.test()</code> の結果に表示されている df = 21.16 である。</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> <span class="fl">21.16</span>, <span class="dt">lower.tail =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> <span class="fl">21.16</span>, <span class="dt">lower.tail =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <pre><code>## [1] 2.078657</code></pre>
 <p>よって、臨界値は<span class="math inline">\(2.078657\)</span>（と<span class="math inline">\(-2.078657\)</span>）である。</p>
 </div>
-<div id="section-4" class="section level2">
+<div id="section-6" class="section level2">
 <h2>5.</h2>
 <p>検定統計量の絶対値が臨界値の絶対値より大きいので、帰無仮説を棄却する。</p>
 <p>したがって、「K工科大学生の統計学に対する興味と、M工科大学生の統計学に対する興味には差がある（K工科大学生の方が統計学に対する興味が強い）」が結論である。</p>
 </div>
 </div>
-<div id="3" class="section level1">
+<div id="section-7" class="section level1">
 <h1>問3</h1>
 <p>データを入力する。</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">myd &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,</a>
-<a class="sourceLine" id="cb22-2" data-line-number="2">                  <span class="dt">pork =</span> <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">4</span>),</a>
-<a class="sourceLine" id="cb22-3" data-line-number="3">                  <span class="dt">salt =</span> <span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">10</span>, <span class="dv">7</span>))</a></code></pre></div>
-<div id="section-5" class="section level2">
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1">myd &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">id =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb23-2" title="2">              <span class="dt">pork =</span> <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">4</span>),</a>
+<a class="sourceLine" id="cb23-3" title="3">              <span class="dt">salt =</span> <span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">10</span>, <span class="dv">7</span>))</a></code></pre></div>
+<div id="section-8" class="section level2">
 <h2>1.</h2>
 <ul>
 <li>帰無仮説 (<span class="math inline">\(\mbox{H}_0\)</span>)：豚骨ラーメンと塩ラーメンの味の評価に違いはない。</li>
 <li>対立仮説 (<span class="math inline">\(\mbox{H}_1\)</span>)：豚骨ラーメンと塩ラーメンでは、味の評価に違いがある。</li>
 </ul>
 </div>
-<div id="section-6" class="section level2">
+<div id="section-9" class="section level2">
 <h2>2.</h2>
 <p>まず、評価の差をとる。</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">(myd<span class="op">$</span>dif &lt;-<span class="st"> </span><span class="kw">with</span>(myd, pork <span class="op">-</span><span class="st"> </span>salt))</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">(myd<span class="op">$</span>dif &lt;-<span class="st"> </span><span class="kw">with</span>(myd, pork <span class="op">-</span><span class="st"> </span>salt))</a></code></pre></div>
 <pre><code>##  [1]  2 -1 -3  3 -1 -3 -1  5 -2 -3</code></pre>
 <p>差の平均値を計算する。</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">mean</span>(myd<span class="op">$</span>dif)</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">mean</span>(myd<span class="op">$</span>dif)</a></code></pre></div>
 <pre><code>## [1] -0.4</code></pre>
 <p>評価の差の平均値は <span class="math inline">\(-0.4\)</span> である。つまり、塩ラーメンの評価に比べ、豚骨ラーメンの評価は平均0.4点低い。</p>
 </div>
-<div id="section-7" class="section level2">
+<div id="section-10" class="section level2">
 <h2>3.</h2>
 <p>対応のあるデータの <span class="math inline">\(t\)</span>検定の検定統計量を求める。</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">t.test</span>(myd<span class="op">$</span>pork, myd<span class="op">$</span>salt, <span class="dt">paired =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">t.test</span>(myd<span class="op">$</span>pork, myd<span class="op">$</span>salt, <span class="dt">paired =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>## 
 ##  Paired t-test
 ## 
@@ -632,14 +721,14 @@ $(document).ready(function () {
 <p>検定統計量は、<span class="math inline">\(-0.45227\)</span> である。</p>
 <p>（ちなみに、この結果にも2. の答えが表示されている。）</p>
 </div>
-<div id="section-8" class="section level2">
+<div id="section-11" class="section level2">
 <h2>4.</h2>
 <p>検定の臨界値を求める。対応のあるデータなので、自由度は <span class="math inline">\(n-1 = 10 - 1 = 9\)</span> である。</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> <span class="dv">9</span>, <span class="dt">lower.tail =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> <span class="dv">9</span>, <span class="dt">lower.tail =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <pre><code>## [1] 2.262157</code></pre>
 <p>よって、臨界値は<span class="math inline">\(2.262157\)</span>（と<span class="math inline">\(-2.262157\)</span>）である。</p>
 </div>
-<div id="section-9" class="section level2">
+<div id="section-12" class="section level2">
 <h2>5.</h2>
 <p>検定統計量の絶対値が臨界値の絶対値より小さいので、帰無仮説は棄却されない。</p>
 <p>したがって、「豚骨ラーメンと塩ラーメンの味の評価に違いがあるとは言えない」というのが、結論である。</p>

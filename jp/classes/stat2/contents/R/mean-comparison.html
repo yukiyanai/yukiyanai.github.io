@@ -11,7 +11,6 @@
 
 <meta name="author" content="矢内　勇生" />
 
-<meta name="date" content="2018-05-22" />
 
 <title>統計学2</title>
 
@@ -199,10 +198,10 @@ window.buildTabsets = function(tocID) {
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -215,13 +214,11 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
+  { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -262,7 +259,29 @@ code span.st { color: #4e9a06; } /* String */
 code span.va { color: #000000; } /* Variable */
 code span.vs { color: #4e9a06; } /* VerbatimString */
 code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -416,9 +435,7 @@ page-break-after: avoid;
 }
 </style>
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -437,25 +454,98 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
 <!-- code folding -->
 
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -465,141 +555,149 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">統計学2</h1>
-<h3 class="subtitle"><em>統計的検定と平均値の比較</em></h3>
-<h4 class="author"><em>矢内　勇生</em></h4>
-<h4 class="date"><em>2018-05-22</em></h4>
+<h3 class="subtitle">統計的検定と平均値の比較</h3>
+<h4 class="author">矢内　勇生</h4>
+<h4 class="date">2018-05-22（改訂: 2018-05-24, 2019-05-15）</h4>
 
 </div>
 
 <div id="TOC">
 <ul>
-<li><a>統計的検定</a><ul>
-<li><a>有意水準の意味を理解する：帰無仮説が正しい場合の仮説検定シミュレーション</a><ul>
-<li><a>1つの標本で検定を行う</a></li>
-<li><a>仮説検定のシミュレーション</a></li>
+<li><a href="#section">準備</a></li>
+<li><a href="#section-1">統計的検定</a><ul>
+<li><a href="#section-2">有意水準の意味を理解する：帰無仮説が正しい場合の仮説検定シミュレーション</a><ul>
+<li><a href="#section-3">1つの標本で検定を行う</a></li>
+<li><a href="#section-4">仮説検定のシミュレーション</a></li>
 </ul></li>
-<li><a>危険率、検出力、標本サイズ：対立仮説が正しい場合の仮説検定シミュレーション</a><ul>
-<li><a href="#-1">1つの標本で検定を行う</a></li>
-<li><a href="#-1">仮説検定のシミュレーション</a></li>
+<li><a href="#section-5">危険率、検出力、標本サイズ：対立仮説が正しい場合の仮説検定シミュレーション</a><ul>
+<li><a href="#section-6">1つの標本で検定を行う</a></li>
+<li><a href="#section-7">仮説検定のシミュレーション</a></li>
 </ul></li>
 </ul></li>
-<li><a>平均値の差の検定</a><ul>
-<li><a>対応のないデータの平均値の差の検定</a></li>
-<li><a>対応のあるデータの平均値の差の検定</a></li>
+<li><a href="#section-8">平均値の差の検定</a><ul>
+<li><a href="#section-9">対応のないデータの平均値の差の検定</a></li>
+<li><a href="#section-10">対応のあるデータの平均値の差の検定</a></li>
 </ul></li>
-<li><a href="#5">課題5</a><ul>
-<li><a href="#1">問1</a></li>
-<li><a href="#2">問2</a></li>
-<li><a href="#3">問3</a></li>
+<li><a href="#section-11">課題6</a><ul>
+<li><a href="#section-12">問1</a></li>
+<li><a href="#section-13">問2</a></li>
+<li><a href="#section-14">問3</a></li>
 </ul></li>
 </ul>
 </div>
 
-<div class="section level1">
+<div id="section" class="section level1">
+<h1>準備</h1>
+<p>必要なパッケージを読み込む。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(<span class="st">&quot;tidyverse&quot;</span>)</a></code></pre></div>
+<p><strong>Macユーザのみ</strong> 次のコマンドも実行する。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">theme_set</span>(<span class="kw">theme_gray</span>(<span class="dt">base_size =</span> <span class="dv">10</span>, <span class="dt">base_family =</span> <span class="st">&quot;HiraginoSans-W3&quot;</span>))</a></code></pre></div>
+</div>
+<div id="section-1" class="section level1">
 <h1>統計的検定</h1>
-<div class="section level2">
+<div id="section-2" class="section level2">
 <h2>有意水準の意味を理解する：帰無仮説が正しい場合の仮説検定シミュレーション</h2>
 <p>標準正規分布（<span class="math inline">\(\mu = 0\)</span>, <span class="math inline">\(\sigma = 1\)</span>）に従う変数 <span class="math inline">\(X\)</span> について考える。</p>
-<p>私たちが<strong>母数を知らないと仮定して</strong>、この集団からランダムに標本を抽出し、以下の仮説を検証する。</p>
+<p>私たちが<strong>母数（パラメタ）を知らないと仮定して</strong>、この集団からランダムに標本を抽出し、以下の仮説を検証する。</p>
 <ul>
 <li>帰無仮説：<span class="math inline">\(\mu = 0\)</span></li>
 <li>対立仮説：<span class="math inline">\(\mu \neq 0\)</span></li>
 </ul>
-<p>有意水準を5% に設定し、検定を行う。実際には帰無仮説のほうが正しいので、帰無仮説を棄却しない方がいい。母数を知らずに検定を行った場合、どのような結果が得られるだろうか。</p>
-<div class="section level3">
+<p>有意水準を5% に<strong>設定</strong>し、検定を行う。実際には帰無仮説のほうが正しいので、帰無仮説を棄却しない方がいい。母数を知らずに検定を行った場合、どのような結果が得られるだろうか。</p>
+<div id="section-3" class="section level3">
 <h3>1つの標本で検定を行う</h3>
 <p>まず、標本を抽出する。標本サイズ <span class="math inline">\(n = 20\)</span> に設定しよう。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">n &lt;-<span class="st"> </span><span class="dv">20</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">smp_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">1</span>)  <span class="co"># 標準正規分布からの乱数生成</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span></a>
+<a class="sourceLine" id="cb3-2" title="2">smp_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">1</span>)  <span class="co"># 標準正規分布からの乱数生成</span></a></code></pre></div>
 <p>この標本の標本平均は、</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">mean</span>(smp_<span class="dv">1</span>)</a></code></pre></div>
-<pre><code>## [1] -0.09873606</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">mean</span>(smp_<span class="dv">1</span>)</a></code></pre></div>
+<pre><code>## [1] -0.3015004</code></pre>
 <p>である。 この標本平均は0ではない。つまり <span class="math inline">\(\bar{x} \neq 0\)</span> であるが、ここから、<span class="math inline">\(\mu \neq 0\)</span>と言えるだろうか？</p>
 <p>標本平均の分布は自由度 <span class="math inline">\(n-1\)</span> の <span class="math inline">\(t\)</span> 分布に従うので、<span class="math inline">\(t\)</span> 分布を利用して検定を行う（このような検定を、<span class="math inline">\(t\)</span> 検定と呼ぶ）。</p>
 <p>ある標本を利用して、「母平均が0」という帰無仮説を検証したいときは、<code>t.test()</code> という関数を使う。</p>
 <p>対立仮説が「母平均は0ではない」のときは、次のようにする。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">(res_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">t.test</span>(smp_<span class="dv">1</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">(res_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">t.test</span>(smp_<span class="dv">1</span>))</a></code></pre></div>
 <pre><code>## 
 ##  One Sample t-test
 ## 
 ## data:  smp_1
-## t = -0.53675, df = 19, p-value = 0.5977
+## t = -1.2538, df = 19, p-value = 0.2251
 ## alternative hypothesis: true mean is not equal to 0
 ## 95 percent confidence interval:
-##  -0.4837549  0.2862828
+##  -0.8048100  0.2018092
 ## sample estimates:
-##   mean of x 
-## -0.09873606</code></pre>
-<p>結果の読み方を説明する。まず、data: smp_1 というところに、検定に利用した標本が示される。次の行を見ると、検定統計量 <span class="math inline">\(T\)</span> の値が “t =” で 示された後、自由度 (df) と<span class="math inline">\(p\)</span> 値 (p-value) が表示される（<span class="math inline">\(p\)</span>値については）。検定統計量の絶対値 <span class="math inline">\(|T|\)</span> が、自ら決めた有意水準における臨界値の絶対値 <span class="math inline">\(c\)</span>| より大きいとき、帰無仮説を棄却する。 検定統計量自体は、次のようにすれば取り出せる。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">res_<span class="dv">1</span><span class="op">$</span>statistic</a></code></pre></div>
-<pre><code>##          t 
-## -0.5367451</code></pre>
+##  mean of x 
+## -0.3015004</code></pre>
+<p>結果の読み方を説明する。まず、data: smp_1 というところに、検定に利用した標本が示される。次の行を見ると、検定統計量 <span class="math inline">\(T\)</span> の値が “t =” で 示された後、自由度 (df) と<span class="math inline">\(p\)</span> 値 (p-value) が表示される。検定統計量の絶対値 <span class="math inline">\(|T|\)</span> が、自ら決めた有意水準における臨界値の絶対値 |<span class="math inline">\(c\)</span>| より大きいとき、帰無仮説を棄却する。 検定統計量自体は、次のようにすれば取り出せる。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">res_<span class="dv">1</span><span class="op">$</span>statistic</a></code></pre></div>
+<pre><code>##         t 
+## -1.253796</code></pre>
 <p>また、自由度 <span class="math inline">\(n-1\)</span> の <span class="math inline">\(t\)</span> 分布で、有意水準が5%のときに必要な臨界値は、</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</a></code></pre></div>
 <pre><code>## [1] -2.093024</code></pre>
 <p>である。この2つの値の絶対値同士を比べると、<span class="math display">\[|T| &lt; |c|\]</span> だから、帰無仮説は棄却されない。</p>
 <p>また、同じことだが、<span class="math inline">\(p\)</span> 値が自分で設定した有意水準より小さいとき、帰無仮説を棄却する。ここでは、有意水準は5% (0.05) で、<span class="math inline">\(p\)</span> 値は、</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">res_<span class="dv">1</span><span class="op">$</span>p.value</a></code></pre></div>
-<pre><code>## [1] 0.5976734</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">res_<span class="dv">1</span><span class="op">$</span>p.value</a></code></pre></div>
+<pre><code>## [1] 0.2251243</code></pre>
 <p>なので、帰無仮説は棄却されない。つまり、<span class="math inline">\(\mu = 0\)</span> を否定する証拠はない。</p>
 <p>実際、<span class="math inline">\(\mu = 0\)</span>ということを私たちは知っているので、これは妥当な結論であるが、標本抽出と仮説検定を繰り返したら、どんなことが起きるだろうか？</p>
 </div>
-<div class="section level3">
+<div id="section-4" class="section level3">
 <h3>仮説検定のシミュレーション</h3>
 <p>まず、標本抽出と仮説検定を1回行い、帰無仮説 (null hypothesis) を棄却しないときは “null” を、帰無仮説を棄却して対立仮説 (alternative hypothesis) を採用するときは “alt” を返す関数を作る。 有意水準 (level) と標本サイズは自分で設定できるようにしておく。</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">smp_test &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">level =</span> <span class="fl">0.05</span>) {</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2">  ## 標本を抽出し、「母平均 = 0」という仮説を検定する関数</a>
-<a class="sourceLine" id="cb12-3" data-line-number="3">  ## 引数：n = 標本サイズ（既定値は10）</a>
-<a class="sourceLine" id="cb12-4" data-line-number="4">  ##       level = 有意水準（既定値は0.05）</a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">  smp &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">1</span>)  <span class="co"># 標準正規分布から乱数を生成する</span></a>
-<a class="sourceLine" id="cb12-6" data-line-number="6">  test &lt;-<span class="st"> </span><span class="kw">t.test</span>(smp)</a>
-<a class="sourceLine" id="cb12-7" data-line-number="7">  judge &lt;-<span class="st"> </span><span class="kw">abs</span>(test<span class="op">$</span>statistic) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(<span class="kw">qt</span>(<span class="dt">p =</span> level <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>))  <span class="co"># abs() は絶対値 (absolute values)</span></a>
-<a class="sourceLine" id="cb12-8" data-line-number="8">  res &lt;-<span class="st"> </span><span class="kw">ifelse</span>(judge, <span class="st">&quot;alt&quot;</span>, <span class="st">&quot;null&quot;</span>)</a>
-<a class="sourceLine" id="cb12-9" data-line-number="9">  <span class="kw">return</span>(res)</a>
-<a class="sourceLine" id="cb12-10" data-line-number="10">}</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">smp_test &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">level =</span> <span class="fl">0.05</span>) {</a>
+<a class="sourceLine" id="cb14-2" title="2">  <span class="co">## 標本を抽出し、「母平均 = 0」という仮説を検定する関数</span></a>
+<a class="sourceLine" id="cb14-3" title="3">  <span class="co">## 引数：n = 標本サイズ（既定値は10）</span></a>
+<a class="sourceLine" id="cb14-4" title="4">  <span class="co">##       level = 有意水準（既定値は0.05）</span></a>
+<a class="sourceLine" id="cb14-5" title="5">  smp &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> <span class="dv">1</span>)  <span class="co"># 標準正規分布から乱数を生成する</span></a>
+<a class="sourceLine" id="cb14-6" title="6">  test &lt;-<span class="st"> </span><span class="kw">t.test</span>(smp)</a>
+<a class="sourceLine" id="cb14-7" title="7">  judge &lt;-<span class="st"> </span><span class="kw">abs</span>(test<span class="op">$</span>statistic) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(<span class="kw">qt</span>(<span class="dt">p =</span> level <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>))  <span class="co"># abs() は絶対値 (absolute values)</span></a>
+<a class="sourceLine" id="cb14-8" title="8">  res &lt;-<span class="st"> </span><span class="kw">ifelse</span>(judge, <span class="st">&quot;alt&quot;</span>, <span class="st">&quot;null&quot;</span>)</a>
+<a class="sourceLine" id="cb14-9" title="9">  <span class="kw">return</span>(res)</a>
+<a class="sourceLine" id="cb14-10" title="10">}</a></code></pre></div>
 <p>試しにこの関数を使ってみると、</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">smp_test</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.05</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">smp_test</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.05</span>)</a></code></pre></div>
 <pre><code>##      t 
 ## &quot;null&quot;</code></pre>
 <p>というように、1つの標本からどちらの仮説を採用したかがわかる。</p>
 <p>標本サイズ <span class="math inline">\(n = 20\)</span>、有意水準5% で、この作業を10,000回繰り返してみよう。関数を繰り返し実行する際は、<code>replicate()</code> を使うのが便利である。</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">n_sims &lt;-<span class="st"> </span><span class="dv">10000</span></a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">sim_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.05</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">n_sims &lt;-<span class="st"> </span><span class="dv">10000</span></a>
+<a class="sourceLine" id="cb17-2" title="2">sim_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.05</span>))</a></code></pre></div>
 <p>sim_1 の中に、10,000個の検定結果が保存されたはずである。最初の5個だけ確認してみよう。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">sim_<span class="dv">1</span>[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">sim_<span class="dv">1</span>[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</a></code></pre></div>
 <pre><code>##      t      t      t      t      t 
 ## &quot;null&quot; &quot;null&quot; &quot;null&quot; &quot;null&quot; &quot;null&quot;</code></pre>
 <p>結果が保存されていることが確認できる。</p>
 <p>では、それぞれの仮説はそれぞれ何回ずつ採用されただろうか？表 (table) にしてみよう。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">table</span>(sim_<span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">table</span>(sim_<span class="dv">1</span>)</a></code></pre></div>
 <pre><code>## sim_1
 ##  alt null 
-##  493 9507</code></pre>
+##  502 9498</code></pre>
 <p>割合を表示するために、シミュレーション回数で割ると、</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">table</span>(sim_<span class="dv">1</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="kw">table</span>(sim_<span class="dv">1</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_1
 ##    alt   null 
-## 0.0493 0.9507</code></pre>
+## 0.0502 0.9498</code></pre>
 <p>となる。 このように、対立仮説が約5%、帰無仮説が95%の検定で採用されている。</p>
 <p>私たちは、上で <span class="math inline">\(\mu=0\)</span> と設定しているので、帰無仮説が正しい仮説である。しかし、帰無仮説が正しくても、5%分の検定では、誤って帰無仮説を棄却し、対立仮説を採用してしまう。この誤りのことを、「第1種の誤り (Type I error)」と呼び。第1種の誤りの確率は、有意水準に一致する。私たちは有意水準5%を選んだので、約5%の検定で、第1種の誤りをおかしてしまう。</p>
 <p>有意水準を1%にして、本当にそうなるか確かめてみよう。</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">sim_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.01</span>))</a>
-<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="kw">table</span>(sim_<span class="dv">2</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">sim_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.01</span>))</a>
+<a class="sourceLine" id="cb24-2" title="2"><span class="kw">table</span>(sim_<span class="dv">2</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_2
 ##    alt   null 
-## 0.0095 0.9905</code></pre>
+## 0.0107 0.9893</code></pre>
 <p>第1種の誤り（null が正しいのに alt を採用）の割合は、約1%である。</p>
 <p>有意水準を14%にすると、</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">sim_<span class="dv">3</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.14</span>))</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2"><span class="kw">table</span>(sim_<span class="dv">3</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1">sim_<span class="dv">3</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.14</span>))</a>
+<a class="sourceLine" id="cb26-2" title="2"><span class="kw">table</span>(sim_<span class="dv">3</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_3
 ##    alt   null 
-## 0.1394 0.8606</code></pre>
+## 0.1393 0.8607</code></pre>
 <p>第1種の誤り（null が正しいのに alt を採用）の割合は、約14%になる。</p>
 <p><strong>実習課題：</strong>第1種の誤りは、標本サイズの影響を受けるだろうか? 有意水準を固定し、標本サイズ <span class="math inline">\(n\)</span> を10, 20, 100, 200 と変えて、第1種の誤りの割合をシミュレーションしてみよう！</p>
 </div>
 </div>
-<div class="section level2">
+<div id="section-5" class="section level2">
 <h2>危険率、検出力、標本サイズ：対立仮説が正しい場合の仮説検定シミュレーション</h2>
 <p>平均3、標準偏差2の正規分布（<span class="math inline">\(\mu = 3\)</span>, <span class="math inline">\(\sigma = 2\)</span>）に従う変数 <span class="math inline">\(Y\)</span> について考える。</p>
 <p>私たちが<strong>母数を知らないと仮定して</strong>、この集団からランダムに標本を抽出し、以下の仮説を検証する。</p>
@@ -607,123 +705,123 @@ $(document).ready(function () {
 <li>帰無仮説：<span class="math inline">\(\mu = 0\)</span></li>
 <li>対立仮説：<span class="math inline">\(\mu \neq 0\)</span></li>
 </ul>
-<p>有意水準を5% に設定し、検定を行う。実際には対立仮説のほうが正しいので、帰無仮説を棄却したい。母数を知らずに検定を行った場合、どのような結果が得られるだろうか。</p>
-<div id="-1" class="section level3">
+<p>有意水準を5% に<strong>設定</strong>し、検定を行う。実際には対立仮説のほうが正しいので、帰無仮説を棄却したい。母数を知らずに検定を行った場合、どのような結果が得られるだろうか。</p>
+<div id="section-6" class="section level3">
 <h3>1つの標本で検定を行う</h3>
 <p>まず、標本を抽出する。標本サイズ <span class="math inline">\(n = 20\)</span> に設定しよう。</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">n &lt;-<span class="st"> </span><span class="dv">20</span></a>
-<a class="sourceLine" id="cb26-2" data-line-number="2">smp_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">mean =</span> <span class="dv">3</span>, <span class="dt">sd =</span> <span class="dv">2</span>)  <span class="co"># N(3, 2^2) からの乱数生成</span></a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1">n &lt;-<span class="st"> </span><span class="dv">20</span></a>
+<a class="sourceLine" id="cb28-2" title="2">smp_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">mean =</span> <span class="dv">3</span>, <span class="dt">sd =</span> <span class="dv">2</span>)  <span class="co"># N(3, 2) からの乱数生成</span></a></code></pre></div>
 <p>この標本の標本平均は、</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">mean</span>(smp_<span class="dv">2</span>)</a></code></pre></div>
-<pre><code>## [1] 2.433238</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">mean</span>(smp_<span class="dv">2</span>)</a></code></pre></div>
+<pre><code>## [1] 3.155836</code></pre>
 <p>である。 この標本平均は0ではない。つまり <span class="math inline">\(\bar{x} \neq 0\)</span> であるが、ここから、<span class="math inline">\(\mu \neq 0\)</span>と言えるだろうか？</p>
 <p>標本平均の分布は自由度 <span class="math inline">\(n-1\)</span> の <span class="math inline">\(t\)</span> 分布に従うので、<span class="math inline">\(t\)</span> 分布を利用して検定を行う。</p>
 <p>先ほど同様、<code>t.test()</code> を使う。仮説は先ほどと同じなので、次のようにする。</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">(res_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">t.test</span>(smp_<span class="dv">2</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" title="1">(res_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">t.test</span>(smp_<span class="dv">2</span>))</a></code></pre></div>
 <pre><code>## 
 ##  One Sample t-test
 ## 
 ## data:  smp_2
-## t = 4.0662, df = 19, p-value = 0.0006587
+## t = 6.9022, df = 19, p-value = 1.395e-06
 ## alternative hypothesis: true mean is not equal to 0
 ## 95 percent confidence interval:
-##  1.180745 3.685731
+##  2.198857 4.112815
 ## sample estimates:
 ## mean of x 
-##  2.433238</code></pre>
+##  3.155836</code></pre>
 <p>検定統計量 <span class="math inline">\(T\)</span> の値は、</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1">res_<span class="dv">2</span><span class="op">$</span>statistic</a></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1">res_<span class="dv">2</span><span class="op">$</span>statistic</a></code></pre></div>
 <pre><code>##        t 
-## 4.066152</code></pre>
+## 6.902177</code></pre>
 <p>である。 また、自由度 <span class="math inline">\(n-1\)</span> の <span class="math inline">\(t\)</span> 分布で、有意水準が5%のときに必要な臨界値は、</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</a></code></pre></div>
 <pre><code>## [1] -2.093024</code></pre>
 <p>である。この2つの値の絶対値同士を比べると、<span class="math display">\[|T| &gt; |c|\]</span> だから、帰無仮説は棄却される。</p>
 <p>また、同じことだが、<span class="math inline">\(p\)</span> 値は、</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">res_<span class="dv">2</span><span class="op">$</span>p.value</a></code></pre></div>
-<pre><code>## [1] 0.0006587457</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" title="1">res_<span class="dv">2</span><span class="op">$</span>p.value</a></code></pre></div>
+<pre><code>## [1] 1.394713e-06</code></pre>
 <p>で、有意水準である0.05より小さいので、帰無仮説は棄却される。つまり、<span class="math inline">\(\mu = 0\)</span> を否定する証拠があるので、<span class="math inline">\(\mu \neq 0\)</span> と考える。</p>
 <p>実際、<span class="math inline">\(\mu = 2\)</span>ということを私たちは知っているので、これは妥当な結論であるが、標本抽出と仮説検定を繰り返したら、どんなことが起きるだろうか？</p>
 </div>
-<div id="-1" class="section level3">
+<div id="section-7" class="section level3">
 <h3>仮説検定のシミュレーション</h3>
 <p>まず、標本抽出と仮説検定を1回行い、帰無仮説 (null hypothesis) を棄却しないときは “null” を、帰無仮説を棄却して対立仮説 (alternative hypothesis) を採用するときは “alt” を返す関数を作る。 先ほど作った関数を改良し、母平均と母標準偏差も自分で設定できるようにする。</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1">smp_test_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">0</span>, <span class="dt">sigma =</span> <span class="dv">1</span>) {</a>
-<a class="sourceLine" id="cb37-2" data-line-number="2">  ## 標本を抽出し、「母平均 = 0」という仮説を検定する関数</a>
-<a class="sourceLine" id="cb37-3" data-line-number="3">  ## 引数：n = 標本サイズ（既定値は10）</a>
-<a class="sourceLine" id="cb37-4" data-line-number="4">  ##       level = 有意水準（既定値は0.05）</a>
-<a class="sourceLine" id="cb37-5" data-line-number="5">  ##       mu = 母平均（既定値は0）</a>
-<a class="sourceLine" id="cb37-6" data-line-number="6">  ##       sigma = 母標準偏差（既定値は1）</a>
-<a class="sourceLine" id="cb37-7" data-line-number="7">  smp &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">mean =</span> mu, <span class="dt">sd =</span> sigma)  <span class="co"># 正規分布から乱数を生成する</span></a>
-<a class="sourceLine" id="cb37-8" data-line-number="8">  test &lt;-<span class="st"> </span><span class="kw">t.test</span>(smp)</a>
-<a class="sourceLine" id="cb37-9" data-line-number="9">  judge &lt;-<span class="st"> </span><span class="kw">abs</span>(test<span class="op">$</span>statistic) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(<span class="kw">qt</span>(<span class="dt">p =</span> level <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>))  <span class="co"># abs() は絶対値 (absolute values)</span></a>
-<a class="sourceLine" id="cb37-10" data-line-number="10">  res &lt;-<span class="st"> </span><span class="kw">ifelse</span>(judge, <span class="st">&quot;alt&quot;</span>, <span class="st">&quot;null&quot;</span>)</a>
-<a class="sourceLine" id="cb37-11" data-line-number="11">  <span class="kw">return</span>(res)</a>
-<a class="sourceLine" id="cb37-12" data-line-number="12">}</a></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" title="1">smp_test_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="cf">function</span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">0</span>, <span class="dt">sigma =</span> <span class="dv">1</span>) {</a>
+<a class="sourceLine" id="cb39-2" title="2">  <span class="co">## 標本を抽出し、「母平均 = 0」という仮説を検定する関数</span></a>
+<a class="sourceLine" id="cb39-3" title="3">  <span class="co">## 引数：n = 標本サイズ（既定値は10）</span></a>
+<a class="sourceLine" id="cb39-4" title="4">  <span class="co">##       level = 有意水準（既定値は0.05）</span></a>
+<a class="sourceLine" id="cb39-5" title="5">  <span class="co">##       mu = 母平均（既定値は0）</span></a>
+<a class="sourceLine" id="cb39-6" title="6">  <span class="co">##       sigma = 母標準偏差（既定値は1）</span></a>
+<a class="sourceLine" id="cb39-7" title="7">  smp &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">mean =</span> mu, <span class="dt">sd =</span> sigma)  <span class="co"># 正規分布から乱数を生成する</span></a>
+<a class="sourceLine" id="cb39-8" title="8">  test &lt;-<span class="st"> </span><span class="kw">t.test</span>(smp)</a>
+<a class="sourceLine" id="cb39-9" title="9">  judge &lt;-<span class="st"> </span><span class="kw">abs</span>(test<span class="op">$</span>statistic) <span class="op">&gt;</span><span class="st"> </span><span class="kw">abs</span>(<span class="kw">qt</span>(<span class="dt">p =</span> level <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>))  <span class="co"># abs() は絶対値 (absolute values)</span></a>
+<a class="sourceLine" id="cb39-10" title="10">  res &lt;-<span class="st"> </span><span class="kw">ifelse</span>(judge, <span class="st">&quot;alt&quot;</span>, <span class="st">&quot;null&quot;</span>)</a>
+<a class="sourceLine" id="cb39-11" title="11">  <span class="kw">return</span>(res)</a>
+<a class="sourceLine" id="cb39-12" title="12">}</a></code></pre></div>
 <p>試しにこの関数を使ってみると、</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1"><span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>)</a></code></pre></div>
-<pre><code>##     t 
-## &quot;alt&quot;</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1"><span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>)</a></code></pre></div>
+<pre><code>##      t 
+## &quot;null&quot;</code></pre>
 <p>というように、1つの標本からどちらの仮説を採用したかがわかる。</p>
 <p>標本サイズ <span class="math inline">\(n = 20\)</span>、有意水準5% で、この作業を10,000回繰り返してみよう。</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1">n_sims &lt;-<span class="st"> </span><span class="dv">10000</span></a>
-<a class="sourceLine" id="cb40-2" data-line-number="2">sim_<span class="dv">11</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1">n_sims &lt;-<span class="st"> </span><span class="dv">10000</span></a>
+<a class="sourceLine" id="cb42-2" title="2">sim_<span class="dv">11</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a></code></pre></div>
 <p>sim_11 の中に、10,000個の検定結果が保存されたはずである。最初の5個だけ確認してみよう。</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1">sim_<span class="dv">11</span>[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" title="1">sim_<span class="dv">11</span>[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]</a></code></pre></div>
 <pre><code>##      t      t      t      t      t 
-##  &quot;alt&quot;  &quot;alt&quot;  &quot;alt&quot; &quot;null&quot; &quot;null&quot;</code></pre>
+## &quot;null&quot;  &quot;alt&quot;  &quot;alt&quot;  &quot;alt&quot;  &quot;alt&quot;</code></pre>
 <p>結果が保存されていることが確認できる。</p>
 <p>では、それぞれの仮説はそれぞれ何割ずつ採用されただろうか？表 (table) にしてみよう。</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1"><span class="kw">table</span>(sim_<span class="dv">11</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" title="1"><span class="kw">table</span>(sim_<span class="dv">11</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_11
 ##    alt   null 
-## 0.8091 0.1909</code></pre>
+## 0.8099 0.1901</code></pre>
 <p>このように、対立仮説が約81%、帰無仮説が約19%の検定で採用されている。</p>
 <p>私たちは、上で <span class="math inline">\(\mu=2\)</span> と設定しているので、対立仮説が正しい仮説である。しかし、対立仮説が正しくても、19%分の検定では、帰無仮説を棄却せず、対立仮説を採用できない。この誤りのことを、「第2種の誤り (Type II error)」と呼び。第2種の誤りの確率は、どうやって決まるのだろうか？</p>
 <p>有意水準を1%にして、第2種の誤りの割合を計算してみよう。</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" data-line-number="1">sim_<span class="dv">12</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.01</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb45-2" data-line-number="2"><span class="kw">table</span>(sim_<span class="dv">12</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" title="1">sim_<span class="dv">12</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.01</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
+<a class="sourceLine" id="cb47-2" title="2"><span class="kw">table</span>(sim_<span class="dv">12</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_12
 ##    alt   null 
-## 0.5643 0.4357</code></pre>
-<p>第2種の誤り（null が正しいのに alt を採用）の割合は、約44%である。有意水準を小さくしたところ、第2種の誤りの割合が大きくなった。</p>
+## 0.5617 0.4383</code></pre>
+<p>第2種の誤り（<s>null が正しいのに alt を採用</s> <strong>alt が正しいのに null を採用</strong>）の割合は、約44%である。有意水準を小さくしたところ、第2種の誤りの割合が大きくなった。</p>
 <p>今度は、有意水準を10%にしてみよう。</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb47-1" data-line-number="1">sim_<span class="dv">13</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.1</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb47-2" data-line-number="2"><span class="kw">table</span>(sim_<span class="dv">13</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" title="1">sim_<span class="dv">13</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.1</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
+<a class="sourceLine" id="cb49-2" title="2"><span class="kw">table</span>(sim_<span class="dv">13</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_13
 ##    alt   null 
-## 0.8892 0.1108</code></pre>
+## 0.8868 0.1132</code></pre>
 <p>第2種の誤り（null が正しいのに alt を採用）の割合は、約11%である。有意水準を大きくしたところ、第2種の誤りの割合が小さくなった。</p>
 <p>このように、第2種の誤りの確率は、有意水準と負の関係にある。第2種の誤りをおかす確率を小さくするためには、有意水準を大きくすればよい。しかし、有意水準は、それ自体が第1種の誤りの確率を表しているので、有意水準を大きくするということは、第1種の誤りの確率が大きくなるということである。</p>
 <p>有意水準を変えずに、第2種の誤りの確率を小さくすることはできないだろうか。 第2種の誤りを小さくするには、「0との違い」を見つけ出す力を強めればよい。つまり、小さな違いでも違いとして見つけ出すことができれば、帰無仮説を棄却することができるようになり、第2種の誤りの確率は小さくなる。このような力のことを<strong>検出力 (power)</strong> と呼ぶ。検出力は、標本サイズに依存する。</p>
 <p>有意水準を5%にして、標本サイズを 10, 20, 50, 100, 200 と変えて、第2種の誤りの割合を計算してみよう。</p>
 <p>n = 10 のとき。</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" data-line-number="1">sim_<span class="dv">14</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb49-2" data-line-number="2"><span class="kw">table</span>(sim_<span class="dv">14</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb51-1" title="1">sim_<span class="dv">14</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
+<a class="sourceLine" id="cb51-2" title="2"><span class="kw">table</span>(sim_<span class="dv">14</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_14
 ##    alt   null 
-## 0.4697 0.5303</code></pre>
+## 0.4796 0.5204</code></pre>
 <p>n = 20 のとき。</p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb51-1" data-line-number="1">sim_<span class="dv">15</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb51-2" data-line-number="2"><span class="kw">table</span>(sim_<span class="dv">15</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb53-1" title="1">sim_<span class="dv">15</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">20</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
+<a class="sourceLine" id="cb53-2" title="2"><span class="kw">table</span>(sim_<span class="dv">15</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_15
 ##    alt   null 
-## 0.8037 0.1963</code></pre>
+## 0.8063 0.1937</code></pre>
 <p>n = 50のとき。</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb53-1" data-line-number="1">sim_<span class="dv">16</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">50</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb53-2" data-line-number="2"><span class="kw">table</span>(sim_<span class="dv">16</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb55-1" title="1">sim_<span class="dv">16</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">50</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
+<a class="sourceLine" id="cb55-2" title="2"><span class="kw">table</span>(sim_<span class="dv">16</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_16
 ##    alt   null 
-## 0.9955 0.0045</code></pre>
+## 0.9959 0.0041</code></pre>
 <p>n = 100 のとき。</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb55-1" data-line-number="1">sim_<span class="dv">17</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">100</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb55-2" data-line-number="2"><span class="kw">table</span>(sim_<span class="dv">17</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" title="1">sim_<span class="dv">17</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">100</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
+<a class="sourceLine" id="cb57-2" title="2"><span class="kw">table</span>(sim_<span class="dv">17</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_17
 ## alt 
 ##   1</code></pre>
 <p>n = 200 のとき。</p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" data-line-number="1">sim_<span class="dv">18</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">200</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
-<a class="sourceLine" id="cb57-2" data-line-number="2"><span class="kw">table</span>(sim_<span class="dv">18</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" title="1">sim_<span class="dv">18</span> &lt;-<span class="st"> </span><span class="kw">replicate</span>(n_sims, <span class="kw">smp_test_2</span>(<span class="dt">n =</span> <span class="dv">200</span>, <span class="dt">level =</span> <span class="fl">0.05</span>, <span class="dt">mu =</span> <span class="dv">2</span>, <span class="dt">sigma =</span> <span class="dv">3</span>))</a>
+<a class="sourceLine" id="cb59-2" title="2"><span class="kw">table</span>(sim_<span class="dv">18</span>) <span class="op">/</span><span class="st"> </span>n_sims</a></code></pre></div>
 <pre><code>## sim_18
 ## alt 
 ##   1</code></pre>
@@ -731,19 +829,19 @@ $(document).ready(function () {
 </div>
 </div>
 </div>
-<div class="section level1">
+<div id="section-8" class="section level1">
 <h1>平均値の差の検定</h1>
 <p>2つのグループの平均値に差があるかどうか、統計的検定で判断しよう。これまで同様、<code>t.test()</code> を使って<span class="math inline">\(t\)</span>検定を行うが、問題によって指定しなけばいけない引数が異なるので注意が必要である。</p>
-<div class="section level2">
+<div id="section-9" class="section level2">
 <h2>対応のないデータの平均値の差の検定</h2>
 <p><strong>例題：</strong> 2つのコーヒーチェーンで、どちらのコーヒーが美味しいか調べるため、無作為に選んだ10人にD店のコーヒーを、無作為に選んだ別の10人にS店のコーヒーを飲んでもらった。10点満点で点数をつけてもらったところ、次のようなデータが得られた。</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" data-line-number="1">d &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">7</span>, <span class="dv">7</span>)</a>
-<a class="sourceLine" id="cb59-2" data-line-number="2">s &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">2</span>, <span class="dv">6</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb61-1" title="1">d &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">7</span>, <span class="dv">7</span>)</a>
+<a class="sourceLine" id="cb61-2" title="2">s &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">2</span>, <span class="dv">6</span>)</a></code></pre></div>
 <p>d とs がそれぞれのコーヒーに対する10人の評価である。D店のコーヒーを飲んだ10人と、S店のコーヒーを飲んだ10人は異なるので、これは対応のないデータであると考えられる。</p>
 <p>2つの店のコーヒーの味に対する評価の平均値は、</p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1"><span class="kw">mean</span>(d)</a></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" title="1"><span class="kw">mean</span>(d)</a></code></pre></div>
 <pre><code>## [1] 7.4</code></pre>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1"><span class="kw">mean</span>(s)</a></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" title="1"><span class="kw">mean</span>(s)</a></code></pre></div>
 <pre><code>## [1] 5.7</code></pre>
 <p>であり、単純に比較すれば、D店のコーヒーの方が美味しいということになりそうである。しかし、この結果は、1つの標本から得られた結果に過ぎない。言い換えると、今回抽出された人たちは、たまたまD店の味を好んだだけかもしれない。そこで、統計的検定の方法を使って、2店の美味しさに違いがあるかどうか判断しよう。</p>
 <p>各コーヒー店のコーヒーの味の評価の母数（パラメタ、真実の値）をそれぞれ S と D とすると、今回検証する仮説は、</p>
@@ -751,9 +849,9 @@ $(document).ready(function () {
 <li>帰無仮説：<span class="math inline">\(S = D\)</span>（つまり、<span class="math inline">\(S - D = 0\)</span>）</li>
 <li>対立仮説：<span class="math inline">\(S \neq D\)</span>（つまり、<span class="math inline">\(S - D \neq 0\)</span>）</li>
 </ul>
-<p>ということになる。これを、有意水準5% で検証する。また、2つのグループの分散は異なると仮定する（2つのグループの分散が等しいと仮定できるときは、<strong>var.equal = TRUE</strong> を指定する）。</p>
+<p>ということになる。これを、有意水準5% で検証する。また、2つのグループの分散は異なると仮定する（2つのグループの分散が等しいと仮定できるときは、<code>var.equal = TRUE</code> を指定する）。</p>
 <p>以下のコマンドで Welch の <span class="math inline">\(t\)</span> 検定を実行する。</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" data-line-number="1">(eg_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">t.test</span>(d, s))</a></code></pre></div>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb66-1" title="1">(eg_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">t.test</span>(d, s))</a></code></pre></div>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -766,37 +864,39 @@ $(document).ready(function () {
 ## mean of x mean of y 
 ##       7.4       5.7</code></pre>
 <p>検定統計量は、1.6953 である。また、この検定に必要な <span class="math inline">\(t\)</span> 分布の自由度 (df) は、14.848 である。この自由度を使って検定に使う臨界値を求めると、</p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb66-1" data-line-number="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> <span class="fl">14.848</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb68-1" title="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> <span class="fl">14.848</span>)</a></code></pre></div>
 <pre><code>## [1] -2.133352</code></pre>
 <p>である。<span class="math inline">\(|T| = 1.6953 &lt; 2.133352 = |c|\)</span> だから、帰無仮説は棄却されない。したがって、D店のコーヒーの方が美味しいとは言えない。</p>
 <p>ちなみに、<code>t.test()</code> の結果として表示される95%信頼区間から、検定結果を出すこともできる。 この例では、DとSの差の95%信頼区間が表示されており、それが <span class="math inline">\([-0.439, 2.839]\)</span> である。この区間が0（つまり、2つの美味しさに差がない）を含んでいるので、有意水準5%で帰無仮説を棄却できない。</p>
 </div>
-<div class="section level2">
+<div id="section-10" class="section level2">
 <h2>対応のあるデータの平均値の差の検定</h2>
 <p><strong>例題：</strong> 2つのコーヒーチェーンで、どちらのコーヒーが美味しいか調べるため、無作為に選んだ10人にD店のコーヒーとS店のコーヒーを1杯ずつ飲んでもらった。それぞれのコーヒーに10点満点で点数をつけてもらったところ、次のようなデータが得られた。</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb68-1" data-line-number="1">survey &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</a>
-<a class="sourceLine" id="cb68-2" data-line-number="2">  <span class="dt">id =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,</a>
-<a class="sourceLine" id="cb68-3" data-line-number="3">  <span class="dt">d =</span> <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">7</span>, <span class="dv">7</span>),</a>
-<a class="sourceLine" id="cb68-4" data-line-number="4">  <span class="dt">s =</span> <span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">2</span>, <span class="dv">6</span>)</a>
-<a class="sourceLine" id="cb68-5" data-line-number="5">)</a>
-<a class="sourceLine" id="cb68-6" data-line-number="6">survey</a></code></pre></div>
-<pre><code>##    id  d  s
-## 1   1  8  6
-## 2   2  7 10
-## 3   3  8  3
-## 4   4  6 10
-## 5   5  4  4
-## 6   6  8  4
-## 7   7  9  5
-## 8   8 10  7
-## 9   9  7  2
-## 10 10  7  6</code></pre>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" title="1">survey &lt;-<span class="st"> </span><span class="kw">tibble</span>(</a>
+<a class="sourceLine" id="cb70-2" title="2">  <span class="dt">id =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb70-3" title="3">  <span class="dt">d =</span> <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">7</span>, <span class="dv">7</span>),</a>
+<a class="sourceLine" id="cb70-4" title="4">  <span class="dt">s =</span> <span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">3</span>, <span class="dv">10</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">2</span>, <span class="dv">6</span>)</a>
+<a class="sourceLine" id="cb70-5" title="5">)</a>
+<a class="sourceLine" id="cb70-6" title="6">survey</a></code></pre></div>
+<pre><code>## # A tibble: 10 x 3
+##       id     d     s
+##    &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1     1     8     6
+##  2     2     7    10
+##  3     3     8     3
+##  4     4     6    10
+##  5     5     4     4
+##  6     6     8     4
+##  7     7     9     5
+##  8     8    10     7
+##  9     9     7     2
+## 10    10     7     6</code></pre>
 <p>id は、回答者番号、d はD店のコーヒーに対する評価、sはS店のコーヒーに対する評価である。</p>
 <p>同じ10人がD店のコーヒーとS店のコーヒーの両方を飲んで評価しているので、これは対応のあるデータであると考えられる。</p>
 <p>2つの店のコーヒーの味に対する評価の平均値は、</p>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1"><span class="kw">mean</span>(survey<span class="op">$</span>d)</a></code></pre></div>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" title="1"><span class="kw">mean</span>(survey<span class="op">$</span>d)</a></code></pre></div>
 <pre><code>## [1] 7.4</code></pre>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb72-1" data-line-number="1"><span class="kw">mean</span>(survey<span class="op">$</span>s)</a></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" title="1"><span class="kw">mean</span>(survey<span class="op">$</span>s)</a></code></pre></div>
 <pre><code>## [1] 5.7</code></pre>
 <p>であり、単純に比較すれば、D店のコーヒーの方が美味しいということになりそうである。しかし、この結果は、1つの標本から得られた結果に過ぎない。言い換えると、今回抽出された人たちは、たまたまD店の味を好んだだけかもしれない。そこで、統計的検定の方法を使って、2店の美味しさに違いがあるかどうか判断しよう。</p>
 <p>各コーヒー店のコーヒーの味の評価の母数（パラメタ、真実の値）をそれぞれ S と D とすると、今回検証する仮説は、</p>
@@ -804,8 +904,8 @@ $(document).ready(function () {
 <li>帰無仮説：<span class="math inline">\(S = D\)</span>（つまり、<span class="math inline">\(S - D = 0\)</span>）</li>
 <li>対立仮説：<span class="math inline">\(S \neq D\)</span>（つまり、<span class="math inline">\(S - D \neq 0\)</span>）</li>
 </ul>
-<p>ということになる。これを、有意水準5% で検証する。対応のあるデータであることをRに伝えるため、<strong>paired = TRUE</strong> を指定する）。</p>
-<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" data-line-number="1">(eg_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">t.test</span>(survey<span class="op">$</span>d, survey<span class="op">$</span>s, <span class="dt">paired =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
+<p>ということになる。これを、有意水準5% で検証する。対応のあるデータであることをRに伝えるため、<code>paired = TRUE</code> を指定する）。</p>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" title="1">(eg_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">t.test</span>(survey<span class="op">$</span>d, survey<span class="op">$</span>s, <span class="dt">paired =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
 <pre><code>## 
 ##  Paired t-test
 ## 
@@ -818,31 +918,31 @@ $(document).ready(function () {
 ## mean of the differences 
 ##                     1.7</code></pre>
 <p>検定統計量は、1.6805 である。また、この検定に必要な <span class="math inline">\(t\)</span> 分布の自由度 (df) は、9 である。この自由度を使って検定に使う臨界値を求めると、</p>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> <span class="dv">9</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" title="1"><span class="kw">qt</span>(<span class="dt">p =</span> <span class="fl">0.05</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">df =</span> <span class="dv">9</span>)</a></code></pre></div>
 <pre><code>## [1] -2.262157</code></pre>
 <p>である。<span class="math inline">\(|T| = 1.6953 &lt; 2.262157 = |c|\)</span> だから、帰無仮説は棄却されない。したがって、D店のコーヒーの方が美味しいとは言えない。</p>
 <p>2つの美味しさの差の95%信頼区間を見てみると、 <span class="math inline">\([-0.588, 3.988]\)</span> である。この区間が0（美味しさに差がない） を含んでいるので、有意水準5%で帰無仮説を棄却できない。</p>
 </div>
 </div>
-<div id="5" class="section level1">
-<h1>課題5</h1>
-<p>以下の各問に答えなさい。</p>
-<div id="1" class="section level2">
+<div id="section-11" class="section level1">
+<h1>課題6</h1>
+<p>以下の各問に答えなさい。<strong>提出は不要</strong>だが、試験対策としてやっておくこと。模範解答は授業のWebページにある。</p>
+<div id="section-12" class="section level2">
 <h2>問1</h2>
-<p>日本の成人男性の平均身長を知りたい。ランダムに選んだ15人を調べたところ、以下のようなデータ得られた。</p>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" data-line-number="1">height &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">167</span>, <span class="dv">189</span>, <span class="dv">172</span>, <span class="dv">163</span>, <span class="dv">170</span>, </a>
-<a class="sourceLine" id="cb78-2" data-line-number="2">            <span class="dv">168</span>, <span class="dv">174</span>, <span class="dv">175</span>, <span class="dv">178</span>, <span class="dv">169</span>,</a>
-<a class="sourceLine" id="cb78-3" data-line-number="3">            <span class="dv">176</span>, <span class="dv">170</span>, <span class="dv">164</span>, <span class="dv">172</span>, <span class="dv">170</span>)</a></code></pre></div>
+<p>日本の成人男性の平均身長を知りたい。ランダムに選んだ15人を調べたところ、以下のようなデータが得られた。</p>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" title="1">height &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">167</span>, <span class="dv">189</span>, <span class="dv">172</span>, <span class="dv">163</span>, <span class="dv">170</span>, </a>
+<a class="sourceLine" id="cb80-2" title="2">            <span class="dv">168</span>, <span class="dv">174</span>, <span class="dv">175</span>, <span class="dv">178</span>, <span class="dv">169</span>,</a>
+<a class="sourceLine" id="cb80-3" title="3">            <span class="dv">176</span>, <span class="dv">170</span>, <span class="dv">164</span>, <span class="dv">172</span>, <span class="dv">170</span>)</a></code></pre></div>
 <p>このデータから、日本の成人男性の平均身長を推定しなさい。ただし、点推定と区間推定の両方を実行すること。また、母分散は知らないと仮定する。</p>
 </div>
-<div id="2" class="section level2">
+<div id="section-13" class="section level2">
 <h2>問2</h2>
 <p>K工科大学とM工科大学の学生が、どの程度統計学に興味を持っているか調べたい。K工科大学から15人をランダムに選び、統計学に対する興味の強さを100点満点で評価してもらった。同様に、M工科大学から12人をランダムに選び、統計学に対する興味の強さを100点満点で評価してもらった。結果は以下のとおりである。</p>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb79-1" data-line-number="1">K &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">80</span>, <span class="dv">90</span>, <span class="dv">78</span>, <span class="dv">82</span>, <span class="dv">23</span>,</a>
-<a class="sourceLine" id="cb79-2" data-line-number="2">       <span class="dv">67</span>, <span class="dv">78</span>, <span class="dv">84</span>, <span class="dv">99</span>, <span class="dv">72</span>,</a>
-<a class="sourceLine" id="cb79-3" data-line-number="3">       <span class="dv">84</span>, <span class="dv">87</span>, <span class="dv">75</span>, <span class="dv">66</span>, <span class="dv">91</span>)</a>
-<a class="sourceLine" id="cb79-4" data-line-number="4">M &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">89</span>, <span class="dv">78</span>, <span class="dv">67</span>, <span class="dv">56</span>, <span class="dv">43</span>, <span class="dv">53</span>,</a>
-<a class="sourceLine" id="cb79-5" data-line-number="5">       <span class="dv">23</span>, <span class="dv">97</span>, <span class="dv">67</span>, <span class="dv">65</span>, <span class="dv">42</span>, <span class="dv">43</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb81-1" title="1">K &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">80</span>, <span class="dv">90</span>, <span class="dv">78</span>, <span class="dv">82</span>, <span class="dv">23</span>,</a>
+<a class="sourceLine" id="cb81-2" title="2">       <span class="dv">67</span>, <span class="dv">78</span>, <span class="dv">84</span>, <span class="dv">99</span>, <span class="dv">72</span>,</a>
+<a class="sourceLine" id="cb81-3" title="3">       <span class="dv">84</span>, <span class="dv">87</span>, <span class="dv">75</span>, <span class="dv">66</span>, <span class="dv">91</span>)</a>
+<a class="sourceLine" id="cb81-4" title="4">M &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">89</span>, <span class="dv">78</span>, <span class="dv">67</span>, <span class="dv">56</span>, <span class="dv">43</span>, <span class="dv">53</span>,</a>
+<a class="sourceLine" id="cb81-5" title="5">       <span class="dv">23</span>, <span class="dv">97</span>, <span class="dv">67</span>, <span class="dv">65</span>, <span class="dv">42</span>, <span class="dv">43</span>)</a></code></pre></div>
 <p>この調査結果から、K工科大学とM工科大学の学生の間で、統計学に対する興味の強さに違いがあるか調べる。そのために、以下の各問に答えなさい。ただし、有意水準は5%とする。</p>
 <ol style="list-style-type: decimal">
 <li>帰無仮説と対立仮説は何か？それぞれ述べなさい。</li>
@@ -852,7 +952,7 @@ $(document).ready(function () {
 <li>検定の結論は？</li>
 </ol>
 </div>
-<div id="3" class="section level2">
+<div id="section-14" class="section level2">
 <h2>問3</h2>
 <p>あるラーメン屋の豚骨ラーメンと塩ラーメンを10 人に食べてもらい、それぞれのラーメンを10 点満点（0 点から10 点まで1 点刻み）で評価してもらった。評価の結果は下の表の通りである。日本に住む人全員を母集団と考えたとき、豚骨ラーメンと塩ラーメンの評価に違いがあるかどうか、有意水準5% で検定したい。このとき、以下の各問に答えよ。</p>
 <table>
@@ -907,13 +1007,6 @@ $(document).ready(function () {
 <li>検定の臨界値はいくつ？</li>
 <li>検定の結論は？</li>
 </ol>
-<p><br> <br></p>
-<ul>
-<li>提出期限：5月31日（木）の授業開始時</li>
-<li>結果を印刷したものを提出（Rのコードも付ける。コードがないものは減点する。Rマークダウンを使ってもよい）</li>
-<li>氏名（ふりがな付き）と学籍番号を忘れずに書く</li>
-<li>2枚以上（片面印刷で2ページ以上または両面印刷で3ページ以上）提出するときは、すべての紙をホチキス等で綴じること</li>
-</ul>
 <p><br> <br></p>
 <div align="right">
 <p><a href="../">授業の内容に戻る</a></p>
