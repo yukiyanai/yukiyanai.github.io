@@ -1,5 +1,6 @@
 ## .Rprofile
 ## 2015-10-05 Yuki Yanai
+## 2019-05-23 YY
 
 ## use quartz for graphics on OS X
 ## Windowsユーザは次の行を削除すること
@@ -23,10 +24,10 @@ setHook(packageEvent("grDevices", "onLoad"),
         if(capabilities("aqua"))
             grDevices::quartzFonts(
               sans =grDevices::quartzFont(
-                c("Hiragino Kaku Gothic Pro W3",
-                  "Hiragino Kaku Gothic Pro W6",
-                  "Hiragino Kaku Gothic Pro W3",
-                  "Hiragino Kaku Gothic Pro W6")),
+                c("Hiragino Sans W3",
+                  "Hiragino Sans W3 W6",
+                  "Hiragino Sans W3",
+                  "Hiragino Sans W3 W6")),
               serif=grDevices::quartzFont(
                 c("Hiragino Mincho Pro W3",
                   "Hiragino Mincho Pro W6",
