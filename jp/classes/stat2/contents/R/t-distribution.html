@@ -557,7 +557,7 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">統計学2</h1>
 <h3 class="subtitle">t分布と母平均の推定</h3>
 <h4 class="author">矢内　勇生</h4>
-<h4 class="date">2018-05-18（改訂; 2018-05-21; 2019-05-14; 2019-05-29）</h4>
+<h4 class="date">2018-05-18（改訂: 2018-05-21; 2019-05-14; 2019-05-29; 2019-05-30）</h4>
 
 </div>
 
@@ -713,7 +713,7 @@ $(document).ready(function () {
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">quantile</span>(z, <span class="dt">probs =</span> <span class="kw">c</span>(<span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span>))</a></code></pre></div>
 <pre><code>##         2.5%          50%        97.5% 
 ## -1.968565253 -0.001995798  1.922012245</code></pre>
-<p>シミュレーションで得た <span class="math inline">\(z\)</span> の分布については、2.5パーセンタイルが -1.97、50パーセンタイルが-1.97、97.5パーセンタイルが 1.92 であることがわかる。</p>
+<p>シミュレーションで得た <span class="math inline">\(z\)</span> の分布については、2.5パーセンタイルが -1.97、50パーセンタイルが0、97.5パーセンタイルが 1.92 であることがわかる。</p>
 <p>2つの分布がもし完全に一致するなら、2つの分布の a% の分位点は、aがどんな値であっても等しいはずである。したがって、片方の分布の分位点を <span class="math inline">\(y\)</span>、もう一方の分布の分位点を <span class="math inline">\(x\)</span> とすれば、2つの分布が等しいときには <span class="math inline">\(y=x\)</span> になるはずである。つまり、yとxの散布図の点が45度線の上にすべて乘るはずである。</p>
 <p>この性質を利用し、Q-Qプロット上の点が45度線の上にあるかどうか（45度線からどれだけずれているか）を調べることで、分布を比較してみよう。</p>
 <p>まず、<span class="math inline">\(z\)</span>（母分散を知っているときに、標本平均を標準化したもの; sample）と標準正規分布 (qnorm) を比べてみよう。 標準正規分布と比較するためのQ-Qプロットは、<code>stat_qq()</code> で作れる。</p>
