@@ -14,7 +14,7 @@ documentclass: ltjsarticle
 title: "統計学2"
 subtitle: "Rマークダウンの使い方と2変数の記述統計"
 author: "矢内　勇生"
-date: "2018-04-19（改訂：2019-04-19）"
+date: "2018-04-19（改訂：2019-04-19; 2019-06-03）"
 ---
 
 このページの内容を初めて読むときは、$\ast$ が付いている項目は飛ばして良い（少し上級者向けの内容）。
@@ -37,7 +37,7 @@ library("knitr")
 
 **Macユーザのみ**次のコードも実行する。
 ```{r mac-ggplot}
-theme_set(theme_gray(base_size = 12, base_family = "HiraginoSans-W3"))
+theme_set(theme_gray(base_size = 10, base_family = "HiraginoSans-W3"))
 ```
 
 
@@ -46,7 +46,7 @@ theme_set(theme_gray(base_size = 12, base_family = "HiraginoSans-W3"))
 ## まず、マークダウン全体のオプションを指定する
 ## "include = FALSE" なので、このチャンクは出力に表示されない
 knitr::opts_chunk$set(warning = FALSE, echo = TRUE, message = TRUE,
-                      fig.width = 4, fig.height = 3)
+                      fig.width = 4, fig.height = 3, dev = "quartz_pdf")
 ```
 
 <br>
@@ -292,7 +292,7 @@ cor(myd$height, myd$weight)
 
 散布図だけに頼ると、存在しないパタンが見えてしまうことがあるので、散布図で発見したパタンが本当にあるかどうか、相関係数を求めて確かめるべきである。
 
-反対に、相関係数だけに頼るのも危険である。相関係数は、2変数のあらゆる関係を捉えられるわけではない。相関係数が示すのは、2つの相関係数の**直線的な関係だけ**である。
+反対に、相関係数だけに頼るのも危険である。相関係数は、2変数のあらゆる関係を捉えられるわけではない。相関係数が示すのは、2つの変数の**直線的な関係だけ**である。
 
 例として、$x$ と$y$ という2つの変数を以下のとおり作り、相関係数を計算してみよう。
 ```{r cor-x-y}
