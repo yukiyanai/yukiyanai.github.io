@@ -1022,7 +1022,7 @@ $(document).ready(function () {
 ## 1 A         40000   42000   44000
 ## 2 B         38000   40000   43000
 ## 3 C         52000   52100   52500</code></pre>
-<p>このように、元の縦長データに戻すことができる。</p>
+<p>このように、元の横長データに戻すことができる。</p>
 <p><code>pivot_longer()</code> と<code>pivot_wider()</code> を比較して、対応関係を理解しよう。</p>
 <p>自分でデータフレームを作りたいときは、<code>dpyr::tibble()</code> を使う。</p>
 <div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1"></a>newd &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dt">mean =</span> <span class="dv">10</span>, <span class="dt">sd =</span> <span class="dv">2</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -1030,8 +1030,8 @@ $(document).ready(function () {
 <span id="cb81-3"><a href="#cb81-3"></a><span class="kw">glimpse</span>(newd)</span></code></pre></div>
 <pre><code>## Observations: 100
 ## Variables: 2
-## $ x &lt;dbl&gt; 9.040359, 12.912274, 6.855613, 7.780751, 8.991079, 11.006920, …
-## $ y &lt;dbl&gt; 8.657054, 10.675021, 5.117251, 8.288354, 9.031734, 11.887114, …</code></pre>
+## $ x &lt;dbl&gt; 9.420161, 12.851338, 11.755551, 8.387121, 8.457132, 11.600785,…
+## $ y &lt;dbl&gt; 7.836435, 9.312945, 11.208273, 7.700125, 9.339862, 9.046011, 1…</code></pre>
 <p>複数のデータセットを結合する方法については、教科書第5章を参照。</p>
 <p><br> <br></p>
 <div align="right">
