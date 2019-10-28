@@ -7,11 +7,11 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="矢内　勇生" />
 
-<meta name="date" content="2019-10-27" />
 
 <title>計量経済学</title>
 
@@ -277,7 +277,7 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
       if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -526,18 +526,6 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
 
@@ -560,7 +548,7 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">計量経済学</h1>
 <h3 class="subtitle">Rによるデータ操作</h3>
 <h4 class="author">矢内　勇生</h4>
-<h4 class="date">2019-10-27</h4>
+<h4 class="date">2019-10-27（改訂：2019-10-28）</h4>
 
 </div>
 
@@ -586,10 +574,6 @@ $(document).ready(function () {
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;tidyr&quot;</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <p>次に、 <strong>tidyverse</strong> パッケージを読み込もう。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(<span class="st">&quot;tidyverse&quot;</span>)</span></code></pre></div>
-<p>Macユーザは次のコマンドも実行しておく。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">theme_set</span>(<span class="kw">theme_gray</span>(<span class="dt">base_size =</span> <span class="dv">10</span>, <span class="dt">base_family =</span> <span class="st">&quot;HiraginoSans-W3&quot;</span>))</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="co"># Or</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="co">#theme_set(theme_gray(base_size = 10, base_family = &quot;HiraKakuPro-W3&quot;))</span></span></code></pre></div>
 </div>
 <div id="section-1" class="section level2">
 <h2>データの読み込み</h2>
@@ -609,7 +593,7 @@ $(document).ready(function () {
 <p>などがあげられる（<strong>注意：このファイルを Word 等のワープロソフトで編集しないように。余分な内容が追加されてデータの中身が変わってしまうので。</strong>）。</p>
 <p>Excel 等に自分でデータを打ち込んで新しいデータセットを作るときは、できるだけこのCSV 形式を選んだ方がよい。</p>
 <p>CSV形式のデータは、<code>redr::read_csv()</code> でRに読み込むことができる。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>mycsv1 &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&#39;data/fake-data-lec02.csv&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>mycsv1 &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&#39;data/fake-data-lec02.csv&#39;</span>)</span></code></pre></div>
 <pre><code>## Parsed with column specification:
 ## cols(
 ##   id = col_double(),
@@ -622,7 +606,7 @@ $(document).ready(function () {
 <p>プロジェクト内の data という名前のフォルダに入っていることを <code>data/</code> の部分で示し、そのフォルダ内の <code>fake-data-lec02.csv</code> を指定して開いている。 このとき、引用符を忘れないように注意する。引用符はシングル「’」でも、ダブル 「&quot;」でもよい。</p>
 <p>RStudio でデータを読み込むと、右上の <strong>Environment</strong>タブの<strong>Data</strong>のところに読み込んだデータセットが表示される。</p>
 <p>念のために中身を少しだけ確認しておこう。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">glimpse</span>(mycsv1)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">glimpse</span>(mycsv1)</span></code></pre></div>
 <pre><code>## Observations: 100
 ## Variables: 6
 ## $ id     &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17…
@@ -636,8 +620,10 @@ $(document).ready(function () {
 <h3>Excel 形式のデータを読む</h3>
 <p>Excel のデータは、<strong>.xlsx</strong> または <strong>.xls</strong> という拡張子で保存されている。 このデータをRで読む方法もあるが、ここではExcel 形式のデータをCSV形式に変換し、それを上で説明した方法で読むことにする。</p>
 <p>例として、<a href="../data/fake-data-lec03.xlsx">fake-data-lec03.xlsx</a> を使う。まず、このデータをダウンロードし、Excel で開こう。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">download.file</span>(<span class="dt">url =</span> <span class="st">&quot;http://yukiyanai.github.io/jp/classes/econometrics2/contents/data/fake-data-lec03.xlsx&quot;</span>,</span>
-<span id="cb8-2"><a href="#cb8-2"></a>              <span class="dt">destfile =</span> <span class="st">&quot;data/fake-data-lec03.xlsx&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">download.file</span>(</span>
+<span id="cb7-2"><a href="#cb7-2"></a>    <span class="dt">url =</span> <span class="st">&quot;http://yukiyanai.github.io/jp/classes/econometrics1/contents/data/fake-data-lec03.xlsx&quot;</span>,</span>
+<span id="cb7-3"><a href="#cb7-3"></a>    <span class="dt">destfile =</span> <span class="st">&quot;data/fake-data-lec03.xlsx&quot;</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>)</span></code></pre></div>
 <p>これを、CSV形式に変換し、プロジェクト内の data フォルダに保存する。そのために、以下を実行する。</p>
 <ol style="list-style-type: decimal">
 <li>Excel 左上の「ファイル」から「名前を付けて保存」を選ぶ</li>
@@ -646,7 +632,7 @@ $(document).ready(function () {
 </ol>
 <p>保存できたら、RStudioの右下の data フォルダをクリックし、<strong>fake-data-lec03.csv</strong> が保存されていることを確かめよう。</p>
 <p>あとは、先ほどと同様の方法でデータを読めばいいので、</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>mycsv2 &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/fake-data-lec03.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>mycsv2 &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/fake-data-lec03.csv&quot;</span>)</span></code></pre></div>
 <pre><code>## Parsed with column specification:
 ## cols(
 ##   id = col_double(),
@@ -658,7 +644,7 @@ $(document).ready(function () {
 ## )</code></pre>
 <p>とすればよい。RStudio の右上で、データが読み込めたこと（mycsv2というデータが追加されたこと）を確認しよう。</p>
 <p>念のために中身を少しだけ確認しておこう。</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">glimpse</span>(mycsv2)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">glimpse</span>(mycsv2)</span></code></pre></div>
 <pre><code>## Observations: 100
 ## Variables: 6
 ## $ id     &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17…
@@ -668,11 +654,11 @@ $(document).ready(function () {
 ## $ weight &lt;dbl&gt; 72.1, 85.4, 81.8, 65.2, 66.0, 50.8, 75.1, 67.1, 76.7, 63.…
 ## $ income &lt;dbl&gt; 2102061, 2729262, 1193016, 3014919, 3982087, 3702544, 793…</code></pre>
 <p>あるいは、<code>readxl::read_excel()</code> でExcelファイルを読み込むこともできる。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">#install.packages(&quot;readxl&quot;)  # 必要な場合のみインストール</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a><span class="kw">library</span>(<span class="st">&quot;readxl&quot;</span>)</span>
-<span id="cb13-3"><a href="#cb13-3"></a>myxl &lt;-<span class="st"> </span><span class="kw">read_excel</span>(<span class="st">&quot;data/fake-data-lec03.xlsx&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">#install.packages(&quot;readxl&quot;)  # 必要な場合のみインストール</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">library</span>(<span class="st">&quot;readxl&quot;</span>)</span>
+<span id="cb12-3"><a href="#cb12-3"></a>myxl &lt;-<span class="st"> </span><span class="kw">read_excel</span>(<span class="st">&quot;data/fake-data-lec03.xlsx&quot;</span>)</span></code></pre></div>
 <p>念のために中身を少しだけ確認しておこう。</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">glimpse</span>(myxl)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">glimpse</span>(myxl)</span></code></pre></div>
 <pre><code>## Observations: 100
 ## Variables: 6
 ## $ id     &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17…
@@ -686,15 +672,15 @@ $(document).ready(function () {
 <h3>複数のデータセットの扱い</h3>
 <p>ここまでで3つのデータセットを読み込んだ（そのうち2つの内容は同じだが）ので、RStudioのEvironment タブには、3つのデータセット、mycsv1, mycsv2, myxl が表示されているはずである。このように、Rには複数のデータを同時に利用できるというメリットがある。</p>
 <p>このうち、csvファイルから読み込んだデータセットについて、データに含まれる変数を確認してみよう。</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">names</span>(mycsv1)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">names</span>(mycsv1)</span></code></pre></div>
 <pre><code>## [1] &quot;id&quot;     &quot;sex&quot;    &quot;age&quot;    &quot;height&quot; &quot;weight&quot; &quot;income&quot;</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">names</span>(mycsv2)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">names</span>(mycsv2)</span></code></pre></div>
 <pre><code>## [1] &quot;id&quot;     &quot;sex&quot;    &quot;age&quot;    &quot;height&quot; &quot;weight&quot; &quot;income&quot;</code></pre>
 <p>2つのデータセットに含まれる変数名は同じようである。</p>
 <p>では、2つのデータはまったく同じものだろうか。ためしに、それぞれのデータセット身長 (height) の平均値を求めてみよう。</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">mean</span>(mycsv1<span class="op">$</span>height)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">mean</span>(mycsv1<span class="op">$</span>height)</span></code></pre></div>
 <pre><code>## [1] 163.746</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">mean</span>(mycsv2<span class="op">$</span>height)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">mean</span>(mycsv2<span class="op">$</span>height)</span></code></pre></div>
 <pre><code>## [1] 162.907</code></pre>
 <p>平均値は異なる。つまり、変数名は同じでも、データの中身は違うようだ。</p>
 <p>このように、異なるデータセットが同じ名前の変数を含んでいることがあるので注意が必要だ。既に学習したとおり、Rでは <code>データセット名$変数名</code> とすることで、同じ名前の変数でも、異なるデータセットに属している場合にはそれらを区別して利用することができる。</p>
@@ -706,16 +692,18 @@ $(document).ready(function () {
 <p>Stata のデータセットには、<strong>.dta</strong> という拡張子が付いている。</p>
 <p>StataのファイルをRで読みたいときは、<strong>haven</strong> というパッケージに含まれる <code>read_dta()</code>という関数を使う。（今後これを、<code>haven::read_dta()</code> と表記する。他のパッケージに含まれる関数についても、`<code>パッケージ名::関数名()</code> という書き方をする。）</p>
 <p>例として、<a href="../data/fake-data-stata.dta">fake-data-stata.dta</a> をダウンロードし、<strong>data</strong> フォルダに保存しよう。</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">download.file</span>(<span class="dt">url =</span> <span class="st">&quot;http://yukiyanai.github.io/jp/classes/econometrics2/contents/data/fake-data-stata.dta&quot;</span>,</span>
-<span id="cb24-2"><a href="#cb24-2"></a>              <span class="dt">destfile =</span> <span class="st">&quot;data/fake-data-stata.dta&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">download.file</span>(</span>
+<span id="cb23-2"><a href="#cb23-2"></a>    <span class="dt">url =</span> <span class="st">&quot;http://yukiyanai.github.io/jp/classes/econometrics1/contents/data/fake-data-stata.dta&quot;</span>,</span>
+<span id="cb23-3"><a href="#cb23-3"></a>    <span class="dt">destfile =</span> <span class="st">&quot;data/fake-data-stata.dta&quot;</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a>)</span></code></pre></div>
 <p>これを読むには、まず <strong>haven</strong> パッケージを読み込むことが必要である。 パッケージの読み込みには、<code>library()</code> を使う（インストールされていない場合はまずインストールする）。</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="co">#install.pacakges(&quot;haven&quot;)  # 必要な場合のみインストール</span></span>
-<span id="cb25-2"><a href="#cb25-2"></a><span class="kw">library</span>(<span class="st">&#39;haven&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co">#install.pacakges(&quot;haven&quot;)  # 必要な場合のみインストール</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="kw">library</span>(<span class="st">&#39;haven&#39;</span>)</span></code></pre></div>
 <p>パッケージが読み込めたら、データを読む。</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>mydta &lt;-<span class="st"> </span><span class="kw">read_dta</span>(<span class="st">&#39;data/fake-data-stata.dta&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>mydta &lt;-<span class="st"> </span><span class="kw">read_dta</span>(<span class="st">&#39;data/fake-data-stata.dta&#39;</span>)</span></code></pre></div>
 <p>RStudio の右上で、データが読み込めたことを確認しよう。</p>
 <p>念のために中身も少しだけ確認しておこう。</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">glimpse</span>(mydta)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">glimpse</span>(mydta)</span></code></pre></div>
 <pre><code>## Observations: 100
 ## Variables: 6
 ## $ id     &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17…
@@ -729,13 +717,13 @@ $(document).ready(function () {
 <h4><strong>SPSS</strong></h4>
 <p>SPSS 形式のデータには、<strong>.sav</strong>という拡張子が付いている。 Rでは、<code>haven::read_sav()</code> （または <code>haven::read_spss()</code>）で読み込める。</p>
 <p>例として、<a href="../data/fake-data-spss.sav">fake-data-spss.sav</a> をダウンロードし、<strong>data</strong> フォルダに保存しよう。</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">download.file</span>(<span class="dt">url =</span> <span class="st">&quot;http://yukiyanai.github.io/jp/classes/econometrics2/contents/data/fake-data-spss.sav&quot;</span>,</span>
-<span id="cb29-2"><a href="#cb29-2"></a>              <span class="dt">destfile =</span> <span class="st">&quot;data/fake-data-spss.sav&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw">download.file</span>(<span class="dt">url =</span> <span class="st">&quot;http://yukiyanai.github.io/jp/classes/econometrics1/contents/data/fake-data-spss.sav&quot;</span>,</span>
+<span id="cb28-2"><a href="#cb28-2"></a>              <span class="dt">destfile =</span> <span class="st">&quot;data/fake-data-spss.sav&quot;</span>)</span></code></pre></div>
 <p>このファイルは、以下のコマンドで読み込める。</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>mysav &lt;-<span class="st"> </span><span class="kw">read_sav</span>(<span class="st">&#39;data/fake-data-spss.sav&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>mysav &lt;-<span class="st"> </span><span class="kw">read_sav</span>(<span class="st">&#39;data/fake-data-spss.sav&#39;</span>)</span></code></pre></div>
 <p>RStudio の右上で、データが読み込めたことを確認しよう。</p>
 <p>念のために中身も少しだけ確認しておこう。</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">glimpse</span>(mysav)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="kw">glimpse</span>(mysav)</span></code></pre></div>
 <pre><code>## Observations: 100
 ## Variables: 6
 ## $ id     &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17…
@@ -776,14 +764,19 @@ $(document).ready(function () {
 <h3>様々な前処理</h3>
 <p>CSVファイルは用意されていると仮定する。</p>
 <p>官庁のウェブサイト等で公開されているデータは、ファイルの冒頭にデータの説明文などの、データセットの中身ではない情報が含まれている場合がある。例えば、最初の3行が余計だとすると、その3行をとばしてデータを読み込みたい。そういう場合は、<code>readr::read_csv()</code> の <strong>skip</strong> 引数を指定する。<strong>foo.csv</strong> というデータセットがあるとすると（実際にはないので、以下のコマンドを実行してもエラーになる。以下、「あるとする」と言った場合は同様）、次のようにして読める。</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>MYD &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;foo.csv&quot;</span>, <span class="dt">skip =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>MYD &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;foo.csv&quot;</span>, <span class="dt">skip =</span> <span class="dv">3</span>)</span></code></pre></div>
 <p>Rでは欠測値（本来ならセルに入っているべき値が、何らかの理由 [アンケートでの回答拒否、政府が情報を公開していない、etc.] で欠けている場合）は、<code>NA</code> で表すことになっている。 自分が用意したCSVファイル（あるいはその元になったMS Excel ファイル）で、も NA と入力されているか、完全に空欄になっている場合、<code>readr::read_csv()</code> は自動的にRの<code>NA</code> に変換してくれる。しかし、インターネット等でダウンロードしたファイルでは、欠測を他の方法で表記している場合があり、対応が必要である。<code>read_csv()</code> では、<strong>na</strong> 引数を指定すればよい。例えば、欠測が<code>.</code>（ドット）で表されている <strong>foo.csv</strong> があるとすれば、</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>MYD &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;foo.csv&quot;</span>, <span class="dt">na =</span> <span class="st">&#39;.&#39;</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>MYD &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;foo.csv&quot;</span>, <span class="dt">na =</span> <span class="st">&#39;.&#39;</span>) </span></code></pre></div>
 <p>とすればよい。あるいは、欠測が 99 または -9 のいずれかで表現されているなら、</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>MYD &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;foo.csv&quot;</span>, <span class="dt">na =</span> <span class="kw">c</span>(<span class="dv">99</span>, <span class="dv">-9</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>MYD &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;foo.csv&quot;</span>, <span class="dt">na =</span> <span class="kw">c</span>(<span class="dv">99</span>, <span class="dv">-9</span>))</span></code></pre></div>
 <p>とする。</p>
 <p>ここからは、実際のデータを使って実習しよう。 『Rによる計量政治学』（浅野正彦, 矢内勇生. 2018）で使用されているデータ（<a href="https://raw.githubusercontent.com/yukiyanai/quant-methods-R/master/data/hr-data.csv">hr-data.csv</a>）を使う。</p>
-<p>まず、データを読み込む。</p>
+<p>まず、データをダウンロードして保存するする。</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="kw">download.file</span>(</span>
+<span id="cb35-2"><a href="#cb35-2"></a>    <span class="dt">url =</span> <span class="st">&quot;https://raw.githubusercontent.com/yukiyanai/quant-methods-R/master/data/hr-data.csv&quot;</span>,</span>
+<span id="cb35-3"><a href="#cb35-3"></a>    <span class="dt">destfile =</span> <span class="st">&quot;data/hr-data.csv&quot;</span></span>
+<span id="cb35-4"><a href="#cb35-4"></a>)</span></code></pre></div>
+<p>データを読み込む。</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>myd &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/hr-data.csv&quot;</span>)</span></code></pre></div>
 <pre><code>## Parsed with column specification:
 ## cols(
@@ -1030,8 +1023,8 @@ $(document).ready(function () {
 <span id="cb81-3"><a href="#cb81-3"></a><span class="kw">glimpse</span>(newd)</span></code></pre></div>
 <pre><code>## Observations: 100
 ## Variables: 2
-## $ x &lt;dbl&gt; 9.420161, 12.851338, 11.755551, 8.387121, 8.457132, 11.600785,…
-## $ y &lt;dbl&gt; 7.836435, 9.312945, 11.208273, 7.700125, 9.339862, 9.046011, 1…</code></pre>
+## $ x &lt;dbl&gt; 9.220553, 7.981334, 10.694472, 10.601160, 13.234544, 12.948464…
+## $ y &lt;dbl&gt; 6.878700, 8.491508, 9.548189, 11.016940, 11.968578, 10.806146,…</code></pre>
 <p>複数のデータセットを結合する方法については、教科書第5章を参照。</p>
 <p><br> <br></p>
 <div align="right">
@@ -1057,6 +1050,23 @@ $(document).ready(function () {
 
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
