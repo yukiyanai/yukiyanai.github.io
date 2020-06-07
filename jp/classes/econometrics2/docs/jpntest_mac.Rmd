@@ -1,0 +1,57 @@
+---
+title: "計量経済学応用"
+subtitle: "日本語PDFできるかな"
+author: "猫好きのRユーザ"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    highlight: tango
+    latex_engine: xelatex
+    number_sections: true
+    toc: false
+header-includes:
+  - \usepackage{zxjatype}
+  - \usepackage[hiragino-pron]{zxjafont}
+documentclass: bxjsarticle
+---
+```{r global_option, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, echo = TRUE, message = FALSE, 
+                      fig.height = 4, fig.width = 6, 
+                      dev = "cairo_pdf")
+```
+
+# 日本語入りのR Markdown ファイルをPDFに knit する
+
+## 準備
+
+まず、必要なパッケージを読み込む。
+
+```{r}
+pacman::p_load(tidyverse, patchwork)
+```
+
+日本語フォントの設定。
+```{r}
+theme_set(theme_gray(base_size = 10, base_family = "HiraginoSans-W3"))
+```
+
+## 作図
+
+図を作って表示する
+```{r, fig.width = 6, fig.height = 3}
+set.seed(321)
+myd <- tibble(x = rnorm(100),
+              y = rnorm(100))
+p1 <- ggplot(myd, aes(x = x, y = after_stat(density))) +
+  geom_histogram(binwidth = 0.25, color = "black") + 
+  ylim(0, 0.6) +
+  labs(y = "確率密度", title = "x のヒストグラム")
+p2 <- ggplot(myd, aes(x = y, y = after_stat(density))) +
+  geom_histogram(binwidth = 0.25, color = "black", fill = "dodgerblue") +
+  ylim(0, 0.6)　+
+  labs(y = "確率密度", title = "y のヒストグラム")
+plot(p1 + p2)
+```
+
+
+
