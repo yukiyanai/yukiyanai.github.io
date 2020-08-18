@@ -1,5 +1,5 @@
 body {
-	font-family: Helvetica, arial, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, sans-serif;
+	font-family: Helvetica, arial, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "Hiragino Sans", IPAex, "メイリオ", Meiryo, sans-serif;
 	font-size: 16px;
 	line-height: 150%;
 	padding-top: 10px;
@@ -15,11 +15,11 @@ table {
 	width: 100%;
 }
 td {
-	font-family: Helvetica, arial, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, sans-serif;
+	font-family: Helvetica, arial, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "Hiragino Sans", IPAex, "メイリオ", Meiryo, sans-serif;
 	font-size: 16px;
 }
 tt, code, pre {
-	font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+	font-family: 'Inconsolata', Monaco, 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
 	font-size: 16px;
 }
 

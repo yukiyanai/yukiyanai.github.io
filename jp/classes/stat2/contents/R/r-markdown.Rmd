@@ -1,65 +1,91 @@
 ---
-output:
-  html_document:
-    css: my-markdown.css
-    highlight: tango
-    self_contained: yes
-    smart: no
-    theme: united
-    toc: yes
-  pdf_document: 
-    latex_engine: lualatex
-    toc: yes
-documentclass: ltjsarticle
 title: "統計学2"
-subtitle: "Rマークダウンの使い方と2変数の記述統計"
+subtitle: "Rマークダウンの使い方"
 author: "矢内　勇生"
-date: "2018-04-19（改訂：2019-04-19; 2019-06-03）"
+date: "2018-04-19（改訂：2019-04-19, 2019-06-03, 2020-08-15）"
+output: 
+  pdf_document:
+    highlight: tango
+    latex_engine: xelatex
+    number_sections: true
+    toc: false
+  html_document:
+    highlight: tango
+    theme: united
+    toc: true
+    css: my-markdown.css
+    smart: false
+header-includes:
+  - \usepackage{indentfirst}
+  - \parindent = 1em
+  - \usepackage{dcolumn}
+  - \newcolumntype{.}{D{.}{.}{-1}}
+  - \usepackage{caption}
+  - \captionsetup[table]{name=表}
+  - \captionsetup[figure]{name=図}
+documentclass: bxjsarticle
+classoption: xelatex, ja=standard
 ---
 
-このページの内容を初めて読むときは、$\ast$ が付いている項目は飛ばして良い（少し上級者向けの内容）。
+この資料を初めて読むときは、$\ast$ が付いている項目はとばして良い（少し上級者向けの内容）。
 
 # 準備
 
-Rマークダウン (R Markdown、拡張子は.Rmd) ファイルはRStudio で編集する。編集したファイルをHTML（またはPDF） に出力するために、`rmarkdown::render()` や`knitr::knit()` を利用する。これらがインストール済みでない場合はまずインストールする。
-```{r rmarkdown-package, message = FALSE, eval = FALSE}
+Rマークダウン (R Markdown、拡張子は.Rmd) ファイルはRStudio で編集する。編集したファイルをPDF（またはHTML） に出力するために、`rmarkdown::render()` や`knitr::knit()` を利用する。これらがインストール済みでない場合はまずインストールする。
+```{r install_packs, message = FALSE, eval = FALSE}
 install.packages("tidyverse", dependencies = TRUE)
 install.packages("rmarkdown", dependencies = TRUE) 
 install.packages("knitr", dependencies = TRUE) 
 ```
 
-インストールできたら、パッケージを読み込む。パッケージのインストールは一度すればすむが、`library()` を使ったパッケージの読み込みは、Rを起動するたびに行う必要がある。
+すべてインストールできたら、パッケージを読み込む。パッケージのインストールは一度すればすむが、`library()` を使ったパッケージの読み込みは、Rを起動するたびに行う必要がある。
+ただし、**rmarkdown** パッケージと **knitr** パッケージは必要なときのみ呼び出せば良いので、`library()` では読み込まなくても良い。
 ```{r load-packs, message = FALSE}
-library("tidyverse")
-library("rmarkdown")
-library("knitr")
+library(tidyverse)
 ```
 
-**Macユーザのみ**次のコードも実行する。
+**Linuxユーザのみ**次のコードを実行する。（IPAexフォントがインストールされていることを前提とする。）
+```{r, lin-ggplot, eval = FALSE}
+theme_set(theme_gray(base_size = 10, base_family = "IPAexGothic")) # Linux
+```
+
+**Macユーザのみ**次のコードを実行する。
 ```{r mac-ggplot}
-theme_set(theme_gray(base_size = 10, base_family = "HiraginoSans-W3"))
+theme_set(theme_gray(base_size = 10, base_family = "HiraginoSans-W3")) # macOS
+```
+
+**Windowsユーザのみ**次のコードを実行する。
+```{r win-ggplot, eval = FALSE}
+theme_set(theme_gray(base_size = 10, base_family = "Meiryo")) # Windows
 ```
 
 
 
+まず、マークダウン全体のオプション（グローバルチャンクオプション）を指定する。
+**HTMLに出力する場合は、`dev = "cairo_pdf"` の先頭に`#` をつけてコメントにする**こと。
+以下のコードチャンクは、オプションに `include = FALSE` がついているので、出力されたPDFやHTML では非表示になる。
+本来、このチャンク（グローバルオプション）は YAML ヘッダのすぐ下に書くべきである。
 ```{r global_option, include = FALSE}
-## まず、マークダウン全体のオプションを指定する
-## "include = FALSE" なので、このチャンクは出力に表示されない
-knitr::opts_chunk$set(warning = FALSE, echo = TRUE, message = TRUE,
-                      fig.width = 4, fig.height = 3, dev = "quartz_pdf")
+knitr::opts_chunk$set(warning = FALSE, 
+                      echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE,
+                      dev = "cairo_pdf",
+                      fig.width = 4, 
+                      fig.height = 3)
 ```
 
 <br>
 
 # Rマークダウンの書き方・使い方
 
-マークダウンファイル ([r-markdown.Rmd](r-markdown.Rmd)) とそのファイルを元に生成されたhtmlファイル（インターネットブラウザで読んでいるこのファイル）（[r-markdown.html](r-markdown.html)) を見比べながら、RStudioでRマークダウンファイルを扱えるようにするのが今日の目標である。
+マークダウンファイル ([r-markdown.Rmd](r-markdown.Rmd)) とそのファイルを元に生成されたPDFファイル （PDFを開いているならそのファイル）([r-markdown.pdf]((r-markdown.pdf)))と htmlファイル（インターネットブラウザで読んでいるならそのファイル）（[r-markdown.html](r-markdown.html)) を見比べながら、RStudioでRマークダウンファイルを扱えるようにするのが今日の目標である。
 
 このマークダウンをそのまま使うためには、担当教員が作ったスタイルシート（[my-markdown.css](my-markdown.css)）をプロジェクトのフォルダに保存する必要がある。
-スタイル（表示されるページの見た目）をカスタマイズしたいときは、このファイルを変更すればよい。デフォルトのスタイルのままでいいとき（あまり良くないと思うが）は、ヘッダの'css'オプションの指定をやめる（このRmdファイル [htmlではない] のヘッダ部分にある "css: my-markdown.css" の行を削除する）。
+スタイル（表示されるページの見た目）をカスタマイズしたいときは、このファイルを変更すればよい。デフォルトのスタイルのままで良いとき（あまり良くないと思うが）は、ヘッダの'css'オプションの指定をやめる（このRmdファイル [htmlではない] のYAMLヘッダ部分にある `css: my-markdown.css` の行を削除する）。
 
 
-## マークダウン記法を利用した文書の書き方
+## マークダウン記法を利用した文章の書き方
 
 文章は、いつもどおり書けばよい。
 文章の一部をイタリック（斜字体）にしたいときは、イタリックにしたい部分を \* または \_ で挟むと、*this is italic* あるいは _this is also italic_ となる（日本語は斜字体にしない）。
@@ -70,16 +96,16 @@ knitr::opts_chunk$set(warning = FALSE, echo = TRUE, message = TRUE,
 
 箇条書きは、\* または \_ を利用し、
 
- * 項目1
- * 項目2
-    * 項目2-1
-    * 項目2-2
+* 項目1
+* 項目2
+  * 項目2-1
+  * 項目2-2
 
 あるいは、
 
 - 項目1
-    - 項目1-1
-    - 項目1-2
+  - 項目1-1
+  - 項目1-2
 - 項目2
 
 のようにできる。\* や \- の後には半角スペースを挿入する。箇条書きを入れ子にするとき、字下げは Tab で行う
@@ -87,32 +113,50 @@ knitr::opts_chunk$set(warning = FALSE, echo = TRUE, message = TRUE,
 番号付きの箇条書きは、数字で作れる。
 
 1. First item
-2. Second item
+1. Second item
     1. What?
-    2. How?
-3. Third item
+    1. How?
+1. Third item
 
-のようにする。
+のようにする。入力する際にすべて「1.」にしても、自動的に1, 2, 3, ... とうい番号が降られる。全部1にしておくと、後から項目の並べ替えができるので楽である。（1でなくても並べ替えるが、数字の意味が不明になる。）
 
-ヘディング (heading) は、"\#" （ハッシュ記号） で作れる。\# の数が少ないほど、上位のヘディングになる。
+ヘディング (heading) は、"\#" （ハッシュ記号） で作れる。
+論文・レポートを書くときは、ヘディングを利用して文章を構造化する。
+\# の数が少ないほど、上位のヘディングになる。
 
-# ハッシュ1つのヘディング
+例を以下に示す。
+
+
+# ハッシュ1つのヘディング 
 
 ## ハッシュ2つのヘディング
 
 ### ハッシュ3つのヘディング
-
+ 
 #### ハッシュ4つのヘディング
 
 
+論文・レポートでは、以下のようにヘディングを使い分ける。
+
+- \#: 節（セクション, section）
+- \#\#: 小節 (subsection)
+- \#\#\#: 小節以下の見出し (subsubsection)
+- \#\#\#\#: （あまり使わない）
 
 
+また、リンクを貼ることもできる：[矢内のウェブサイト](https://yukiyanai.github.io/jp/)。
 
-また、リンクを貼ることもできる：[矢内のウェブサイト](http://www.yukiyanai.com/)。
-
-画像も貼れる：![いらすとやの猫](animal_chara_computer_neko.png)
+画像も貼れる：![いらすとやの猫](animal_chara_computer_neko.png){width=50%}
 
 （出典：[いらすとや](https://www.irasutoya.com/2018/10/blog-post_67.html)）
+
+画像へのパスが通っていないと表示されないので注意。
+
+
+HTMLに出力する場合は、HTMLを直接書くこともできる（PDFに出力する場合はうまくいかない）。
+
+- リンクを貼る：<a href="https://yukiyanai.github.io/jp/" target="_blank">矢内のウェブサイト</a>
+- 画像を貼る：<img src="animal_chara_computer_neko.png" width="300">
 
 
 ### $\ast$ 数式の書き方
@@ -120,11 +164,13 @@ knitr::opts_chunk$set(warning = FALSE, echo = TRUE, message = TRUE,
 [LaTeX](https://ja.wikipedia.org/wiki/LaTeX) と同じように数式を書くこともできる。
 文章中と同じ行に数式を書きたいときは、`$`で挟む。
 たとえば、$\bar{x} = \sum_{i=1}^n x_i / n$ と、する。
+
 数式を独立したブロックとして書きたいときは、`$$`で挟み、
 $$
 \sigma^2 = \frac{\sum_{i=1}^n (x_i - \mu)^2}{n}
 $$
 のようにする。
+
 
 ## コードチャンクの書き方
 
@@ -139,19 +185,23 @@ Rコードチャンクの始めには、3つの「\`」の後に{r}をつける�
 rとスペースの後（{}の中）には、チャンクの名前を付ける。
 好きな名前を付けてよいが、他のチャンクとまったく同じ名前は付けられない。
 チャンクの終わりには3つの「\`」を書く。
-RStudioで開いたRマークダウンファイル内でコードチャンクを作るには、ショートカットキーを使った方がよい。
-Ctrl + Alt + i で（3つのキーを同時に押すと）、コードチャンクが挿入される（Macの場合は Ctrl の代わりにCmd）。
+RStudioで開いたRマークダウンファイル内でコードチャンクを作るには、次のショートカットキーを使った方がよい。
+
+- macOS: Cmd + Option + I
+- Windows: Ctrl + Alt + I
+
+I は Insert （チャンクを「挿入する」）の頭文字である。
 
 文章中にRコードを書きたいときは`mean(x)` のように、Rのコマンドを\`の間に書く。
-関数を実行（評価, evaluate）した後の結果を文章中に入れたいときは、「\$a\$ の平均値は \` r mean(a) \` です」のように"r"を入れて書くと、「$a$ の平均値は`r mean(a)` です」となる。つまり、mean(a) をRが計算し、その結果を文章の中に入れてくれる。この方法を使えば、文章と別にRのコマンドを実行しなくても、Rの実行結果を表示することができる。
+関数を実行（評価, evaluate）した後の結果を文章中に入れたいときは、「\$a\$ の平均値は \` r mean(a) \` です」のように "r" を入れて書くと、「$a$ の平均値は`r mean(a)` です」となる。つまり、mean(a) をRが計算し、その結果を文章の中に入れてくれる。この方法を使えば、文章と別にRのコマンドを実行しなくても、Rの実行結果を表示することができる。
 
-図を含めた文章も作れる。
-```{r example-plot4html, message = FALSE, warning = FALSE}
+図を含めた文章も作れる。チャンクオプション `fig.cap` で図のキャプションが指定できる。
+```{r example-plot4html, fig.cap = "トマト色のヒストグラム"}
 p <- tibble(x = rnorm(100, mean = 0, sd = 1)) %>% 
   ggplot(aes(x = x)) + 
   geom_histogram(binwidth = 1, color = "black", fill = "tomato") +
   labs(y = "度数", title = "ヒストグラム")
-print(p)
+plot(p)
 ```
 
 何もオプションを指定しない状態では、チャンクは1行ずつ評価され、結果も順番に次々出力される。
@@ -174,146 +224,65 @@ var(a)
 
 また、Rマークダウン全般（特に、RStudioを使う場合）については、[ココ](https://kazutan.github.io/JSSP2018_spring/intro_rstudio.html) を参照。
 
-Rマークダウンのチートシート（[PDFファイル](https://github.com/rstudio/cheatsheets/raw/master/translations/japanese/rmarkdown-2.0_jp.pdf)）もあるので、ダウンロードして持っておくと便利である。RとRStudioに関連するチートシートは[ココ](https://www.rstudio.com/resources/cheatsheets/) にまとめて置いてある。
+Rマークダウンのチートシート（[PDFファイル](https://github.com/rstudio/cheatsheets/raw/master/translations/japanese/
 
 <br>
 
-##  $\ast$ R MarkdownファイルをPDFファイルに出力する
 
-R Markdown を PDFファイルに出力するときは、`rmarkdown::render()`を使う。
+# R Markdown を knit してレポートを作る
 
-PDFファイルを作るためにはTeXが必要である。TeXを使ったことがなく、パソコンにTeXがインストールされていない場合は、以下のコマンドを実行して **tinytex** をインストールする。
+## R MarkdownファイルをPDFファイルに出力する
+
+PDFファイルを作るためにはTeXが必要である。TeXを使ったことがなく、パソコンにTeXがインストールされていない場合は、以下のコマンドを実行して **tinytex** をインストールする。それなりに時間がかかるので気長に待とう。
+（**注意**：既にLaTeX環境が設定済みなら、以下のコードを実行する必要はない。）
 ```{r tinylatex, eval = FALSE}
 install.packages("tinytex")
 tinytex::install_tinytex()
 ```
 
-PDFファイルに変換する際のオプションは、ヘッダ部分 （YAMLヘッダ) で指定する。このRmdファイル（HTMLファイルではない。つまり、ウェブブラウザで見ている場合には表示されていない） では、第1行から第18行までがヘッダであり、そのうち、"pdf_document:" のブロックと、**documentclass:** でPDF出力のためのオプションが指定されている。例えば、"toc: yes" は目次 (table of contents; toc) を表示するという指定である。非表示にするには "toc: no" とする。 
+PDFファイルに変換する際のオプションは、ヘッダ部分 （YAMLヘッダ) で指定する。このRmdファイル（HTMLファイルではない。つまり、ウェブブラウザで見ている場合には表示されていない）では、第1行から第28行までがヘッダであり、そのうち、`pdf_document:` のブロックと、`documentclass:`、`classoption:` でPDF出力のためのオプションが指定されている。例えば、`toc: true` は目次 (table of contents; toc) を表示するという指定である。非表示にするには `toc: false` とする。 
 
 試しに、"r-markdown.Rmd" を "r-markdown.pdf" に変換してみよう。
 Rmd ファイルをRStudio で編集している場合、コード編集画面の上にある "Knit" ボタン（毛糸と棒針のマーク）の右にある三角ボタンを押して、表示されたメニューから "Knit to PDF" を選べばPDFができる。初めて実行するときは、足りないパッケージを自動でインストールするので、時間がかかるかもしれない。
 
-出力されたPDFファイルは（他のディレクトリを指定しない限り）現在の作業ディレクトリ（プロジェクトのフォルダ）に保存される。出来上がったPDFファイルをAdobe Reader 等のPDFリーダで開いて確認してみよう。
+出力されたPDFファイルは（他のディレクトリを指定しない限り）現在の作業ディレクトリ（プロジェクトのフォルダ）に保存される。出来上がったPDFファイルをAdobe Readerやskim 等のPDFリーダで開いて確認してみよう。（RStudio のViewr だと、平仮名の「う」が表示されないが、Adobe Reader で開くと正しく表示される。）
 
-Knitボタンを使ってDFファイルを作ると、図の中の日本語が文字化けする（トーフになる）かもしれない。
-その場合、`knitr::render()`コマンドでPDFを作ると文字化けしない（かもしれない）。
 コマンドを使っPDFファイルを作るときは、`rmarkdown::render()` を使う。
+
 ```{r render-pdf, eval = FALSE}
-render("r-markdown.Rmd", output_format = "pdf_document",
-       output_file = "r-markdown.pdf", run_pandoc = FALSE)
+rmarkdown::render("r-markdown.Rmd", 
+                  output_format = "pdf_document",
+                  output_file = "r-markdown.pdf", 
+                  run_pandoc = FALSE)
 ```
-
-これでも文字化けが解消しない場合は、以下の設定が必要である。
-
-1. 日本語を使う図を表示するコードチャンクで、chunkオプション **dev = "cairo_pdf"** を指定する（Macの場合は **dev = "quartz_pdf"** も使える）。
-  - すべてのチャンクに適用するなら、global_option で指定してもよい
-  - PDF以外に出力する場合は、オプションを外したほうがよい（そのままにすると、HTMLで図だけPDFになってしまう [Couldn't load plugin. と表示される。] ）
-2. フォントを指定する
- - Macの場合： `par(family = "HiraginoSans-W3")`
- - Windowsの場合：`par(family = "Japan1GothicBBB")`
-
-```{r example-plot4pdf, dev = "cairo_pdf"}
-print(p)
-```
-
-
-詳しくは、[ココ](https://miyazakikenji.wordpress.com/2014/01/12/knitr%E3%81%A7%E6%97%A5%E6%9C%AC%E8%AA%9E%E3%81%AE%E3%81%AF%E3%81%84%E3%81%A3%E3%81%9F%E4%BD%9C%E5%9B%B3/) や[ココ](https://qiita.com/Atsushi776/items/9ef1e5d744e2b91c61ee) を参照。
-
+`run_pandoc = FALSE` を指定しないと日本語が文字化けするので注意が必要である（ボタンを押して変換するときは心配しなくてよい。ボタンで変換できればよい）。
 <br>
 
 
 
 ## R MarkdownファイルをHTMLファイルに出力する
 
-R Markdown を HTML ファイルに出力するときは、`rmarkdown::render()`を使う。
-
-HTML ファイルに変換する際のオプションは、ヘッダ部分で指定する。このRmdファイル（HTMLファイルではない。つまり、ウェブブラウザで見ている場合には表示されていない） では、第1行から第18行までがヘッダであり、そのうち、"html_document:" のブロックでHTML出力のためのオプションが指定されている。例えば、"toc: yes" は目次 (table of contents; toc) を表示するという指定である。非表示にするには "toc: no" とする。 
+HTML ファイルに変換する際のオプションは、ヘッダ部分で指定する。このRmdファイル（HTMLファイルではない。つまり、ウェブブラウザで見ている場合には表示されていない） では、第1行から第28行までがヘッダであり、そのうち、`html_document:` のブロックでHTML出力のためのオプションが指定されている。例えば、`toc: ture` は目次 (table of contents; toc) を表示するという指定である。非表示にするには `toc: false` とする。 
 
 試しに、"r-markdown.Rmd" を "r-markdown.html" に変換してみよう。
-Rmd ファイルをRStudio で編集している場合、コード編集画面の上にある "Knit" ボタン（毛糸と棒針のマーク）を押してもHTMLファイルを作れる。
+Knitする前に、グローバルチャンクオプション（このRmdファイルの67-74行）の中にある、
+`dev = "cairo_pdf"` の先頭に `#` をつけてコメントアウトしよう。（PDFにする際には、`#`# を消してコメントからコードに戻す必要がある。）
+
+
+Rmd ファイルをRStudio で編集している場合、コード編集画面の上にある "Knit" ボタン（毛糸と棒針のマーク）の右にある三角ボタンを押して、表示されたメニューから "Knit to HTML" を選べばHTMLファイルができる。
 
 出力されたHTMLファイルは（他のディレクトリを指定しない限り）現在の作業ディレクトリ（プロジェクトのフォルダ）に保存される。
-出来上がったHTMLファイルをブラウザで開いて確認してみよう。
+出来上がったHTMLファイルをウェブブラウザで開いて確認してみよう。
 
 コマンドを使ってHTMLファイルを作るときは、`rmarkdown::render()` を使う。
-```{r render-html, eval=FALSE}
-render("r-markdown.Rmd", output_format = "html_document",
-       output_file = "r-markdown.html", run_pandoc = FALSE)
+```{r render-html, eval = FALSE}
+rmarkdown::render("r-markdown.Rmd", 
+                  output_format = "html_document",
+                  output_file = "r-markdown.html", 
+                  run_pandoc = FALSE)
 ```
-**run_pandoc = FALSE** を指定しないと日本語が文字化けするので注意が必要である（ボタンを押して変換するときは心配しなくてよい。今はボタンで変換できればよい）。
-<br>
+`run_pandoc = FALSE` を指定しないと日本語が文字化けするので注意が必要である（ボタンを押して変換するときは心配しなくてよい。ボタンで変換できればよい）。
 
-
-# R Markdown の例：2変数の記述統計
-
-前回の授業で使った架空のデータセット [fake-data-01.csv](../data/fake-data-01.csv) を使い、2つの量的な変数の関係を調べてみよう。
-
-前回同様、このデータセットを `myd` という名前で利用する。
-```{r read_csv}
-myd <- read_csv("data/fake-data-01.csv")
-```
-
-データを読み込んだら、中身を確認する。
-```{r check-dataset}
-glimpse(myd)
-```
-
-## 2つの量的変数の関係を図示する
-
-2つの量的変数の関係は、散布図 (scatter plot) で確認する。ここでは、身長 (height) と体重 (weight) の関係を図示してみよう。ggplot2では、`geom_point()` で散布図ができる。
-
-```{r scatter1}
-scat <- ggplot(myd, aes(x = height, y = weight)) +
-  geom_point() +
-  labs(x = "身長 (cm)", y = "体重 (kg)")
-print(scat)
-```
-
-このデータセットに含まれる身長と体重の間には、どのような関係があるだろうか？
-
-## 2つの量的変数の関係を統計量で示す
-
-2つの量的変数の関係を表すのにもっともよく使われるのは、相関係数 (correlation coefficient) である。この統計量は、$r$ で表されることが多い。$-1 \leq r \leq 1$となる。$a$と$b$ という2つの変数があったとき、$a$が大きくなるほど$b$ も大きくなるという関係があるとき、「$a$と$b$には正の相関 (positive correlation) がある」と言い、このとき $r > 0$ である。また、$a$が大きくなるほど$b$ が小さくなるという関係があるとき、「$a$と$b$には負の相関 (negative correlation) がある」と言い、このとき $r < 0$ である。$r=$ のとき、「$a$と$b$は相関関係がない」と言う。
-
-正の相関があるとき、$r$が$1$に近いほど、その関係は強い。また、負の相関があるとき、$r$が$-1$に近いほど、その関係は強い。つまり、相関関係は、相関係数の絶対値が1に近いほど強い。
-
-Rで相関係数を求めるときは、$cor()$を使う。身長と体重の相関係数は、
-```{r cor-h-w}
-cor(myd$height, myd$weight)
-```
-である。この2変数にはどんな関係があるだろうか？
-
-
-## 散布図と相関係数
-
-2つの量的な変数の関係を調べるときは、散布図と相関係数の**両者**を使ったほうがよい。
-
-散布図だけを使うと、本当は存在しない関係を、誤って見つけてしまうことがある。例えば、本当は相関がない2つの変数の散布図を描いたとき、描かれた点がなんとなく右肩上がりの直線の周りに集まっているように見えてしまうことがある。これは、人間がパタンを見つける能力に優れている（優れ過ぎている？）からだと考えられる。偶然できた壁のシミが人間の顔に見えてしまうことがあるというのも似たような現象である。
-
-散布図だけに頼ると、存在しないパタンが見えてしまうことがあるので、散布図で発見したパタンが本当にあるかどうか、相関係数を求めて確かめるべきである。
-
-反対に、相関係数だけに頼るのも危険である。相関係数は、2変数のあらゆる関係を捉えられるわけではない。相関係数が示すのは、2つの変数の**直線的な関係だけ**である。
-
-例として、$x$ と$y$ という2つの変数を以下のとおり作り、相関係数を計算してみよう。
-```{r cor-x-y}
-x <- -10:10
-y <- x^2
-cor(x, y)
-```
-
-2変数と$x$と$y$の相関係数は0である。相関係数だけに頼ると、2つの変数の間には関係がないと言う結論が出せそうである。しかし、相関係数が低くても、必ず散布図を描いたほうがよい。散布図を作ってみよう。
-```{r plot-x-y}
-newd <- tibble(x = x, y = y)
-scat2 <- ggplot(newd, aes(x = x, y = y)) +
-  geom_point()
-print(scat2)
-```
-
-この図を見て、$x$と$y$は無関係と言えるだろうか？
-
-散布図から明らか（$y$をどのように作ったかを見ればもっと明らかだが）なように、$x$と$y$には強い関係がある（$y$は$x$の関数である）。しかし、その関係は**曲線的** なので、**直線的な関係しか捉えられない相関係数**は、強い関係を見落としてしまうのである。
-
-このように、2つの量的変数の関係を調べるときは、**散布図と相関係数の両方を確認する**習慣を身につけたほうがよい。
 
 
 <br>
