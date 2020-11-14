@@ -663,7 +663,7 @@ summary {
 <h1 class="title toc-ignore">計量経済学</h1>
 <h3 class="subtitle">分析結果の提示法</h3>
 <h4 class="author">矢内　勇生</h4>
-<h4 class="date">2019-11-06（改訂：2020-11-04, 2020-11-11）</h4>
+<h4 class="date">2019-11-06（改訂：2020-11-04, 2020-11-11, 2020-11-14）</h4>
 
 </div>
 
@@ -681,10 +681,10 @@ summary {
 
 <div id="準備" class="section level2">
 <h2>準備</h2>
-<p>今回使うパッケージを読み込む。インストール済みでないパッケージがある場合は、<code>install.package()</code> でインストールすれば良いが、<strong>pacman</strong> パッケージを使うとインストール済みかどうか判断して、インストールと読み込みを実行してくれる。</p>
+<p>今回使うパッケージを読み込む。インストール済みでないパッケージがある場合は、<code>install.packages()</code> でインストールすれば良いが、<strong>pacman</strong> パッケージを使うと各パッケージがインストール済みかどうか判断し、読み込み前に必要に応じでインストールしてくれる。</p>
 <p><strong>pacman</strong> がインストール済みでない場合はインストールする。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;pacman&quot;</span>)</span></code></pre></div>
-<p>必要なパッケージを <code>pacman::p_load()</code> で読み込む。インストールれていないものは、インストールしてから読み込んでくれる。</p>
+<p>必要なパッケージを <code>pacman::p_load()</code> で読み込む。</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, broom, coefplot, texreg)</span></code></pre></div>
 <p><strong>Macユーザのみ</strong> 次のコマンドも実行する。</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_gray</span>(<span class="at">base_size =</span> <span class="dv">10</span>, <span class="at">base_family =</span> <span class="st">&quot;HiraginoSans-W3&quot;</span>))</span></code></pre></div>
@@ -1123,7 +1123,7 @@ R<sup>2</sup>
 <pre><code>---
 title: &quot;計量経済学 -- 最終レポート&quot;
 author: &quot;猫が好きなRユーザ&quot;
-date: &quot;2020-11-11&quot;
+date: &quot;2020-11-14&quot;
 output:
   pdf_document:
     highlight: tango
