@@ -2,19 +2,18 @@
 title: "統計学2"
 subtitle: "Rマークダウンの使い方"
 author: "矢内　勇生"
-date: "2018-04-19（改訂：2019-04-19, 2019-06-03, 2020-08-15）"
-output: 
+date: "2018-04-19（改訂：2019-04-19, 2019-06-03, 2020-08-18, 2021-04-16）"
+output:
   pdf_document:
-    highlight: tango
-    latex_engine: xelatex
-    number_sections: true
+    latex_engine: lualatex
     toc: false
+    number_sections: true
   html_document:
-    highlight: tango
+    highlight: textmate
     theme: united
     toc: true
-    css: my-markdown.css
     smart: false
+    css: my-markdown.css
 header-includes:
   - \usepackage{indentfirst}
   - \parindent = 1em
@@ -23,11 +22,27 @@ header-includes:
   - \usepackage{caption}
   - \captionsetup[table]{name=表}
   - \captionsetup[figure]{name=図}
+  - \usepackage{hyperref}
 documentclass: bxjsarticle
-classoption: xelatex, ja=standard
+classoption: 10pt,a4paper,lualatex,ja=standard
 ---
 
-この資料を初めて読むときは、$\ast$ が付いている項目はとばして良い（少し上級者向けの内容）。
+まず、マークダウン全体のオプション（グローバルチャンクオプション）を指定する。
+PDFに出力する（LaTeX 使う）場合は、グラフィックデバイスに cairo を利用するが、HTML の場合には cairo を使いたくないので、`knitr::is_latex_output()` を利用して場合分けする。
+以下のコードチャンクは、オプションに `include = FALSE` がついているので、出力されたPDFやHTML では非表示になる。
+このチャンク（グローバルオプション）は**常にYAMLヘッダのすぐ下に書く**べきである。
+```{r global_option, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,      # Rコード: FALSE で非表示, TRUE で表示
+                      warning = FALSE,  # 警告文: FALSE で非表示, TRUE で表示
+                      message = TRUE,   # メッセージ: FALSE で非表示, TRUE で表示
+                      fig.width = 5,    # 図の幅の既定値
+                      fig.height = 3)   # 図の高さの既定値
+## PDF に出力する際は cairo を使用する
+if (knitr::is_latex_output()) {
+  knitr::opts_chunk$set(dev = "cairo_pdf")
+}
+```
+
 
 # 準備
 
@@ -36,46 +51,39 @@ Rマークダウン (R Markdown、拡張子は.Rmd) ファイルはRStudio で�
 install.packages("tidyverse", dependencies = TRUE)
 install.packages("rmarkdown", dependencies = TRUE) 
 install.packages("knitr", dependencies = TRUE) 
-```
+install.packages("systemfonts")
+install.packages("remotes")
+remotes::install_github("Gedevan-Aleksizde/fontregisterer", 
+                        repos = NULL, type = "source")
+```   
 
-すべてインストールできたら、パッケージを読み込む。パッケージのインストールは一度すればすむが、`library()` を使ったパッケージの読み込みは、Rを起動するたびに行う必要がある。
-ただし、**rmarkdown** パッケージと **knitr** パッケージは必要なときのみ呼び出せば良いので、`library()` では読み込まなくても良い。
-```{r load-packs, message = FALSE}
+すべてインストールできたら、パッケージを読み込む。パッケージのインストールは一度すれば済むが、`library()` を使ったパッケージの読み込みは、Rを起動するたびに行う必要がある。
+ただし、**rmarkdown** パッケージと**knitr** パッケージは必要なときのみ呼び出せば良いので、`library()` では読み込まなくても良い。
+
+```{r, message = FALSE}
 library(tidyverse)
 ```
 
-**Linuxユーザのみ**次のコードを実行する。（IPAexフォントがインストールされていることを前提とする。）
-```{r, lin-ggplot, eval = FALSE}
-theme_set(theme_gray(base_size = 10, base_family = "IPAexGothic")) # Linux
+```{r, echo = FALSE, message = FALSE}
+## 図のなかで日本語を使えるようにする
+## フォントの設定はお好みで
+## （Unix/Linux ではIPAexフォントのインストールが必要かも）
+if (.Platform$OS.type == "windows") {
+  # Windows
+  require(fontregisterer)
+  my_font <- "Yu Gothic"
+} else if (capabilities("aqua")) {
+  # macOS
+  my_font <- "HiraginoSans-W3"
+} else {
+  # Unix/Linux
+  my_font <- "IPAexGothic"
+}
+## ggplot2 用の設定
+theme_set(theme_gray(base_size   = 9,
+                     base_family = my_font))
 ```
 
-**Macユーザのみ**次のコードを実行する。
-```{r mac-ggplot}
-theme_set(theme_gray(base_size = 10, base_family = "HiraginoSans-W3")) # macOS
-```
-
-**Windowsユーザのみ**次のコードを実行する。
-```{r win-ggplot, eval = FALSE}
-theme_set(theme_gray(base_size = 10, base_family = "Meiryo")) # Windows
-```
-
-
-
-まず、マークダウン全体のオプション（グローバルチャンクオプション）を指定する。
-**HTMLに出力する場合は、`dev = "cairo_pdf"` の先頭に`#` をつけてコメントにする**こと。
-以下のコードチャンクは、オプションに `include = FALSE` がついているので、出力されたPDFやHTML では非表示になる。
-本来、このチャンク（グローバルオプション）は YAML ヘッダのすぐ下に書くべきである。
-```{r global_option, include = FALSE}
-knitr::opts_chunk$set(warning = FALSE, 
-                      echo = TRUE,
-                      message = FALSE,
-                      warning = FALSE,
-                      dev = "cairo_pdf",
-                      fig.width = 4, 
-                      fig.height = 3)
-```
-
-<br>
 
 # Rマークダウンの書き方・使い方
 
@@ -83,6 +91,8 @@ knitr::opts_chunk$set(warning = FALSE,
 
 このマークダウンをそのまま使うためには、担当教員が作ったスタイルシート（[my-markdown.css](my-markdown.css)）をプロジェクトのフォルダに保存する必要がある。
 スタイル（表示されるページの見た目）をカスタマイズしたいときは、このファイルを変更すればよい。デフォルトのスタイルのままで良いとき（あまり良くないと思うが）は、ヘッダの'css'オプションの指定をやめる（このRmdファイル [htmlではない] のYAMLヘッダ部分にある `css: my-markdown.css` の行を削除する）。
+
+この資料と同じ画像を表示するためには、画像ファイルも同じフォルダに保存する必要がある。自分でもっている画像（写真）に置き換えて試してほしい。
 
 
 ## マークダウン記法を利用した文章の書き方
@@ -213,7 +223,7 @@ var(a)
 
 チャンクの最後まで評価してからまとめて結果表示したいときは、チャンクオプション**results** を'hold'にする。
 オプションは、チャンク名の後に「,（comma）」を打ち、その後に書く。
-例えば、\`\`\` {r example-option, results='hold'} とチャンクの冒頭に書くと、
+例えば、`{r example-option, results = 'hold'}` とチャンクの冒頭に書くと、
 ```{r example-option, results = 'hold'}
 sd(a)
 var(a)
@@ -224,7 +234,7 @@ var(a)
 
 また、Rマークダウン全般（特に、RStudioを使う場合）については、[ココ](https://kazutan.github.io/JSSP2018_spring/intro_rstudio.html) を参照。
 
-Rマークダウンのチートシート（[PDFファイル](https://github.com/rstudio/cheatsheets/raw/master/translations/japanese/
+Rマークダウンのチートシート（[PDFファイル](https://github.com/rstudio/cheatsheets/raw/master/translations/japanese/)）
 
 <br>
 
@@ -290,3 +300,9 @@ rmarkdown::render("r-markdown.Rmd",
 <div align="right">
 [授業の内容に戻る](../)
 </div>
+
+
+
+
+
+
