@@ -11,7 +11,6 @@
 
 <meta name="author" content="矢内 勇生" />
 
-<meta name="date" content="2021-04-16" />
 
 <title>計量経済学応用</title>
 
@@ -193,7 +192,7 @@ summary {
 <h1 class="title toc-ignore">計量経済学応用</h1>
 <h3 class="subtitle">回帰分析</h3>
 <h4 class="author">矢内 勇生</h4>
-<h4 class="date">2021-04-16</h4>
+<h4 class="date">`2021年4月16日（改訂：2021-04-18）</h4>
 
 </div>
 
@@ -349,8 +348,8 @@ class(df_list)</code></pre>
 <pre><code>## # A tibble: 2 x 5
 ##   term        estimate std.error statistic p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept)  -0.0611     0.283    -0.216  0.830 
-## 2 X             0.889      0.459     1.94   0.0584</code></pre>
+## 1 (Intercept)   -0.280     0.300    -0.934 0.355  
+## 2 X              1.48      0.508     2.92  0.00529</code></pre>
 <p>である。</p>
 <p><code>sapply()</code> も使えるが、結果が行列になって使いにくいので、この場合には <code>lapply()</code> を使ったほうが良い。</p>
 <pre class="r"><code>fit_list_2 &lt;- df_list %&gt;% 
@@ -360,8 +359,8 @@ class(df_list)</code></pre>
 <pre><code>## # A tibble: 2 x 5
 ##   term        estimate std.error statistic p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept)  -0.0611     0.283    -0.216  0.830 
-## 2 X             0.889      0.459     1.94   0.0584</code></pre>
+## 1 (Intercept)   -0.280     0.300    -0.934 0.355  
+## 2 X              1.48      0.508     2.92  0.00529</code></pre>
 <p>で、上と同じ結果が出る。</p>
 <p><code>map()</code> や <code>sapply()</code>（あるいはその他の apply 系関数）では、適用する関数に無名関数 (anonymous function) を 使うことができる。無名関数とは、その名の通り名前がついていない関数である。簡単にいうと、使う時点でまだ関数として定義されていないものである。 例えば、1から10の整数ベクトルの各要素に、それぞれの数に2を足した数をかける、つまり、 <span class="math display">\[
 f(x) = x (x + 2) = x^2 + 2x
@@ -559,7 +558,7 @@ with(df_cont, mean(Y[D &gt; -epsilon &amp; D &lt; epsilon]))</code></pre>
 <div id="重回帰" class="section level3">
 <h3>重回帰</h3>
 <p>処置変数 <span class="math inline">\(D_i \in \{0, 1\}\)</span> と結果変数 <span class="math inline">\(Y_i \in \mathbb{R}\)</span> に加え、共変量 <span class="math inline">\(X \in \{-4, -3, \dots, 4\}\)</span> を考える。 <span class="math inline">\(Y_i\)</span> が <span class="math inline">\(D_i\)</span> と <span class="math inline">\(X_i\)</span> の関数で <span class="math display">\[
-Y_i = 0.5 + 0.7 D_i + 0.4 X_i +  e_i
+Y_i = 0.5 + 0.7 D_i + 0.3 X_i +  e_i
 \]</span> と表されるとする。また、<span class="math inline">\(D_i\)</span> の値は<span class="math inline">\(X_i\)</span> に依存して、次のように決まることにする。 <span class="math display">\[
 D_i \sim \mbox{Bernoulli}(\theta_i)\\
 \theta_i = \mathrm{logit}^{-1}(0.5 X_i)
@@ -1144,7 +1143,7 @@ ggdag(tidy_dag_pt2) + theme_dag()</code></pre>
 <li>提出する課題としては2つ目だが、ファイル名の番号はトピックに合わせる。</li>
 </ul></li>
 <li>提出方法：Slack のダイレクトメッセージで提出。</li>
-<li><strong>提出期限：2021年4月28日（水）午後6時</strong>（日本時間）</li>
+<li><strong>提出期限：2021年4月<s>28日（水）</s> 29日（木）午後6時</strong>（日本時間）</li>
 </ul>
 <br> <br>
 <div style="text-align: right;">
