@@ -2,7 +2,7 @@
 title: "統計学2"
 subtitle: "Rマークダウンの使い方"
 author: "矢内　勇生"
-date: "2018-04-19（改訂：2019-04-19, 2019-06-03, 2020-08-18, 2021-04-16）"
+date: "2018-04-19（改訂：2019-04-19, 2019-06-03, 2020-08-18, 2021-04-16, 2021-04-21）"
 output:
   pdf_document:
     latex_engine: lualatex
@@ -64,7 +64,7 @@ remotes::install_github("Gedevan-Aleksizde/fontregisterer",
 library(tidyverse)
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = TRUE, message = FALSE}
 ## 図のなかで日本語を使えるようにする
 ## フォントの設定はお好みで
 ## （Unix/Linux ではIPAexフォントのインストールが必要かも）
@@ -234,7 +234,7 @@ var(a)
 
 また、Rマークダウン全般（特に、RStudioを使う場合）については、[ココ](https://kazutan.github.io/JSSP2018_spring/intro_rstudio.html) を参照。
 
-Rマークダウンのチートシート（[PDFファイル](https://github.com/rstudio/cheatsheets/raw/master/translations/japanese/)）
+Rマークダウンのチートシート（[PDFファイル]https://github.com/rstudio/cheatsheets/blob/master/translations/japanese/Rmarkdown-cheatsheet-2.0_ja.pdf)）
 
 <br>
 
@@ -244,7 +244,7 @@ Rマークダウンのチートシート（[PDFファイル](https://github.com/
 ## R MarkdownファイルをPDFファイルに出力する
 
 PDFファイルを作るためにはTeXが必要である。TeXを使ったことがなく、パソコンにTeXがインストールされていない場合は、以下のコマンドを実行して **tinytex** をインストールする。それなりに時間がかかるので気長に待とう。
-（**注意**：既にLaTeX環境が設定済みなら、以下のコードを実行する必要はない。）
+（**注意**：既にLaTeX環境が設定済みなら、以下のコードを実行する必要はない。情報演習室のパソコンには Tex Live 2020 がインストールされているので、次のコードは実行しなくてよい）。
 ```{r tinylatex, eval = FALSE}
 install.packages("tinytex")
 tinytex::install_tinytex()
@@ -258,7 +258,6 @@ Rmd ファイルをRStudio で編集している場合、コード編集画面�
 出力されたPDFファイルは（他のディレクトリを指定しない限り）現在の作業ディレクトリ（プロジェクトのフォルダ）に保存される。出来上がったPDFファイルをAdobe Readerやskim 等のPDFリーダで開いて確認してみよう。（RStudio のViewr だと、平仮名の「う」が表示されないが、Adobe Reader で開くと正しく表示される。）
 
 コマンドを使っPDFファイルを作るときは、`rmarkdown::render()` を使う。
-
 ```{r render-pdf, eval = FALSE}
 rmarkdown::render("r-markdown.Rmd", 
                   output_format = "pdf_document",
@@ -275,10 +274,6 @@ rmarkdown::render("r-markdown.Rmd",
 HTML ファイルに変換する際のオプションは、ヘッダ部分で指定する。このRmdファイル（HTMLファイルではない。つまり、ウェブブラウザで見ている場合には表示されていない） では、第1行から第28行までがヘッダであり、そのうち、`html_document:` のブロックでHTML出力のためのオプションが指定されている。例えば、`toc: ture` は目次 (table of contents; toc) を表示するという指定である。非表示にするには `toc: false` とする。 
 
 試しに、"r-markdown.Rmd" を "r-markdown.html" に変換してみよう。
-Knitする前に、グローバルチャンクオプション（このRmdファイルの67-74行）の中にある、
-`dev = "cairo_pdf"` の先頭に `#` をつけてコメントアウトしよう。（PDFにする際には、`#`# を消してコメントからコードに戻す必要がある。）
-
-
 Rmd ファイルをRStudio で編集している場合、コード編集画面の上にある "Knit" ボタン（毛糸と棒針のマーク）の右にある三角ボタンを押して、表示されたメニューから "Knit to HTML" を選べばHTMLファイルができる。
 
 出力されたHTMLファイルは（他のディレクトリを指定しない限り）現在の作業ディレクトリ（プロジェクトのフォルダ）に保存される。
