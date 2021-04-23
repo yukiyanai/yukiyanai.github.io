@@ -238,7 +238,7 @@ summary {
 </ul></li>
 </ul>
 <p>これらの理解に不安がある場合は、浅野・矢内 (2018) の第10–14章や<a href="http://yukiyanai.github.io/jp/classes/econometrics1/contents/">計量経済学の講義資料</a> などを参照されたい。より厳密な説明は、計量経済学の教科書（たとえば、Angrist and Pischke (2009) の第3章、 Hansen (2021) の第2章から第5章、西山・新谷・川口・奥井(2019) の第6章、末石 (2015) の第1章など）を参照。</p>
-<p>以下の説明では、<code>replicate()</code> でシミュレーションを繰り返す回数を1,000 に設定しているが、自分の環境合わせて調整するように。あまり処理能力が高くないパソコンを使っている場合は、繰り返し回数を少なめ（たとえば500）にしたほうがよいかもしれない。シミュレーションの結果を安定させたいなら、繰り返し回数をさらに大きくしたほうが良い。また、<code>set.seed()</code> で指定する値は適宜変えるように。</p>
+<p>以下の説明では、<code>replicate()</code> でシミュレーションを繰り返す回数を1,000 に設定しているが、自分の環境に合わせて調整するように。あまり処理能力が高くないパソコンを使っている場合は、繰り返し回数を少なめ（たとえば500）にしたほうがよいかもしれない。シミュレーションの結果を安定させたいなら、繰り返し回数をさらに大きくしたほうが良い。また、<code>set.seed()</code> で指定する値は適宜変えるように。</p>
 </div>
 <div id="rパッケージの読み込み" class="section level3">
 <h3>Rパッケージの読み込み</h3>
@@ -352,8 +352,8 @@ class(df_list)</code></pre>
 <pre><code>## # A tibble: 2 x 5
 ##   term        estimate std.error statistic p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept)   0.251      0.376    0.667    0.508
-## 2 X             0.0313     0.631    0.0497   0.961</code></pre>
+## 1 (Intercept)    0.420     0.319     1.32    0.194
+## 2 X             -0.386     0.604    -0.639   0.526</code></pre>
 <p>である。</p>
 <p><code>sapply()</code> も使えるが、結果が行列になって使いにくいので、この場合には <code>lapply()</code> を使ったほうが良い。</p>
 <pre class="r"><code>fit_list_2 &lt;- df_list %&gt;% 
@@ -363,8 +363,8 @@ class(df_list)</code></pre>
 <pre><code>## # A tibble: 2 x 5
 ##   term        estimate std.error statistic p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept)   0.251      0.376    0.667    0.508
-## 2 X             0.0313     0.631    0.0497   0.961</code></pre>
+## 1 (Intercept)    0.420     0.319     1.32    0.194
+## 2 X             -0.386     0.604    -0.639   0.526</code></pre>
 <p>で、上と同じ結果が出る。</p>
 <p><code>map()</code> や <code>sapply()</code>（あるいはその他の apply 系関数）では、適用する関数に無名関数 (anonymous function) を 使うことができる。無名関数とは、その名の通り名前がついていない関数である。簡単にいうと、使う時点でまだ関数として定義されていないものである。 例えば、1から10の整数ベクトルの各要素に、それぞれの数に2を足した数をかける、つまり、 <span class="math display">\[
 f(x) = x (x + 2) = x^2 + 2x
