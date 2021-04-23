@@ -352,8 +352,8 @@ class(df_list)</code></pre>
 <pre><code>## # A tibble: 2 x 5
 ##   term        estimate std.error statistic p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept)   0.302      0.296     1.02    0.313
-## 2 X             0.0696     0.487     0.143   0.887</code></pre>
+## 1 (Intercept)   0.251      0.376    0.667    0.508
+## 2 X             0.0313     0.631    0.0497   0.961</code></pre>
 <p>である。</p>
 <p><code>sapply()</code> も使えるが、結果が行列になって使いにくいので、この場合には <code>lapply()</code> を使ったほうが良い。</p>
 <pre class="r"><code>fit_list_2 &lt;- df_list %&gt;% 
@@ -363,8 +363,8 @@ class(df_list)</code></pre>
 <pre><code>## # A tibble: 2 x 5
 ##   term        estimate std.error statistic p.value
 ##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-## 1 (Intercept)   0.302      0.296     1.02    0.313
-## 2 X             0.0696     0.487     0.143   0.887</code></pre>
+## 1 (Intercept)   0.251      0.376    0.667    0.508
+## 2 X             0.0313     0.631    0.0497   0.961</code></pre>
 <p>で、上と同じ結果が出る。</p>
 <p><code>map()</code> や <code>sapply()</code>（あるいはその他の apply 系関数）では、適用する関数に無名関数 (anonymous function) を 使うことができる。無名関数とは、その名の通り名前がついていない関数である。簡単にいうと、使う時点でまだ関数として定義されていないものである。 例えば、1から10の整数ベクトルの各要素に、それぞれの数に2を足した数をかける、つまり、 <span class="math display">\[
 f(x) = x (x + 2) = x^2 + 2x
