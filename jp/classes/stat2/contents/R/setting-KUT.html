@@ -233,15 +233,17 @@ summary {
 usethis::edit_r_profile()</code></pre>
 <p>すると、Source ペイン（RStudio を授業の指示通りに設定している場合は左上）に .Rprofile ファイルが開く。そのファイルに以下の内容をコピペする。</p>
 <pre><code>Sys.setenv(
-  http_proxy  = &quot;http://proxy.noc.kochi-tech.ac.jp:3128&quot;,
-  https_proxy = &quot;https://proxy.noc.kochi-tech.ac.jp:3128&quot;,
-  ftp_proxy   = &quot;ftp://proxy.noc.kochi-tech.ac.jp:3128&quot;
+  http_proxy  = &quot;http://proxy.noc.kochi-tech.ac.jp:xxxx&quot;,
+  https_proxy = &quot;https://proxy.noc.kochi-tech.ac.jp:xxxx&quot;,
+  ftp_proxy   = &quot;ftp://proxy.noc.kochi-tech.ac.jp:xxxx&quot;
 )
 
 ## suppress annoying significance stars
 options(show.signif.stars = FALSE)
 </code></pre>
-<p>上の内容を貼り付けたら、最後に1行空行（何も書かない行）を挿入する（最後に1回改行すればOK）。 <code>ctrl + S</code> でファイルを保存し、そのファイルを閉じる。</p>
+<p>上の内容を貼り付けたら、最後に1行空行（何も書かない行）を挿入する（最後に1回改行すればOK）。</p>
+<p>次に <code>xxxx</code> の部分を授業で案内する番号に書き換える（3つとも同じ番号）。</p>
+<p>書き換えが完了したら<code>ctrl + S</code> でファイルを保存し、そのファイルを閉じる。</p>
 <p>その後、RStudioのメニュー（上部）で [Session] -&gt; [Restart R] を選んでRを再起動する。</p>
 <p>この作業は1度実行すれば次回から行う必要はない。（設定を変えたいときは .Rprofile を書き換える。）</p>
 <p><br> <br></p>
