@@ -11,7 +11,6 @@
 
 <meta name="author" content="矢内 勇生" />
 
-<meta name="date" content="2021-04-29" />
 
 <title>計量経済学応用</title>
 
@@ -193,7 +192,7 @@ summary {
 <h1 class="title toc-ignore">計量経済学応用</h1>
 <h3 class="subtitle">傾向スコア</h3>
 <h4 class="author">矢内 勇生</h4>
-<h4 class="date">2021-04-29</h4>
+<h4 class="date">2021-04-29（改訂：2021-04-30）</h4>
 
 </div>
 
@@ -256,8 +255,8 @@ theme_set(theme_gray(base_size   = 9,
 <p>まず、連続な変数<code>a</code>をランダムに生成する。</p>
 <pre class="r"><code>a &lt;- runif(100, min = 0, max = 1)
 summary(a)</code></pre>
-<pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## 0.008098 0.203423 0.490052 0.466305 0.703233 0.996416</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## 0.03332 0.26008 0.47925 0.49003 0.73080 0.98774</code></pre>
 <p>この変数を、[0, 0.2], (0.2, 0.4], (0.4, 0.6], (0.6, 0.8], (0.8, 1.0] の5つのカテゴリに分類するカテゴリ変数を作る。</p>
 <pre class="r"><code>f1 &lt;- cut(a, 
           breaks = seq(0, 1, by = 0.2), 
@@ -265,7 +264,7 @@ summary(a)</code></pre>
 table(f1)</code></pre>
 <pre><code>## f1
 ##   [0,0.2] (0.2,0.4] (0.4,0.6] (0.6,0.8]   (0.8,1] 
-##        25        15        26        17        17</code></pre>
+##        20        22        20        22        16</code></pre>
 <p>同様に、[0, 0.2), [0.2, 0.4), [0.4, 0.6), [0.6, 0.8), [0.8, 1.0] の5つのカテゴリにするには、<code>right = FALSE</code> にする。</p>
 <pre class="r"><code>f2 &lt;- cut(a, 
           breaks = seq(0, 1, by = 0.2), 
@@ -274,15 +273,15 @@ table(f1)</code></pre>
 table(f2)</code></pre>
 <pre><code>## f2
 ##   [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8)   [0.8,1] 
-##        25        15        26        17        17</code></pre>
+##        20        22        20        22        16</code></pre>
 <p>各カテゴリに属する観測数を同数にしたいときは、<code>quantile()</code> を利用して次のようにする。</p>
 <pre class="r"><code>f3 &lt;- cut(a, 
           breaks = quantile(a, prob = seq(0, 1, by = 0.2)),
           include.lowest = TRUE)
 table(f3)</code></pre>
 <pre><code>## f3
-## [0.0081,0.16]  (0.16,0.397] (0.397,0.551]  (0.551,0.75]  (0.75,0.996] 
-##            20            20            20            20            20</code></pre>
+## [0.0333,0.224]  (0.224,0.391]  (0.391,0.565]  (0.565,0.753]  (0.753,0.988] 
+##             20             20             20             20             20</code></pre>
 <p><br></p>
 </div>
 </div>
@@ -307,7 +306,7 @@ table(f3)</code></pre>
 </ol>
 <p>安井 (2020) でも分析されている <a href="https://www.jstor.org/stable/1806062">LaLonde (1986)</a> の実験データ (<a href="https://www.google.com/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=&amp;ved=2ahUKEwinp47Njp7wAhXl-GEKHUG-DEYQFjABegQICxAD&amp;url=http%3A%2F%2Fusers.nber.org%2F~rdehejia%2Fpapers%2Fmatching.pdf&amp;usg=AOvVaw3TYrXk2BHtCPuu-ILkuZuW">Dehejia and Wahba 2002</a>) を使い、傾向スコアを使った分析手順を説明する。</p>
 <p>この実験の関心は、「職業訓練（カウンセリングと短期的な就労経験）」が、その後の収入に影響を与えるかどうかであう。データセットのなかで、処置変数である職業訓練は <code>treat</code> で、結果変数である1978年の収入は <code>re78</code> で表される。</p>
-<p>まず、データを入手しよう。後で読み込み直すことも考えて、data ディレクトリに一旦ダウンロードする。<code>download.file()</code> を使ったダウンロードがうまくいかない場合（Windows では失敗しがち。一見ダウンロードできたように見えても、データを読む段階で失敗する）は、ウェブブラウザで <a href="%22https://users.nber.org/~rdehejia/data/">https://users.nber.org/~rdehejia/data/</a> にアクセスし、必要なデータを手動でダウンロードする。</p>
+<p>まず、データを入手しよう。後で読み込み直すことも考えて、data ディレクトリに一旦ダウンロードする。<code>download.file()</code> を使ったダウンロードがうまくいかない場合（Windows では失敗しがち。一見ダウンロードできたように見えても、データを読む段階で失敗する）は、ウェブブラウザで <a href="https://users.nber.org/~rdehejia/data/">https://users.nber.org/~rdehejia/data/</a> にアクセスし、必要なデータを手動でダウンロードする。</p>
 <pre class="r"><code>base_url &lt;- &quot;https://users.nber.org/~rdehejia/data/&quot;
 targets &lt;- c(&quot;nsw_dw.dta&quot;, &quot;cps_controls.dta&quot;, &quot;cps_controls3.dta&quot;)
 download.file(url = str_c(base_url, targets),
@@ -330,7 +329,7 @@ d_nsw &lt;- read_dta(&quot;data/nsw_dw.dta&quot;)</code></pre>
 <pre class="r"><code>rct_formula</code></pre>
 <pre><code>## re78 ~ treat + age + education + black + hispanic + married + 
 ##     nodegree + re74 + re75
-## &lt;environment: 0x7f8e62d48240&gt;</code></pre>
+## &lt;environment: 0x7ff57bc188d0&gt;</code></pre>
 <p>線形モデルを仮定した回帰式を推定する。</p>
 <pre class="r"><code>ate_rct &lt;- lm(rct_formula, data = d_nsw) %&gt;% 
   tidy() %&gt;% 
@@ -442,7 +441,7 @@ ps_formula &lt;- covariates %&gt;%
 <pre class="r"><code>ps_formula</code></pre>
 <pre><code>## treat ~ age_c + education_c + black_c + hispanic_c + married_c + 
 ##     nodegree_c + re74_c + re75_c + re74_sq_c + re75_sq_c
-## &lt;environment: 0x7f8e535cb2c0&gt;</code></pre>
+## &lt;environment: 0x7ff57c434390&gt;</code></pre>
 <p>これを使ってロジスティック回帰式を推定する。</p>
 <pre class="r"><code>fit_logistic &lt;- glm(ps_formula, 
                     data = myd,
