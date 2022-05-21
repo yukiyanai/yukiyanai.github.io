@@ -558,7 +558,7 @@ theme_set(theme_gray(base_size = 9,
 <pre class="r"><code>a &lt;- runif(100, min = 0, max = 1)
 summary(a)</code></pre>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## 0.002295 0.285810 0.497790 0.497584 0.692131 0.971895</code></pre>
+## 0.007937 0.250142 0.441357 0.501596 0.770823 0.988917</code></pre>
 <p>この変数を、[0, 0.2], (0.2, 0.4], (0.4, 0.6], (0.6, 0.8], (0.8, 1.0]
 の5つのカテゴリに分類するカテゴリ変数を作る。</p>
 <pre class="r"><code>f1 &lt;- cut(a, 
@@ -567,7 +567,7 @@ summary(a)</code></pre>
 table(f1)</code></pre>
 <pre><code>## f1
 ##   [0,0.2] (0.2,0.4] (0.4,0.6] (0.6,0.8]   (0.8,1] 
-##        15        24        19        29        13</code></pre>
+##        21        21        15        20        23</code></pre>
 <p>同様に、[0, 0.2), [0.2, 0.4), [0.4, 0.6), [0.6, 0.8), [0.8, 1.0]
 の5つのカテゴリにするには、<code>right = FALSE</code> にする。</p>
 <pre class="r"><code>f2 &lt;- cut(a, 
@@ -577,7 +577,7 @@ table(f1)</code></pre>
 table(f2)</code></pre>
 <pre><code>## f2
 ##   [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8)   [0.8,1] 
-##        15        24        19        29        13</code></pre>
+##        21        21        15        20        23</code></pre>
 <p>各カテゴリに属する観測数を同数にしたいときは、<code>quantile()</code>
 を利用して次のようにする。</p>
 <pre class="r"><code>f3 &lt;- cut(a, 
@@ -585,7 +585,7 @@ table(f2)</code></pre>
           include.lowest = TRUE)
 table(f3)</code></pre>
 <pre><code>## f3
-## [0.00229,0.255]   (0.255,0.409]   (0.409,0.619]   (0.619,0.711]   (0.711,0.972] 
+## [0.00794,0.194]   (0.194,0.383]   (0.383,0.624]   (0.624,0.817]   (0.817,0.989] 
 ##              20              20              20              20              20</code></pre>
 <p><br></p>
 </div>
@@ -648,7 +648,7 @@ d_nsw &lt;- read_dta(&quot;data/nsw_dw.dta&quot;)</code></pre>
 <pre class="r"><code>rct_formula</code></pre>
 <pre><code>## re78 ~ treat + age + education + black + hispanic + married + 
 ##     nodegree + re74 + re75
-## &lt;environment: 0x125aa47d8&gt;</code></pre>
+## &lt;environment: 0x131a750e8&gt;</code></pre>
 <p>線形モデルを仮定した回帰式を推定する。</p>
 <pre class="r"><code>ate_rct &lt;- lm(rct_formula, data = d_nsw) %&gt;% 
   tidy() %&gt;% 
@@ -787,7 +787,7 @@ ps_formula &lt;- covariates %&gt;%
 <pre class="r"><code>ps_formula</code></pre>
 <pre><code>## treat ~ age_c + education_c + black_c + hispanic_c + married_c + 
 ##     nodegree_c + re74_c + re75_c + re74_sq_c + re75_sq_c
-## &lt;environment: 0x127b8bf40&gt;</code></pre>
+## &lt;environment: 0x116202a08&gt;</code></pre>
 <p>これを使ってロジスティック回帰式を推定する。</p>
 <pre class="r"><code>fit_logistic &lt;- glm(ps_formula, 
                     data = myd,
@@ -1351,7 +1351,8 @@ weighted.mean(subclass_att, w = w_subclass)</code></pre>
 であることがわかった。 （これは有意水準 0.05
 で統計的に有意ではない。）</p>
 <p>このように、調査・観察データを使った因果推論には、様々な工夫が必要であり、慎重に分析を進める必要がある。また、さまざまな仮定をおいて分析を行っており、仮定が成り立たない場合には因果効果を正しく推定できない。自分がどのような仮定に基づいて、何を推定対象
-(esimand) としたデータを分析しているのか、常に意識するようにしよう。</p>
+(estimand)
+としたデータを分析しているのか、常に意識するようにしよう。</p>
 <p><br> <br></p>
 </div>
 </div>
