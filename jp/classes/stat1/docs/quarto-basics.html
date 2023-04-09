@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="矢内　勇生">
+
+<title>統計学1</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="quarto-basics_files/libs/clipboard/clipboard.min.js"></script>
+<script src="quarto-basics_files/libs/quarto-html/quarto.js"></script>
+<script src="quarto-basics_files/libs/quarto-html/popper.min.js"></script>
+<script src="quarto-basics_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="quarto-basics_files/libs/quarto-html/anchor.min.js"></script>
+<link href="quarto-basics_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="quarto-basics_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="quarto-basics_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="quarto-basics_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="quarto-basics_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">統計学1</h1>
+<p class="subtitle lead">Quarto文書の書き方</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">作者</div>
+    <div class="quarto-title-meta-contents">
+             <p>矢内　勇生 </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">公開</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">2023年4月9日</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="準備" class="level1">
+<h1>準備</h1>
+<p><strong>tidyverse</strong> パッケージを読み込む。パッケージのインストールは一度すれば済むが、<code>library()</code> を使ったパッケージの読み込みは、Rを起動するたびに行う必要がある。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 図のなかで日本語を使えるようにする</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="do">## フォントの設定はお好みで</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="do">## （Unix/Linux ではIPAexフォントのインストールが必要かも）</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fontregisterer)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (.Platform<span class="sc">$</span>OS.type <span class="sc">==</span> <span class="st">"windows"</span>) { <span class="co"># Windows</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  my_font <span class="ot">&lt;-</span> <span class="st">"Yu Gothic"</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">capabilities</span>(<span class="st">"aqua"</span>)) { <span class="co"># macOS</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  my_font <span class="ot">&lt;-</span> <span class="st">"Hiragino Sans"</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> { <span class="co"># Unix/Linux</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  my_font <span class="ot">&lt;-</span> <span class="st">"IPAexGothic"</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_gray</span>(<span class="at">base_size =</span> <span class="dv">9</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">base_family =</span> my_font))</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="quarto文書の書き方使い方" class="level1">
+<h1>Quarto文書の書き方・使い方</h1>
+<p>Quarto文書 (<a href="https://drive.google.com/file/d/11UqTpnFMX4yTypJwtZUSTfIgfDdvvZrX/view?usp=sharing">quarto-basics.qmd</a>) とそのファイルを元に生成されたPDFファイル （PDFを開いているならそのファイル）(<a href="https://drive.google.com/file/d/11UixGKxAFbFOfmElXfLVVaLaldmx8bM7/view?usp=share_link">quarto-basics.pdf</a>)と htmlファイル（インターネットブラウザで読んでいるならそのファイル）(<a href="https://yukiyanai.github.io/jp/classes/stat1/docs/quarto-basics.html">quarto-basics.html</a>) を見比べながら、RStudioでQuarto文書（.qmdファイル）を扱えるようにするのが今回の目標である。</p>
+<p>この資料と同じ画像を表示するためには、画像ファイルも同じフォルダに保存する必要がある。自分でもっている画像（写真）に置き換えて試してほしい。</p>
+<section id="マークダウン記法を利用した文章の書き方" class="level2">
+<h2 class="anchored" data-anchor-id="マークダウン記法を利用した文章の書き方">マークダウン記法を利用した文章の書き方</h2>
+<p>文章は、いつもどおり書けばよい。 文章の一部をイタリック（斜字体）にしたいときは、イタリックにしたい部分を * または _ で挟むと、<em>this is italic</em> あるいは <em>this is also italic</em> となる（日本語は斜字体にしない）。 太字は、**（*を2つ） または __（_ を2つ）で挟むと、<strong>ここが太字</strong> または <strong>ここも太字</strong> となる。 太字のイタリックは、*** （*を3つ）または ___（_を3つ）で挟むと、<strong><em>here is bold italic</em></strong> または <strong><em>here is also bold italic</em></strong> となる。</p>
+<p>改行するときは、文章の間を1行以上空ける。</p>
+<p>箇条書きは、* または _ を利用し、</p>
+<ul>
+<li>項目1</li>
+<li>項目2
+<ul>
+<li>項目2-1</li>
+<li>項目2-2</li>
+</ul></li>
+</ul>
+<p>あるいは、</p>
+<ul>
+<li>項目1
+<ul>
+<li>項目1-1</li>
+<li>項目1-2</li>
+</ul></li>
+<li>項目2</li>
+</ul>
+<p>のようにできる。* や - の後には半角スペースを挿入する。箇条書きを入れ子にするとき、字下げは Tab で行う</p>
+<p>番号付きの箇条書きは、数字で作れる。</p>
+<ol type="1">
+<li>First item</li>
+<li>Second item
+<ol type="1">
+<li>What?</li>
+<li>How?</li>
+</ol></li>
+<li>Third item</li>
+</ol>
+<p>のようにする。入力する際にすべて「1.」にしても、自動的に1, 2, 3, … とうい番号が割り当てられる。全部1にしておくと、後から項目の並べ替えができるので楽である。（1でなくても並べ替えられるが、数字の意味が不明になる。）</p>
+<p>ヘディング (heading) は、“#” （ハッシュ記号） で作れる。 論文・レポートを書くときは、ヘディングを利用して文章を構造化する。 # の数が少ないほど、上位のヘディングになる。<strong>Rコードのコメントと同じ記号だが、その役割はまったく異なるので誤解しなように注意されたい</strong>。</p>
+<p>例を以下に示す。</p>
+</section>
+</section>
+<section id="ハッシュ1つのヘディング" class="level1">
+<h1>ハッシュ1つのヘディング</h1>
+<section id="ハッシュ2つのヘディング" class="level2">
+<h2 class="anchored" data-anchor-id="ハッシュ2つのヘディング">ハッシュ2つのヘディング</h2>
+<section id="ハッシュ3つのヘディング" class="level3">
+<h3 class="anchored" data-anchor-id="ハッシュ3つのヘディング">ハッシュ3つのヘディング</h3>
+<section id="ハッシュ4つのヘディング" class="level4">
+<h4 class="anchored" data-anchor-id="ハッシュ4つのヘディング">ハッシュ4つのヘディング</h4>
+<p>論文・レポートでは、以下のようにヘディングを使い分ける。</p>
+<ul>
+<li>#: 節（セクション, section）</li>
+<li>##: 小節 (subsection)</li>
+<li>###: 小節以下の見出し (subsubsection)</li>
+<li>####: （あまり使わない）</li>
+</ul>
+<p>また、リンクを貼ることもできる：<a href="https://yukiyanai.github.io/jp/">矢内のウェブサイト</a>。</p>
+<p>画像も貼れる：<img src="animal_chara_computer_neko.png" class="img-fluid" style="width:50.0%" alt="いらすとやの猫"></p>
+<p>（出典：<a href="https://www.irasutoya.com/2018/10/blog-post_67.html">いらすとや</a>）</p>
+<p>画像へのパス (path) が通っていないと表示されないので注意。</p>
+<p>HTMLに出力する場合は、HTMLを直接書くこともできる（PDFに出力する場合はうまくいかない）。</p>
+<ul>
+<li>リンクを貼る：<a href="https://yukiyanai.github.io/jp/" target="_blank">矢内のウェブサイト</a></li>
+<li>画像を貼る：<img src="animal_chara_computer_neko.png" width="300"></li>
+</ul>
+</section>
+</section>
+<section id="ast-数式の書き方" class="level3">
+<h3 class="anchored" data-anchor-id="ast-数式の書き方"><span class="math inline">\(\ast\)</span> 数式の書き方</h3>
+<p><a href="https://ja.wikipedia.org/wiki/LaTeX">LaTeX</a> と同じように数式を書くこともできる。 文章中と同じ行に数式を書きたいときは、<code>$</code>で挟む。 たとえば、<span class="math inline">\(\bar{x} = \sum_{i=1}^n x_i / n\)</span> と、する。</p>
+<p>数式を独立したブロックとして書きたいときは、<code>$$</code>で挟み、 <span class="math display">\[
+\sigma^2 = \frac{\sum_{i=1}^n (x_i - \mu)^2}{n}
+\]</span> のようにする。</p>
+</section>
+</section>
+<section id="コードチャンクの書き方" class="level2">
+<h2 class="anchored" data-anchor-id="コードチャンクの書き方">コードチャンクの書き方</h2>
+<p>Rのコードは、コードチャンクと呼ばれる部分に書き込む。 コードチャンクは、たとえば以下のように書ける。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span><span class="sc">:-</span><span class="dv">10</span></span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Rコードチャンクの始めには、3つの「`」の後に{r}をつける。 rとスペースの後（{}の中）には、チャンクの名前を付ける。 好きな名前を付けてよいが、<strong>他のチャンクとまったく同じ名前は付けられない</strong>（つまり、各チャンクが異なる名前をもつ必要がある）。 チャンクの終わりには3つの「`」を書く。 RStudioで開いた.qmdファイル内でコードチャンクを作るには、次のショートカットキーを使った方がよい。</p>
+<ul>
+<li>macOS: <code>command</code> + <code>option</code> + <code>I</code> または <code>control</code> + <code>option</code> + <code>I</code></li>
+<li>Windows: <code>Ctrl</code> + <code>Alt</code> + <code>I</code></li>
+</ul>
+<p>I は Insert （チャンクを「挿入する」）の頭文字である。</p>
+<p>文章中にRコードを書きたいときは <code>mean(x)</code> のように、Rのコマンドを`の間に書く。 関数を実行（評価, evaluate）した後の結果を文章中に入れたいときは、「$a$ の平均値は ` r mean(a) ` です」のように “r” を入れて書くと、「<span class="math inline">\(a\)</span> の平均値は5.5 です」となる。つまり、<code>mean(a)</code> というコマンド をRが実行し、その結果を文章の中に入れてくれる。この方法を使えば、文章と別にRのコマンドを実行しなくても、Rの実行結果を表示することができる。</p>
+<p>図を含めた文章も作れる。チャンクオプション <code>fig.cap</code> で図のキャプションが指定できる。 チャンクオプションは、チャンクの冒頭に <code>#|</code> という記号を使って書き加える。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="fu">rnorm</span>(<span class="dv">100</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="st">"tomato"</span>) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"度数"</span>, <span class="at">title =</span> <span class="st">"ヒストグラム"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="quarto-basics_files/figure-html/example-plot4html-1.png" class="img-fluid figure-img" width="480"></p>
+<p></p><figcaption class="figure-caption">トマト色のヒストグラム</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>何もオプションを指定しない状態では、チャンクは1行ずつ評価され、結果も順番に次々出力される。 たとえば、</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(a)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.02765</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(a)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 9.166667</code></pre>
+</div>
+</div>
+<p>チャンクの最後まで評価してからまとめて結果表示したいときは、チャンクオプション<strong>results</strong> を<code>"hold"</code>にする。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(a)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(a)</span></code><button title="コピー" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.02765
+[1] 9.166667</code></pre>
+</div>
+</div>
+<p>となる。</p>
+<p>チャンクオプションを含め、Quarto についてのもう少し詳しい説明は、『私たちのR』の「<a href="https://www.jaysong.net/RBook/quarto.html">Quarto入門</a>」を参照。</p>
+<br> <br>
+<div data-align="right">
+<p><a href="https://yukiyanai.github.io/stat1/intro-to-quarto.html">授業の内容に戻る</a></p>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "コピーしました");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "コピーしました");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
