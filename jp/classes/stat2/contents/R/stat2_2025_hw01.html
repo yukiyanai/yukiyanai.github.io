@@ -11,9 +11,8 @@
 
 <meta name="author" content="矢内 勇生" />
 
-<meta name="date" content="2023-11-10" />
 
-<title>統計学 2 – 課題3</title>
+<title>KUT 統計学2</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -472,188 +471,57 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">統計学 2 – 課題3</h1>
+<h1 class="title toc-ignore">KUT 統計学2</h1>
+<h3 class="subtitle">課題1</h3>
 <h4 class="author">矢内 勇生</h4>
-<h4 class="date">2023-11-10</h4>
 
 </div>
 
 
 <div id="課題" class="section level2">
 <h2>課題</h2>
-<p>以下の4つの問に答えなさい。</p>
-<p><br></p>
-<div id="母平均の推定" class="section level3">
-<h3>1. 母平均の推定</h3>
-<p>平均が<span class="math inline">\(\mu\)</span>の母集団から<span class="math inline">\(N=10\)</span>の標本<span class="math inline">\((x_1, x_2, \dots,
-x_{10})\)</span>を抽出したところ、以下のデータが得られた。</p>
-<table style="width:100%;">
-<colgroup>
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-<col width="10%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="right"><span class="math inline">\(x_1\)</span></th>
-<th align="right"><span class="math inline">\(x_2\)</span></th>
-<th align="right"><span class="math inline">\(x_3\)</span></th>
-<th align="right"><span class="math inline">\(x_4\)</span></th>
-<th align="right"><span class="math inline">\(x_5\)</span></th>
-<th align="right"><span class="math inline">\(x_6\)</span></th>
-<th align="right"><span class="math inline">\(x_7\)</span></th>
-<th align="right"><span class="math inline">\(x_8\)</span></th>
-<th align="right"><span class="math inline">\(x_9\)</span></th>
-<th align="right"><span class="math inline">\(x_{10}\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">1.2</td>
-<td align="right">0.5</td>
-<td align="right">0.9</td>
-<td align="right">0.7</td>
-<td align="right">0.6</td>
-<td align="right">0.9</td>
-<td align="right">0.7</td>
-<td align="right">0.4</td>
-<td align="right">1.4</td>
-<td align="right">1.4</td>
-</tr>
-</tbody>
-</table>
-<p>このとき<span class="math inline">\(\mu\)</span>の</p>
-<ul>
-<li>点推定値</li>
-<li>95%信頼区間</li>
-<li>77%信頼区間</li>
-</ul>
-<p>をそれぞれ求めなさい。</p>
-<p><br></p>
+<div id="課題-11" class="section level3">
+<h3>課題 1−1</h3>
+<p>トピック 3. の実習 「<a href="https://yukiyanai.github.io/stat2/rng.html">乱数生成</a>」のページにある実習課題
+(1), （2）, (3) と「<a href="https://yukiyanai.github.io/stat2/clt.html">中心極限定理</a>」のページにある実習課題
+（これを 実習課題 (4)
+とする）を実行しなさい。各実験で得られた結果は、<strong>ggplot2</strong>
+を使って可視化すること。また、これらの実験の結果から自分がどのようなことを学んだか、簡単に（1段落程度で）説明しなさい。</p>
 </div>
-<div id="仮説検定-1" class="section level3">
-<h3>2. 仮説検定 (1)</h3>
-<p>K工科大学とM工科大学の学生が、どの程度統計学に興味を持っているか調べたい。K工科大学から15人をランダムに選び、統計学に対する興味の強さを100点満点で評価してもらった。同様に、M工科大学から12人をランダムに選び、統計学に対する興味の強さを100点満点で評価してもらった。結果は以下のとおりである。</p>
-<pre class="r"><code>K &lt;- c(80, 90, 78, 82, 23,
-       67, 78, 84, 99, 72,
-       84, 87, 75, 66, 91)
-M &lt;- c(89, 78, 67, 56, 43, 53,
-       23, 97, 67, 65, 42, 43)</code></pre>
-<p>この調査結果から、K工科大学とM工科大学の学生の間で、統計学に対する興味の強さに違いがあるか検討したい。そのために、以下の各問に答えなさい。ただし、有意水準は5%とする。</p>
-<ol style="list-style-type: decimal">
-<li>帰無仮説と対立仮説は何か？それぞれ述べなさい。</li>
-<li>評価の差の点推定値はいくつ？</li>
-<li>検定統計量はいくつ？</li>
-<li>検定の臨界値はいくつ？</li>
-<li>検定の結論は？</li>
-</ol>
-<p><br></p>
-</div>
-<div id="仮説検定-2" class="section level3">
-<h3>3. 仮説検定 (2)</h3>
-<p>あるラーメン屋の豚骨ラーメンと塩ラーメンを10
-人に食べてもらい、それぞれのラーメンを10 点満点（0 点から10 点まで1
-点刻み）で評価してもらった。評価の結果は下の表の通りである。日本に住む人全員を母集団と考えたとき、豚骨ラーメンと塩ラーメンの評価に違いがあるかどうか、有意水準5%
-で検定したい。このとき、以下の各問に答えよ。</p>
-<table>
-<thead>
-<tr class="header">
-<th align="center">評価者</th>
-<th align="center">1</th>
-<th align="center">2</th>
-<th align="center">3</th>
-<th align="center">4</th>
-<th align="center">5</th>
-<th align="center">6</th>
-<th align="center">7</th>
-<th align="center">8</th>
-<th align="center">9</th>
-<th align="center">10</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">豚骨</td>
-<td align="center">8</td>
-<td align="center">6</td>
-<td align="center">5</td>
-<td align="center">6</td>
-<td align="center">1</td>
-<td align="center">5</td>
-<td align="center">3</td>
-<td align="center">7</td>
-<td align="center">8</td>
-<td align="center">4</td>
-</tr>
-<tr class="even">
-<td align="center">塩</td>
-<td align="center">6</td>
-<td align="center">7</td>
-<td align="center">8</td>
-<td align="center">3</td>
-<td align="center">2</td>
-<td align="center">8</td>
-<td align="center">4</td>
-<td align="center">2</td>
-<td align="center">10</td>
-<td align="center">7</td>
-</tr>
-</tbody>
-</table>
-<ol style="list-style-type: decimal">
-<li>帰無仮説と対立仮説は何か？それぞれ述べなさい。</li>
-<li>評価の差の平均値はいくつ？</li>
-<li>検定統計量はいくつ？</li>
-<li>検定の臨界値はいくつ？</li>
-<li>検定の結論は？</li>
-</ol>
-<p><br></p>
-</div>
-<div id="二変数の関係" class="section level3">
-<h3>4. 二変数の関係</h3>
-<p><a href="../data/bivariate_13pairs.csv">bivariate_13pairs.csv</a>
-というデータセット（このデータは、<a href="http://albertocairo.com/">Alberto Cairo</a>
-が提供する有名なデータを授業用に整理したものである）には、全部で26個の変数が保存されている。
-26個の変数は、13組の <span class="math inline">\((x, y)\)</span>
-であり、<code>x_1</code>と<code>y_1</code>
-がペア、<code>x_2</code>と<code>y_2</code>
-がペア、というように、13組の2変数で構成されている。変数はすべて量的な変数である。</p>
-<p>これら13組のペアのそれぞれについて2変数の間の関係を調べなさい（つまり13組の関係を調べる）。そして、全体としてこの課題からどのような教訓が得られるか、文章にまとめなさい。</p>
-<p><br> <br></p>
+<div id="課題-1-2-オプションやれば加点するがやらなくても減点はしない" class="section level3">
+<h3>課題 1-2
+（オプション：やれば加点するが、やらなくても減点はしない）</h3>
+<p>ベルヌーイ分布を使い、サンプルサイズが大きくなると、「二項分布からの乱数の平均値」の分布が正規分布に近づくことをシミュレーションによって示しなさい（ヒント：<code>sample()</code>
+または <code>rbinom()</code> を使う）。</p>
 </div>
 </div>
 <div id="提出方法" class="section level2">
 <h2>提出方法</h2>
 <ul>
-<li>Quarto文書を render
+<li>Quarto 文書を render
 して作った<strong>PDFファイル</strong>を提出しなさい。
 <ul>
-<li>PDFファイル以外は受け付けない。</li>
+<li>Quarto 文書 を render したPDFファイル以外は受け付けない。</li>
 </ul></li>
-<li>ファイル名は、<strong>stat2_hw3_studentID.pdf</strong> とすること。
+<li>ファイル名は、<strong>stat2_hw1_StudentID.pdf</strong> とすること。
 <ul>
-<li>元となる Quartoファイル名を stat2_hw3_studentID.<strong>qmd</strong>
-としておけばよい。</li>
-<li>ただし、<strong>studentID
+<li>元となる Quarto文書のファイル名を
+stat2_hw2_StudentID.<strong>qmd</strong> としておけば良い。</li>
+<li>ただし、<strong>Student-ID
 は自分の学籍番号に置き換える</strong>こと。</li>
-<li>たとえば、学籍番号が 123456 なら、stat2_hw3_123456.pdf にする。</li>
+<li>たとえば、学籍番号が 123456 なら、stat2_hw1_123456.qmd
+をPDFにknitする。</li>
 </ul></li>
-<li><a href="https://lms.kochi-tech.ac.jp/course/view.php?id=154148">KUTLMS</a>
-の「課題の提出場所」（トピック1
-の上にある）の「課題3」にファイルを提出する。</li>
-<li><strong>提出期限：2023年11月22日（水）午後10時</strong>（日本時間）</li>
+<li><a href="https://lms.kochi-tech.ac.jp/course/view.php?id=4239">KUTLMS</a>
+の「課題の提出場所」（トピック 1
+の上にある）の「課題1」にファイルを提出する。</li>
+<li><strong>提出期限：2025年12月23日（火）午後2時30分</strong>（日本時間）</li>
 </ul>
-<br> <br>
-<div style="text-align: right;">
-<p><a href="../">授業の内容に戻る</a></p>
 </div>
+<div id="注意" class="section level2">
+<h2>注意</h2>
+<p>実験結果を説明する文章がこのレポートの本体であり、計算結果や図は説明のためのを補助手段であることを忘れずにレポートを書きなさい。つまり、点数の大部分は書かれた文章によって決まる（文章がなければ0点）であることを念頭においてレポートを作成しなさい。</p>
+<p><br> <br></p>
 </div>
 
 
