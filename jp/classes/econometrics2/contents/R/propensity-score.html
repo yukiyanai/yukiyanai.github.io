@@ -475,7 +475,7 @@ display: none;
 <h3 class="subtitle">傾向スコア</h3>
 <h4 class="author">矢内 勇生</h4>
 <h4 class="date">2021-04-29（改訂：2021-04-30, 2022-05-02, 2023-10-18,
-2026-02-05）</h4>
+2026-02-05, 2026-02-16）</h4>
 
 </div>
 
@@ -508,8 +508,7 @@ display: none;
                cobalt, 
                MatchIt, 
                survey,
-               patchwork,
-               fontregisterer)
+               patchwork)
 
 if (.Platform$OS.type == &quot;windows&quot;) {# Windows
   my_font &lt;- &quot;Yu Gothic&quot;
@@ -546,7 +545,7 @@ theme_set(theme_gray(base_size = 9,
 <pre class="r"><code>a &lt;- runif(100, min = 0, max = 1)
 summary(a)</code></pre>
 <pre><code>##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## 0.001121 0.199423 0.485880 0.475250 0.722617 0.971060</code></pre>
+## 0.008265 0.219102 0.405799 0.469730 0.763170 0.970998</code></pre>
 <p>この変数を、[0, 0.2], (0.2, 0.4], (0.4, 0.6], (0.6, 0.8], (0.8, 1.0]
 の5つのカテゴリに分類するカテゴリ変数を作る。</p>
 <pre class="r"><code>f1 &lt;- cut(a, 
@@ -555,7 +554,7 @@ summary(a)</code></pre>
 table(f1)</code></pre>
 <pre><code>## f1
 ##   [0,0.2] (0.2,0.4] (0.4,0.6] (0.6,0.8]   (0.8,1] 
-##        26        17        21        18        18</code></pre>
+##        25        24        17        14        20</code></pre>
 <p>同様に、[0, 0.2), [0.2, 0.4), [0.4, 0.6), [0.6, 0.8), [0.8, 1.0]
 の5つのカテゴリにするには、<code>right = FALSE</code> にする。</p>
 <pre class="r"><code>f2 &lt;- cut(a, 
@@ -565,7 +564,7 @@ table(f1)</code></pre>
 table(f2)</code></pre>
 <pre><code>## f2
 ##   [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8)   [0.8,1] 
-##        26        17        21        18        18</code></pre>
+##        25        24        17        14        20</code></pre>
 <p>各カテゴリに属する観測数を同数にしたいときは、<code>quantile()</code>
 を利用して次のようにする。</p>
 <pre class="r"><code>f3 &lt;- cut(a, 
@@ -573,8 +572,8 @@ table(f2)</code></pre>
           include.lowest = TRUE)
 table(f3)</code></pre>
 <pre><code>## f3
-## [0.00112,0.163]   (0.163,0.358]   (0.358,0.559]   (0.559,0.774]   (0.774,0.971] 
-##              20              20              20              20              20</code></pre>
+## [0.00826,0.19]    (0.19,0.35]   (0.35,0.529]  (0.529,0.785]  (0.785,0.971] 
+##             20             20             20             20             20</code></pre>
 <p><br></p>
 </div>
 </div>
