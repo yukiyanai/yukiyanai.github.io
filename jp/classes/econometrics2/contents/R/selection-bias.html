@@ -474,7 +474,8 @@ display: none;
 <h1 class="title toc-ignore">計量経済学応用</h1>
 <h3 class="subtitle">セレクションバイアス</h3>
 <h4 class="author">矢内 勇生</h4>
-<h4 class="date">2021-04-11（改訂：2022-04-05, 2026-02-05）</h4>
+<h4 class="date">2021-04-11（改訂：2022-04-05, 2026-02-05,
+2026-02-15）</h4>
 
 </div>
 
@@ -509,7 +510,7 @@ if (.Platform$OS.type == &quot;windows&quot;) { # Windows
   my_font &lt;- &quot;IPAexGothic&quot;
 }
 
-theme_set(theme_gray(base_siz = 9,
+theme_set(theme_gray(base_size = 9,
                      base_family = my_font))</code></pre>
 <p><br></p>
 </div>
@@ -526,7 +527,7 @@ theme_set(theme_gray(base_siz = 9,
 table(gender)</code></pre>
 <pre><code>## gender
 ## 女 男 
-## 52 48</code></pre>
+## 50 50</code></pre>
 <p>この変数の値が「女」のときは1、「男」のときは0になる female
 というダミー変数は、<code>ifelse()</code> で作れる。使い方は、
 <code>ifelse(条件, 条件がTRUEのときの値, 条件がFALSEのときの値)</code>
@@ -537,14 +538,14 @@ table(gender)</code></pre>
 table(female)</code></pre>
 <pre><code>## female
 ##  0  1 
-## 48 52</code></pre>
+## 50 50</code></pre>
 <p>同様に、male ダミーは</p>
 <pre class="r"><code>#male &lt;- 1 - female　## female が既にあるのでこれでもOK
 male &lt;- ifelse(gender == &quot;男&quot;, 1, 0)
 table(male)</code></pre>
 <pre><code>## male
 ##  0  1 
-## 52 48</code></pre>
+## 50 50</code></pre>
 <p>で作れる。 このように、<code>ifelse()</code>
 は2つの場合に分けるときには便利である。</p>
 <p>次に、gender2
@@ -556,14 +557,14 @@ table(male)</code></pre>
 table(gender2)</code></pre>
 <pre><code>## gender2
 ## その他     女     男 
-##     13     49     38</code></pre>
+##      8     54     38</code></pre>
 <p>この変数の値を英語に変換したいとする。これも、<code>ifelse()</code>でできる。</p>
 <pre class="r"><code>gender_eng1 &lt;- ifelse(gender2 == &quot;女&quot;, &quot;female&quot;,
                       ifelse(gender2 == &quot;男&quot;, &quot;male&quot;, &quot;other&quot;))
 table(gender_eng1)</code></pre>
 <pre><code>## gender_eng1
 ## female   male  other 
-##     49     38     13</code></pre>
+##     54     38      8</code></pre>
 <p>このように、<code>ifelse()</code>
 を入れ子にして使えば、変数を3つ以上の場合に分けることもできる。
 しかし、<code>ifelse()</code>
@@ -578,7 +579,7 @@ table(gender_eng1)</code></pre>
 table(gender_eng2)</code></pre>
 <pre><code>## gender_eng2
 ## female   male  other 
-##     49     38     13</code></pre>
+##     54     38      8</code></pre>
 <p>このように、<code>case_when()</code>
 では、<code>条件 ~ 条件がTRUE のときの値</code>
 という書き方をする。条件の評価は、上から順番に行われる。したがって、上の例では
@@ -591,7 +592,7 @@ table(gender_eng2)</code></pre>
 table(rchs)</code></pre>
 <pre><code>## rchs
 ##  a  b  c  d  e  f  g  h  i  j  k  l  m  n  o  p  q  r  s  t  u  v  w  x  y  z 
-## 16 22 14 16 20 21 25 30 18 19 17 18 21 15 22 17 14 25 22 14 27 18 21 16 16 16</code></pre>
+## 23 14 23 23 23 23 21 19 17 24 14 25 22 18 16 14 18 21 16 15 18 23 13 18 22 17</code></pre>
 <p>これをアルファベット順に基づいて適当なグループに分ける。アルファベットは、a
 <span class="math inline">\(&lt;\)</span> b <span class="math inline">\(&lt; \cdots &lt;\)</span> z とみなされる。</p>
 <pre class="r"><code>group_chs &lt;- case_when(
@@ -605,7 +606,7 @@ table(rchs)</code></pre>
 table(group_chs)</code></pre>
 <pre><code>## group_chs
 ## a2d e2h i2n o2q r2x y2z 
-##  68  96 108  53 143  32</code></pre>
+##  83  86 120  48 124  39</code></pre>
 <p><br></p>
 </div>
 </div>
